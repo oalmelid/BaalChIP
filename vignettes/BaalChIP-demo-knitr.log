@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  12 JUN 2015 01:06
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  12 JUN 2015 01:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -375,250 +375,169 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <8> on input line 73.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <6> on input line 73.
-(./BaalChIP-demo-knitr.toc
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 3.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 3.
-)
+(./BaalChIP-demo-knitr.toc)
 \tf@toc=\write4
 \openout4 = `BaalChIP-demo-knitr.toc'.
 
- [1
-
-{/usr/local/texlive/2012/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 Package color Info: Redefining color shadecolor on input line 95.
 LaTeX Font Info:    Font shape `OT1/cmtt/bx/n' in size <10> not available
 (Font)              Font shape `OT1/cmtt/m/n' tried instead on input line 97.
 Package color Info: Redefining color shadecolor on input line 106.
 Package color Info: Redefining color shadecolor on input line 117.
+ [1
+
+{/usr/local/texlive/2012/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 Package color Info: Redefining color shadecolor on input line 139.
 Package color Info: Redefining color shadecolor on input line 156.
  [2]
-! Undefined control sequence.
-l.201 ...ts for four transcription factors (\textt
-                                                  {target}). The first colum...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+Overfull \hbox (1583.74783pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 {target}). The first column \verbatim{group name} identifies
+ the group label of each study (MCF7, GM12891). The column \verbatim{replicate 
+number} shows that there are two biological replicates for each ChIP-seq factor
+. The sample sheet also contains file paths to the BAM files (\verbatim{bam nam
+e}) with the aligned reads and the BED files (\verbatim{bed name}) with the pre
+viously called peaks. 
+ []
 
-Package color Info: Redefining color shadecolor on input line 209.
-! Undefined control sequence.
-l.217 ...the variant file should include an \textt
-                                                  {ID} column with a unique ...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-! Undefined control sequence.
-l.217 ... the (1-based) genomic coordinates \textt
-                                                  {CHROM, POS}, and the A,C,...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+Overfull \hbox (318.50887pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 Note that the sample sheet should be saved as a .csv file, y
+ou do not have to first load it into a data frame (the filename is passed direc
+tly to BaalChIP).[] 
+ []
 
-! Undefined control sequence.
-l.217 ...he A,C,G,T bases for the reference \textt
-                                                  {REF} and the non-referenc...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-! Undefined control sequence.
-l.217 ...F} and the non-reference alternate \textt
-                                                  {ALT} allele. The final co...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+Overfull \hbox (901.25378pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 In addition to the sample sheet, BaalChIP requires a ^^Mvari
+ant file^^M containning the list of heterozygous variants to be analysed. As an
+ example, a small set of heterozygous variants for each cell line has been incl
+uded in this vignette and can be assessed as follows:[] 
+ []
 
-! Undefined control sequence.
-l.217 ...extt{ALT} allele. The final column \textt
-                                                  {RAF} consists of a
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+
+Overfull \hbox (1242.50081pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 The information in the variant file should include an \verba
+tim{ID} column with a unique identifier string per variant, the (1-based) genom
+ic coordinates \verbatim{CHROM, POS}, and the A,C,G,T bases for the reference \
+verbatim{REF} and the non-reference alternate \verbatim{ALT} allele. The final 
+column \verbatim{RAF} consists of a[] 
+ []
+
+
+Overfull \hbox (1289.7504pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 value ranging from 0 to 1 for each variant denoting the rela
+tive allele frequency. A value between 0.5 and 1 denotes a bias to the referenc
+e allele, and a value between 0 and 0.5 a bias to the alternate allele. This co
+lumn is optional, if missing BaalChIP will still run but will not correct for r
+elative allele frequency (copy-number) bias.[] 
+ []
+
+
+Overfull \hbox (1258.25067pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 The first step is to generate a BaalChIP object. The functio
+n \verbatim{new} accepts a samplesheet and a named vector containing the filena
+mes for the variant files to be used. The names in the vector should correspond
+ to \verbatim{group_name} strings in the \verbatim{.csv} samplesheet, in this c
+ase it should be "MCF7" and "GM12891".[] 
+ []
+
+
+Overfull \hbox (355.25854pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 \hlstd{hets} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"MCF7"}\hls
+td{=}\hlstr{"MCF7_hetSNP.txt"}\hlstd{,} \hlstr{"GM12891"}\hlstd{=}\hlstr{"GM128
+91_hetSNP.txt"}\hlstd{)}[] 
+ []
+
+
+Overfull \hbox (224.00969pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 \hlstd{res} \hlkwb{<-} \hlkwd{new}\hlstd{(}\hlstr{"BaalChIP"
+}\hlstd{,} \hlkwc{samplesheet}\hlstd{=samplesheet,} \hlkwc{hets}\hlstd{=hets)}[
+] 
+ []
 
 [3]
-! Undefined control sequence.
-l.223 ...te a BaalChIP object. The function \textt
-                                                  {new} accepts a sampleshee...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-l.223 ...in the vector should correspond to \textt
-                                                  {group_name} strings in th...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Missing $ inserted.
-<inserted text> 
-                $
-l.223 ...vector should correspond to \textt{group_
-                                                  name} strings in the \text...
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-! Extra }, or forgotten $.
-l.223 ...r should correspond to \textt{group_name}
-                                                   strings in the \textt{.cs...
-I've deleted a group-closing symbol because it seems to be
-spurious, as in `$x}$'. But perhaps the } is legitimate and
-you forgot something else, as in `\hbox{$x}'. In such cases
-the way to recover is to insert both the forgotten and the
-deleted material, e.g., by typing `I$}'.
-
-! Undefined control sequence.
-l.223 ... \textt{group_name} strings in the \textt
-                                                  {.csv} samplesheet, in thi...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Missing $ inserted.
-<inserted text> 
-                $
-l.224 
-      
-I've inserted a begin-math/end-math symbol since I think
-you left one out. Proceed, with fingers crossed.
-
-
-Overfull \hbox (239.10193pt too wide) in paragraph at lines 223--224
-\OT1/cmss/m/n/10 file-names for the vari-ant files to be used. The names in the
- vec-tor should cor-re-spond to group$[]\OML/cmm/m/it/10 amestringsinthe[]sampl
-esheet; inthiscaseitshouldbe\OT1/cmr/m/n/10 "\OML/cmm/m/it/10 MCF\OT1/cmr/m/n/1
-0 7"\OML/cmm/m/it/10 and\OT1/cmr/m/n/10 "\OML/cmm/m/it/10 GM\OT1/cmr/m/n/10 128
-91"\OML/cmm/m/it/10 :$ 
+Overfull \hbox (1216.25104pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 The next step is to compute the read coverage at each allele
+. BaalChIP will read in the information whithin the \verbatim{samples} slot of 
+a BaalChIP object and it will primarly find all variants overlapping peaks. The
+n, for each variant, computes the number of reads carrying the reference (REF) 
+and alternative (ALT) alleles.[] 
  []
 
-Package color Info: Redefining color shadecolor on input line 226.
-! Undefined control sequence.
-l.235 the samplesheet is saved in the \textt
-                                            {samples} slot of a BaalChIP obj...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
 
-Package color Info: Redefining color shadecolor on input line 238.
-! Undefined control sequence.
-l.247 ...ead in the information whithin the \textt
-                                                  {samples} slot of a BaalCh...
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-Package color Info: Redefining color shadecolor on input line 250.
-Package color Info: Redefining color shadecolor on input line 263.
-
-Overfull \hbox (40.26129pt too wide) in paragraph at lines 266--266
-[]                []\OT1/cmtt/m/n/10 RegionsToFilter[][]=[][]list[][]([][]"blac
-klist"[][]=blacklist_hg19,[] []"highcoverage"[][]=pickrell2011cov1_hg19),[][] 
+Overfull \hbox (308.00896pt too wide) in paragraph at lines 342--342
+[]\OT1/cmtt/m/n/10 \hlstd{res} \hlkwb{<-} \hlkwd{alleleCounts}\hlstd{(res,} \hl
+kwc{min_base_quality}\hlstd{=}\hlnum{10}\hlstd{,} \hlkwc{min_mapq}\hlstd{=}\hln
+um{15}\hlstd{)}[] 
  []
 
-Package color Info: Redefining color shadecolor on input line 277.
-Package color Info: Redefining color shadecolor on input line 290.
-<figure/QCplots-1.pdf, id=94, 325.215pt x 433.62pt>
-File: figure/QCplots-1.pdf Graphic file (type pdf)
- <use figure/QCplots-1.pdf>
-Package pdftex.def Info: figure/QCplots-1.pdf used on input line 297.
-(pdftex.def)             Requested size: 325.2142pt x 433.65202pt.
 
-[4] <figure/QCplots-2.pdf, id=102, 325.215pt x 433.62pt>
-File: figure/QCplots-2.pdf Graphic file (type pdf)
-
-<use figure/QCplots-2.pdf>
-Package pdftex.def Info: figure/QCplots-2.pdf used on input line 307.
-(pdftex.def)             Requested size: 325.2142pt x 433.65202pt.
- [5 <./figure/QCplots-1.pdf>]
-<figure/QCplots-3.pdf, id=113, 325.215pt x 433.62pt>
-File: figure/QCplots-3.pdf Graphic file (type pdf)
-
-<use figure/QCplots-3.pdf>
-Package pdftex.def Info: figure/QCplots-3.pdf used on input line 317.
-(pdftex.def)             Requested size: 325.2142pt x 433.65202pt.
- [6 <./figure/QCplots-2.pdf>]
-Overfull \vbox (0.11247pt too high) detected at line 343
+Overfull \hbox (376.25836pt too wide) in paragraph at lines 342--342
+[]                \OT1/cmtt/m/n/10 \hlkwc{RegionsToFilter}\hlstd{=}\hlkwd{list}
+\hlstd{(}\hlstr{"blacklist"}\hlstd{=blacklist_hg19,} \hlstr{"highcoverage"}\hls
+td{=pickrell2011cov1_hg19),}[] 
  []
 
-[7 <./figure/QCplots-3.pdf>]
-Package color Info: Redefining color shadecolor on input line 351.
-Package color Info: Redefining color shadecolor on input line 363.
-LaTeX Font Info:    Try loading font information for OMS+cmss on input line 383
-.
-LaTeX Font Info:    No file OMScmss.fd. on input line 383.
+
+Overfull \hbox (187.26001pt too wide) in paragraph at lines 342--342
+[]                \OT1/cmtt/m/n/10 \hlkwc{RegionsToKeep}\hlstd{=}\hlkwd{list}\h
+lstd{(}\hlstr{"UniqueMappability"}\hlstd{=UniqueMappability50bp_hg19))}[] 
+ []
+
+[4]
+
+! LaTeX Error: \begin{document} ended by \end{verbatim}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.342 \end{verbatim}
+                    
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+! Extra \endgroup.
+<recently read> \endgroup 
+                          
+l.342 \end{verbatim}
+                    
+Things are pretty mixed up, but I think the worst is over.
+
+[5]
+Overfull \hbox (523.25708pt too wide) in paragraph at lines 353--353
+[]\OT1/cmtt/m/n/10 \hlstd{res1} \hlkwb{<-} \hlkwd{getASB}\hlstd{(res,} \hlkwc{I
+ter}\hlstd{=}\hlnum{5000}\hlstd{,} \hlkwc{conf_level}\hlstd{=}\hlnum{0.95}\hlst
+d{,} \hlkwc{RAFcorrection}\hlstd{=}\hlnum{TRUE}\hlstd{)}[] 
+ []
 
 
-LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
-(Font)              using `OMS/cmsy/m/n' instead
-(Font)              for symbol `textbullet' on input line 383.
-
-No file BaalChIP-demo-knitr.bbl.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 405.
-[8]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 405.
- (./BaalChIP-demo-knitr.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 405.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 405.
-Package rerunfilecheck Info: File `BaalChIP-demo-knitr.out' has not changed.
-(rerunfilecheck)             Checksum: 80FBFF188D61DB170818D28150824665;1181.
+Overfull \hbox (528.50703pt too wide) in paragraph at lines 365--365
+[]\OT1/cmtt/m/n/10 \hlstd{res2} \hlkwb{<-} \hlkwd{getASB}\hlstd{(res,} \hlkwc{I
+ter}\hlstd{=}\hlnum{5000}\hlstd{,} \hlkwc{conf_level}\hlstd{=}\hlnum{0.95}\hlst
+d{,} \hlkwc{RAFcorrection}\hlstd{=}\hlnum{FALSE}\hlstd{)}[] 
+ []
 
 
-LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+Overfull \hbox (8.76157pt too wide) in paragraph at lines 374--374
+[]\OT1/cmtt/m/n/10 We thank Thomas Carroll and Gordon Brown for suggestions and
+ advice about ChIP-seq data analysis.[] 
+ []
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 405.
- )
-(\end occurred inside a group at level 1)
+[6])
+! Emergency stop.
+<*> BaalChIP-demo-knitr.tex
+                           
+*** (job aborted, no legal \end found)
 
-### simple group (level 1) entered at line 223 ({)
-### bottom level 
+ 
 Here is how much of TeX's memory you used:
- 6354 strings out of 493488
- 95412 string characters out of 3141326
- 201547 words of memory out of 3000000
- 9571 multiletter control sequences out of 15000+200000
- 8819 words of font info for 32 fonts, out of 3000000 for 9000
+ 6299 strings out of 493488
+ 94539 string characters out of 3141326
+ 201543 words of memory out of 3000000
+ 9538 multiletter control sequences out of 15000+200000
+ 8525 words of font info for 31 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 36i,12n,45p,598b,407s stack positions out of 5000i,500n,10000p,200000b,50000s
-</usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmitt10.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmmi10.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmmi7.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm
-/cmr10.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mss10.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-ss12.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-s17.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmss
-bx10.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cms
-y10.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt
-10.pfb>
-Output written on BaalChIP-demo-knitr.pdf (8 pages, 145059 bytes).
-PDF statistics:
- 180 PDF objects out of 1000 (max. 8388607)
- 152 compressed objects within 2 object streams
- 24 named destinations out of 1000 (max. 500000)
- 128 words of extra memory for PDF output out of 10000 (max. 10000000)
-
+ 36i,11n,45p,609b,369s stack positions out of 5000i,500n,10000p,200000b,50000s
+!  ==> Fatal error occurred, no output PDF file produced!
