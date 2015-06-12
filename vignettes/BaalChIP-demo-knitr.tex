@@ -198,7 +198,7 @@ A .tsv sample sheet has been included in this vignette and can be assessed as fo
 \end{kframe}
 \end{knitrout}
 
-This sample sheet details the metadata for ChIP-seq studies in MCF7 and GM12891 cell lines. For each study, ChIP-seq data exists for four transcription factors (\verbatim{target}). The first column \verbatim{group name} identifies the group label of each study (MCF7, GM12891). The column \verbatim{replicate number} shows that there are two biological replicates for each ChIP-seq factor. The sample sheet also contains file paths to the BAM files (\verbatim{bam name}) with the aligned reads and the BED files (\verbatim{bed name}) with the previously called peaks. 
+This sample sheet details the metadata for ChIP-seq studies in MCF7 and GM12891 cell lines. For each study, ChIP-seq data exists for four transcription factors (\texttt{target}). The first column \texttt{group name} identifies the group label of each study (MCF7, GM12891). The column \texttt{replicate number} shows that there are two biological replicates for each ChIP-seq factor. The sample sheet also contains file paths to the BAM files (\texttt{bam name}) with the aligned reads and the BED files (\texttt{bed name}) with the previously called peaks. 
 
 
 Note that the sample sheet should be saved as a .csv file, you do not have to first load it into a data frame (the filename is passed directly to BaalChIP).
@@ -214,13 +214,13 @@ In addition to the sample sheet, BaalChIP requires a 'variant file' containning 
 \end{kframe}
 \end{knitrout}
 
-The information in the variant file should include an \verbatim{ID} column with a unique identifier string per variant, the (1-based) genomic coordinates \verbatim{CHROM, POS}, and the A,C,G,T bases for the reference \verbatim{REF} and the non-reference alternate \verbatim{ALT} allele. The final column \verbatim{RAF} consists of a 
+The information in the variant file should include an \texttt{ID} column with a unique identifier string per variant, the (1-based) genomic coordinates \texttt{CHROM, POS}, and the A,C,G,T bases for the reference \texttt{REF} and the non-reference alternate \texttt{ALT} allele. The final column \texttt{RAF} consists of a 
 value ranging from 0 to 1 for each variant denoting the relative allele frequency. A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. This column is optional, if missing BaalChIP will still run but will not correct for relative allele frequency (copy-number) bias.
 
 
 \subsection{Constructing a BaalChIP object}
 
-The first step is to generate a BaalChIP object. The function \verbatim{new} accepts a samplesheet and a named vector containing the filenames for the variant files to be used. The names in the vector should correspond to \verbatim{group_name} strings in the \verbatim{.csv} samplesheet, in this case it should be "MCF7" and "GM12891".
+The first step is to generate a BaalChIP object. The function \texttt{new} accepts a samplesheet and a named vector containing the filenames for the variant files to be used. The names in the vector should correspond to \texttt{group_name} strings in the \texttt{.csv} samplesheet, in this case it should be "MCF7" and "GM12891".
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -232,7 +232,7 @@ The first step is to generate a BaalChIP object. The function \verbatim{new} acc
 \end{kframe}
 \end{knitrout}
 
-the samplesheet is saved in the \verbatim{samples} slot of a BaalChIP object:
+the samplesheet is saved in the \texttt{samples} slot of a BaalChIP object:
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -244,7 +244,7 @@ the samplesheet is saved in the \verbatim{samples} slot of a BaalChIP object:
 
 \subsection{Obtainning allele-specific counts for BAM files}
 
-The next step is to compute the read coverage at each allele. BaalChIP will read in the information whithin the \verbatim{samples} slot of a BaalChIP object and it will primarly find all variants overlapping peaks. Then, for each variant, computes the number of reads carrying the reference (REF) and alternative (ALT) alleles.
+The next step is to compute the read coverage at each allele. BaalChIP will read in the information whithin the \texttt{samples} slot of a BaalChIP object and it will primarly find all variants overlapping peaks. Then, for each variant, computes the number of reads carrying the reference (REF) and alternative (ALT) alleles.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}

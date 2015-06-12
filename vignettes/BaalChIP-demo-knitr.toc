@@ -1,0 +1,14 @@
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}
+\contentsline {section}{\numberline {2}Example}{1}{section.2}
+\contentsline {subsection}{\numberline {2.1}Identifying allele-specific binding (ASB) events from ChIP-seq data obtained from cancer cells}{2}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Data preparation}{2}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Constructing a BaalChIP object}{4}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Obtainning allele-specific counts for BAM files}{4}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.5}QC: Filtering variants that may be problematic for allele-specific detection}{4}{subsection.2.5}
+\contentsline {subsection}{\numberline {2.6}Allele counts and QC in 1-step script}{4}{subsection.2.6}
+\contentsline {subsection}{\numberline {2.7}summarysing and plotting QC data}{4}{subsection.2.7}
+\contentsline {subsection}{\numberline {2.8}Identifying allele-specific binding events}{8}{subsection.2.8}
+\contentsline {subsubsection}{\numberline {2.8.1}with RAF copy-number correction}{8}{subsubsection.2.8.1}
+\contentsline {subsubsection}{\numberline {2.8.2}without RAF copy-number correction}{8}{subsubsection.2.8.2}
+\contentsline {section}{\numberline {3}Acknowledgements}{8}{section.3}
+\contentsline {section}{\numberline {4}Session Info}{8}{section.4}
