@@ -1,6 +1,6 @@
 # BaalChIP R package
 
-BaalChIP (Baysian Anaysis of Allelic imbalances from ChIP-seq data) was built for the identifying allele-specific binding (ASB) events from ChIP-seq data obtained from cancer cell lines.
+BaalChIP (Baysian Anaysis of Allelic imbalances from ChIP-seq data) was built for the identification of allele-specific binding (ASB) events from ChIP-seq data obtained from cancer cell lines.
 
 BaalChIP tests the differential read counts of the alleles at each heterozygous variant using the quantitative information of ChIP-seq read counts at the reference and alternative alleles and accomodating the information about the allele presence and other sources of ChIP-seq mapping biases.
 
