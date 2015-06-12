@@ -1,5 +1,5 @@
 #BaalChIP: functions for retrieving summary information from BaalChIP class
-#Ines de Santiago and Wei Liu (2015)
+#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 
 get_filterstats <- function (sampledata, mergeddata=NULL) {

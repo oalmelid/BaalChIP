@@ -1,4 +1,5 @@
-#BaalChIP plot funtions
+#BaalChIP: plot funtions
+#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 #plot.simul <- function(simulation_stats) {
 #    suppressPackageStartupMessages(require(ggplot2))

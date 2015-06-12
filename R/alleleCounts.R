@@ -1,5 +1,5 @@
 #BaalChIP: functions to compute alleleCounts
-#Ines de Santiago and Wei Liu (2015)
+#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 get_snp_ranges <- function(snps) {
     suppressPackageStartupMessages(require(GenomicRanges))

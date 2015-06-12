@@ -1,5 +1,5 @@
 #BaalChIP: all methods
-#Ines de Santiago and Wei Liu (2015) 
+#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 ##initialization method
 setMethod("initialize",

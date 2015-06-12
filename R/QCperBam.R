@@ -1,5 +1,5 @@
 #BaalChIP: filtering functions for QC
-#Ines de Santiago and Wei Liu (2015)
+#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 
 filter_regions <- function(snp.ranges, region.ranges, type=c("filterOut_overlapping_sites","keep_overlapping_sites")) {

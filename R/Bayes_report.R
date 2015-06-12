@@ -1,5 +1,5 @@
 #BaalChIP: Bayesian_report function to report the bayesian analysis result
-#Ines de Santiago and Wei Liu (2015) 
+#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 Bayesian_report <- function(iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check,SNP_hit_Peaks){
   

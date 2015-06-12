@@ -1,5 +1,5 @@
-#BaalChIP: estimation of reference bias funtions
-#Ines de Santiago and Wei Liu (2015)
+#BaalChIP: estimation of reference bias ans ASB funtions
+#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 #Refbias functions
 getstats <- function(x){

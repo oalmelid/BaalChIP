@@ -1,5 +1,5 @@
 #BaalChIP: all generics for setMethod
-#Ines de Santiago and Wei Liu (2015) 
+#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 ##alleleCounts
 setGeneric(name="alleleCounts",

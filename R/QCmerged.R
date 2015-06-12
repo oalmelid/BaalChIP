@@ -1,5 +1,5 @@
 #BaalChIP: filtering functions for QC
-#Ines de Santiago and Wei Liu (2015)
+#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 getdframe <- function(granges) {
   #I had to do this function because as.data.frame is not working for some obscure reason and I am too tired to figure it out 

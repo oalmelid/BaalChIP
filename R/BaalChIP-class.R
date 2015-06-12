@@ -1,9 +1,10 @@
 ##################################################
 ## BaalChIP.R - Allele specific analysis of  	##
 ## ChIP-seq data from cancer cell lines         ##
-## 23 April 2015                           		  ##
-## Ines de Santiago and Wei Liu            		  ##
-## ines.desantiago@cruk.cam.ac.uk           	  ##
+## 23 April 2015                           		##
+## Ines de Santiago, Wei Liu,                   ##
+## Ke Yuan, Florian Markowetz           		##
+## ines.desantiago@cruk.cam.ac.uk           	##
 ## Cancer Research UK - University of Cambridge ##
 ##################################################
 
