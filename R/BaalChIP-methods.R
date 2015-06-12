@@ -47,7 +47,7 @@ setMethod("show", "BaalChIP",
 #' @examples
 #'setwd(system.file("test",package="BaalChIP"))
 #'samplesheet <- "example.tsv"
-#'hets <- c("MCF10"="MCF10_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+#'hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 #'res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 #'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 #'
@@ -56,10 +56,10 @@ setMethod("show", "BaalChIP",
 #'
 #'#alleleCounts are grouped by bam_name and group_name:
 #'names(counts)
-#'names(counts[["MCF10"]])
+#'names(counts[["MCF7"]])
 #'
 #'#check out the result for one of the bam files:
-#'counts[["MCF10"]][[1]]
+#'counts[["MCF7"]][[1]]
 #' @export 
 setMethod(
   f="alleleCounts",
@@ -97,7 +97,7 @@ setMethod(
 #' @examples
 #'setwd(system.file("test",package="BaalChIP"))
 #'samplesheet <- "example.tsv"
-#'hets <- c("MCF10"="MCF10_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+#'hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 #'res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 #'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 #'data(blacklist_hg19)
@@ -112,10 +112,10 @@ setMethod(
 #'
 #'#alleleCounts are grouped by bam_name and group_name:
 #'names(counts)
-#'names(counts[["MCF10"]])
+#'names(counts[["MCF7"]])
 #'
 #'#check out the result for one of the bam files:
-#'counts[["MCF10"]][[1]]
+#'counts[["MCF7"]][[1]]
 #' @export 
 setMethod(
   f="QCfilter",
@@ -195,7 +195,7 @@ setMethod(
 #' @examples
 #'setwd(system.file("test",package="BaalChIP"))
 #'samplesheet <- "example.tsv"
-#'hets <- c("MCF10"="MCF10_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+#'hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 #'res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 #'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 #'data(blacklist_hg19)
@@ -243,7 +243,7 @@ setMethod(
 #' @examples
 #'setwd(system.file("test",package="BaalChIP"))
 #'samplesheet <- "example.tsv"
-#'hets <- c("MCF10"="MCF10_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+#'hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 #'res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 #'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 #'data(blacklist_hg19)
@@ -295,7 +295,7 @@ setMethod(
 #' @examples
 #'setwd(system.file("test",package="BaalChIP"))
 #'samplesheet <- "example.tsv"
-#'hets <- c("MCF10"="MCF10_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+#'hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 #'res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 #'res <- BaalChIP.QC(res)
 #'
@@ -350,7 +350,7 @@ setMethod(
 #' @examples
 #'setwd(system.file("test",package="BaalChIP"))
 #'samplesheet <- "example.tsv"
-#'hets <- c("MCF10"="MCF10_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+#'hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 #'res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 #'res <- BaalChIP.QC(res)
 #'res <- getASB(res)
@@ -448,7 +448,7 @@ setMethod(
 #'
 #'#retrieve a GRanges list with allele-specific read counts per BAM file:
 #'counts <- BaalChIP.get(BaalObject,"alleleCountsPerBam")
-#'counts[["MCF10"]][[1]]
+#'counts[["MCF7"]][[1]]
 #'
 #'#retrieve a data.frame with allele-specific read counts per group:
 #'counts <- BaalChIP.get(BaalObject,"mergedCounts")
@@ -499,7 +499,7 @@ setMethod(
 #' names(report)
 #' 
 #' #check out the report for one of the groups:
-#' head(report[["MCF10"]])
+#' head(report[["MCF7"]])
 #' @export 
 
 setMethod(

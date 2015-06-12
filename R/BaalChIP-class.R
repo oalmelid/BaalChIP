@@ -34,7 +34,7 @@
 #' @examples
 #'setwd(system.file("test",package="BaalChIP"))
 #'samplesheet <- "example.tsv"
-#'hets <- c("MCF10"="MCF10_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+#'hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 #'res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 
 BaalChIP <- setClass(
