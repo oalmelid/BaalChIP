@@ -1,0 +1,16 @@
+{
+    "contents" : "Package: BaalChIP\nTitle: Provides a framework for detecting allele-specific events from ChIP-seq data.\nVersion: 0.0.1\nAuthors: Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz\nMantainer: Ines de Santiago <ines.deSantiago@cruk.cam.ac.uk>\nDescription: The package offers functions to process multiple ChIP-seq BAM files and detect allele-specific events. Computes allele counts at individual variants (SNPs/SNVs), implements extensive QC steps to remove problematic variants, and utilizes a bayesian framework to identify statistically significant allele-specific events. The bayesian framework is able to account for copy number differences between the two alleles, a known phenotypical feature of cancer samples. \nDepends: R (>= 3.1.2), GenomicRanges, Rsamtools, GenomicAlignments\nImports: ggplot2, reshape2, doBy, coda, foreach, doParallel, GenomeInfoDb\nLicense: Artistic-2.0\nLazyData: true\n",
+    "created" : 1434050152806.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "493552548",
+    "id" : "625A86D9",
+    "lastKnownWriteTime" : 1434050158,
+    "path" : "~/Dropbox/FromHome/baal_package/BaalChIP/DESCRIPTION",
+    "project_path" : "DESCRIPTION",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "dcf"
+}
