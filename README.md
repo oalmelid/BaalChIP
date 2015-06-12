@@ -11,7 +11,7 @@ The example dataset contains ChIP-seq data obtained for two cell lines: A cancer
 The metadata and all files necessary for this example are available in the extra subdirectory of the BaalChIP package directory; you can make this your working directory by entering:
 
 ```r
-￼library(BaalChIP)
+library(BaalChIP)
 setwd(system.file("test",package="BaalChIP"))
 ```
 Note that the example data in this vignette does not reveal real biology and was build only for demonstration purposes. 
