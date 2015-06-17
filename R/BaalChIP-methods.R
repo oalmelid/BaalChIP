@@ -400,9 +400,8 @@ setMethod(
     	if (!RAFcorrection) {GTtable$RAF <- 0.5}
     	
     	#get bias table (variants ordered equally between counts table and biastable)
-      #if (RMcorrection) {ARestimate <- estimateRefBias(assayed,GTtable,remove_percentile=0, min_n=200, RAF_tr=NULL)}else{ARestimate=NULL}
-      if (RMcorrection) {ARestimate <- estimateRefBias(assayed,GTtable, min_n=200)}else{ARestimate=NULL}
-      result <- getbiasTable(assayed, GTtable, ARestimate) 
+        if (RMcorrection) {ARestimate <- estimateRefBias(assayed, GTtable, min_n=200)}else{ARestimate=NULL}
+        result <- getbiasTable(assayed, GTtable, ARestimate) 
     	counts <- result[[1]]
     	biastable <- result[[2]]
     	biasparam <- getbiasparam(biastable)
@@ -419,7 +418,7 @@ setMethod(
 
     ##-----assign parameters
     applyedCorrection <- t(do.call("rbind",applyedCorrection))
-	 .Object@param$ASBparam <- list(Iter=Iter, conf_level=conf_level, applyedCorrection=applyedCorrection, RAFcorrection=RAFcorrection)
+	.Object@param$ASBparam <- list(Iter=Iter, conf_level=conf_level, applyedCorrection=applyedCorrection)
 	
     ##-----updade status and return
     .Object@biasTable <- biasTable
