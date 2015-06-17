@@ -4,12 +4,12 @@
 ##initialization method
 setMethod("initialize",
           "BaalChIP",
-          function(.Object, samplesheet = NULL, hets=NULL) {
+          function(.Object, samplesheet = NULL, hets=NULL, .CHECKS=TRUE) {
 					
             ##-----check arguments
             if(missing(samplesheet))stop("NOTE: 'samplesheet' is missing!")    
-            samples <- BaalChIP.checks(name="samplesheet",samplesheet)
-            BaalChIP.checks(name="hets",hets)
+            samples <- BaalChIP.checks(name="samplesheet",samplesheet, .CHECKS=.CHECKS)
+            BaalChIP.checks(name="hets",hets, .CHECKS=.CHECKS)
             
             ##-----check matching cellnames
             cells1 <- unique(.Object@samples$cell_name)

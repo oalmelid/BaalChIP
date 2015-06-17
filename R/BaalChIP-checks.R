@@ -68,17 +68,17 @@ checkmatchingnames <- function(names1, names2) {
     
 }
 
-BaalChIP.checks <- function(name, param){
+BaalChIP.checks <- function(name, param, .CHECKS= TRUE){
 	
 	if (name == "samplesheet")
 		{
-		samples <- readsamplesheet(param)
+		samples <- readsamplesheet(param, .CHECKS = .CHECKS)
 		return(samples)
 	}
 	
 	if (name == "hets")
 		{
-		readhettables(param)
+		readhettables(param, .CHECKS = .CHECKS)
 	}
 	
 	if (name == "min_base_quality") {
