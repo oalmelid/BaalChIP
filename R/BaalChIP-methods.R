@@ -31,7 +31,7 @@ setMethod("show", "BaalChIP",
     asb <- object@ASB
     samples <- object@samples
     cat(" Samples                 :  ", nrow(samples), "\n")
-    cat(" Experiments             :  ", unique(samples[,"cell_name"]), "\n")
+    cat(" Experiments             :  ", unique(samples[,"group_name"]), "\n")
     cat(" Filtering and QC        :  ", ifelse(is.null(QCstats), "None", paste(ncol(QCstats), "filters applied")), "\n")
     cat(" Run allele-specific     :  ", ifelse(length(asb)==0, "None", "Yes: run BaalChIP.get(object, 'ASB')"), "\n")
     cat("\n")
