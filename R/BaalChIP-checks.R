@@ -1,7 +1,7 @@
 #BaalChIP: functions for argument checking
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
-readsamplesheet <- function(samplesheet) {
+readsamplesheet <- function(samplesheet, .CHECKS=TRUE) {
 	# Read samplesheet
     try(samples <- read.delim(samplesheet,stringsAsFactors=F), silent = TRUE)
     if (!exists("samples")) { stop('could not read samplesheet',call.=FALSE) } 
@@ -25,25 +25,28 @@ readsamplesheet <- function(samplesheet) {
 	  }
  
     #check if all files exist in samplesheet
-    for (rownr in 1:nrow(samples)) {
-        x <- samples[rownr,]
-        if (!file.exists(x[["bam_name"]]))
-            {stop(paste('BAM file does not exist:', x[["bam_name"]]),call.=FALSE)}
-        if (!file.exists(paste0(x[["bam_name"]],".bai")))
-        {stop(paste('BAM index file does not exist:', paste0(x[["bam_name"]],".bai")),call.=FALSE)}
-        if (!file.exists(x[["bed_name"]]))
-            {stop(paste('BED file does not exist:', x[["bed_name"]]),call.=FALSE)}
-    }
-        
+    if (.CHECKS) {
+        for (rownr in 1:nrow(samples)) {
+            x <- samples[rownr,]
+            if (!file.exists(x[["bam_name"]]))
+                {stop(paste('BAM file does not exist:', x[["bam_name"]]),call.=FALSE)}
+            if (!file.exists(paste0(x[["bam_name"]],".bai")))
+            {stop(paste('BAM index file does not exist:', paste0(x[["bam_name"]],".bai")),call.=FALSE)}
+            if (!file.exists(x[["bed_name"]]))
+                {stop(paste('BED file does not exist:', x[["bed_name"]]),call.=FALSE)}
+        }
+    }    
     
     #return
     cat("-samplesheet checks: OK!\n")
     return(samples)
 }
 
-readhettables <- function(hets) {
-    for (filename in hets) {
-        if (!file.exists(filename)) { stop(paste('hetSNP file does not exist:',filename),call.=FALSE) } 
+readhettables <- function(hets, .CHECKS=TRUE) {
+    if (.CHECKS) {
+        for (filename in hets) {
+            if (!file.exists(filename)) { stop(paste('hetSNP file does not exist:',filename),call.=FALSE) } 
+        }
     }
 }
 

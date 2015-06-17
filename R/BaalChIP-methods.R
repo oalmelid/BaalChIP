@@ -10,7 +10,11 @@ setMethod("initialize",
             if(missing(samplesheet))stop("NOTE: 'samplesheet' is missing!")    
             samples <- BaalChIP.checks(name="samplesheet",samplesheet)
             BaalChIP.checks(name="hets",hets)
-
+            
+            ##-----check matching cellnames
+            cells1 <- unique(.Object@samples$cell_name)
+            checkmatchingnames(names(.Object@hets), cells1)
+    
             ##-----initialization
             .Object@samples <- samples
             .Object@hets <- hets
