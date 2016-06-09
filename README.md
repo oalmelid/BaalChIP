@@ -1,3 +1,12 @@
+# Installation
+
+To install the development version of BaalChIP R package from GitHub type:
+
+```r
+library(devtools)
+install_github("inesdesantiago/BaalChIP")
+```
+
 # BaalChIP R package
 
 BaalChIP (Baysian Anaysis of Allelic imbalances from ChIP-seq data) was built for the identification of allele-specific binding (ASB) events from ChIP-seq data obtained from cancer cell lines.
