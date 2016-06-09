@@ -43,6 +43,13 @@ setGeneric(name="filter1allele",
                        )
                        
 ##QC step pipeline
+setGeneric(name="BaalChIP.run",
+                       def=function(.Object,...)
+                       {
+                               standardGeneric("BaalChIP.run")
+                       }
+                       )
+
 setGeneric(name="BaalChIP.QC",
                        def=function(.Object,...)
                        {
@@ -100,8 +107,22 @@ setGeneric(name="plotQC",
                        )
 
 
+#plotSimul
+setGeneric(name="plotSimul",
+                       def=function(.Object,...)
+                       {
+                               standardGeneric("plotSimul")
+                       }
+                       )
 
 
+#adjustmentBaalPlot
+setGeneric(name="adjustmentBaalPlot",
+                       def=function(.Object,...)
+                       {
+                               standardGeneric("adjustmentBaalPlot")
+                       }
+                       )
 
 
 

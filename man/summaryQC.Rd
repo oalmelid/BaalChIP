@@ -28,6 +28,6 @@ summaryQC(BaalObject)
 Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 }
 \seealso{
-\code{\link{BaalChIP.QC}}, \code{\link{plotQC}}
+\code{\link{BaalChIP.run}}, \code{\link{plotQC}}
 }
 

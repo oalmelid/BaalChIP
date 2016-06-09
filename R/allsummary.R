@@ -9,7 +9,7 @@ get_filterstats <- function (sampledata, mergeddata=NULL) {
     #total number of snp ids per filter (combine across all samples)
     allcounts <- sapply(filtnames1, function(filtname) {
                                                 a <- lapply(sampledata, "[[",filtname)
-                                                length(unique(unlist(sapply(a,names), use.names=F)))
+                                                length(unique(unlist(lapply(a,names), use.names=F)))
                                     })
     names(allcounts) <- filtnames1
     
@@ -36,13 +36,13 @@ get_average_stats <- function(filtering_stats) {
 	suppressPackageStartupMessages(require(reshape2))
     suppressPackageStartupMessages(require(doBy))
     total <- rowSums(filtering_stats)
-    filtering_perc <- data.frame(apply(filtering_stats,2, function (x) 100 * x / total))
+    filtering_perc <- data.frame(apply(filtering_stats,2, function (x) 100 * x / total), stringsAsFactors=F)
     filtering_stats$cellname <- rownames(filtering_stats)
     filtering_perc$cellname <- rownames(filtering_perc)
     data2plot_stats <- melt(filtering_stats, id="cellname")
     data2plot_perc <-  melt(filtering_perc, id="cellname")
-    means     <- data.frame(summaryBy(value ~ variable , data2plot_stats, FUN=c(mean)))
-    meansPERC <- data.frame(summaryBy(value ~ variable , data2plot_perc, FUN=c(mean)))
+    means     <- data.frame(summaryBy(value ~ variable , data2plot_stats, FUN=c(mean)), stringsAsFactors=F)
+    meansPERC <- data.frame(summaryBy(value ~ variable , data2plot_perc, FUN=c(mean)), stringsAsFactors=F)
     return(cbind(means, "perc"=meansPERC[,2]))
 }    
     
@@ -55,7 +55,7 @@ applyFilteringStats <- function(res_per_bam, res_merged) {
     		get_filterstats(sampledata, mergeddata)})
     if (all(sapply(filtering_stats,length) == 0)) {return(list())}
     names(filtering_stats) <- names(res_per_bam)
-    filtering_stats <- data.frame(do.call("rbind",filtering_stats))
+    filtering_stats <- data.frame(do.call("rbind",filtering_stats), stringsAsFactors=F)
     average_stats <- get_average_stats(filtering_stats)
     #return(list("filtering_summary_perSample"=filtering_summary_perSample, "filtering_stats"=filtering_stats, "average_stats"=average_stats))
 	return(list("filtering_stats"=filtering_stats, "average_stats"=average_stats))
@@ -81,6 +81,32 @@ summary_ASB <- function(object) {
 	
 }
 
+   
+getReport <- function(object, group_name) {
+    
+    if (length(object@ASB) == 0) {return(NULL)}else{asb <- object@ASB}
+    
+    asb <- object@ASB[[group_name]]
+    assayed <- object@assayedVar[[group_name]]
+    pooled <- pooldata(assayed)
+    varTable <- object@VarTable[[group_name]][,c("ID","CHROM","POS","REF","ALT")]
+    RAFtable <- object@biasTable[[group_name]]
+    correctedAR <- object@ASB[[group_name]]
+    correctedAR <- data.frame("ID"=as.character(correctedAR$ID), 
+                    "Bayes_lower"=correctedAR$Bayes_lower,
+                    "Bayes_upper"=correctedAR$Bayes_upper,
+                    "Corrected.AR"=rowMeans(correctedAR[,c("Bayes_lower","Bayes_upper")]),
+                     stringsAsFactors=F)
+    baalSig <- as.character(asb$ID[asb[,4]==1 | asb[,5] == 1])
+    snps <- merge(varTable, pooled, by="ID")
+    snps <- merge(snps, RAFtable, by="ID")
+    snps <- merge(snps, correctedAR, by="ID")
+    snps$isASB <- snps$ID %in% baalSig
+    return(snps)
+}
+
+
+    
 
  
 #setGeneric(name="simulationStats",

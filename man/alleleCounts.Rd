@@ -29,8 +29,8 @@ BaalChIP computes allelic counts at each variant position with Rsamtools pileup 
 }
 \examples{
 setwd(system.file("test",package="BaalChIP"))
-samplesheet <- "example.tsv"
-hets <- c("MCF10"="MCF10_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+samplesheet <- "exampleChIP.tsv"
+hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 
@@ -39,10 +39,10 @@ counts <- BaalChIP.get(res, "alleleCountsPerBam")
 
 #alleleCounts are grouped by bam_name and group_name:
 names(counts)
-names(counts[["MCF10"]])
+names(counts[["MCF7"]])
 
 #check out the result for one of the bam files:
-counts[["MCF10"]][[1]]
+counts[["MCF7"]][[1]]
 }
 \author{
 Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz

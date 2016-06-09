@@ -20,16 +20,16 @@
 #location_bowtie: location to bowtie
 #location_genome: the location to the genome file
 
-simscript=/lustre/fmlab/santia01/tools/Degner2009/simulate.reads/get.overlaps.v2_chrXY.perl
-picard=/lustre/fmlab/santia01/tools/picard-tools-1.47
-bowtie=/lustre/fmlab/santia01/tools/bowtie-1.1.0/bowtie
-genome=/lustre/fmlab/santia01/tools/genomes/hg19_encodeDCC/male.hg19
-genomeBychr=/lustre/fmlab/santia01/tools/genomes/hg19_encodeDCC/maleByChrom
-#simscript=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/Projects/BallChIP_2015/sim_tools_test/get.overlaps.v2_chrXY.perl
-#picardSortSam=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/picard-tools-1.119/SortSam.jar
-#bowtie=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/bowtie-1.1.1/bowtie
-#genome=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/Projects/BallChIP_2015/sim_tools_test/genomes/hg19_encodeDCC/male.hg19
-#genomeBychr=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/Projects/BallChIP_2015/sim_tools_test/genomes/hg19_encodeDCC/maleByChrom
+#simscript=/lustre/fmlab/santia01/tools/Degner2009/simulate.reads/get.overlaps.v2_chrXY.perl
+#picard=/lustre/fmlab/santia01/tools/picard-tools-1.47
+#bowtie=/lustre/fmlab/santia01/tools/bowtie-1.1.0/bowtie
+#genome=/lustre/fmlab/santia01/tools/genomes/hg19_encodeDCC/male.hg19
+#genomeBychr=/lustre/fmlab/santia01/tools/genomes/hg19_encodeDCC/maleByChrom
+simscript=/Users/santia01/Dropbox/FromHome/baal_package/BaalChIP/inst/extra/get.overlaps.v2_chrXY.perl
+picardSortSam=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/picard-tools-1.119/SortSam.jar
+bowtie=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/bowtie-1.1.1/bowtie
+genome=/Users/santia01/Desktop/genomes_test/male.hg19
+genomeBychr=/Users/santia01/Desktop/genomes_test/maleByChrom
 readlen=$1
 snplist=$2
 fastaout=$3

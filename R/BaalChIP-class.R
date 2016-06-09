@@ -12,7 +12,7 @@
 #' BaalChIP-class
 #' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 #' @name BaalChIP
-#' @param samplesheet A character string indicating the filename for a \code{.csv} file. Column names in the \code{.csv} file should include:
+#' @param samplesheet A character string indicating the filename for a \code{.tsv} file. Column names in the \code{.tsv} file should include:
 #' \itemize{
 #' \item \code{group_name}: identifier string to group samples together
 #' \item \code{target}: identifier string for factor (transcription factor, protein)
@@ -28,8 +28,9 @@
 #' \item POS: the reference position (1-based)
 #' \item REF: reference base. Each base must be one of A,C,G,T in uppercase. Multiple bases are not permitted
 #' \item ALT: alternate non-reference base. Each base must be one of A,C,G,T in uppercase. Multiple bases are not permitted
-#' \item RAF: [Optional] a value ranging from 0 to 1 for each variant denoting the relative allele frequency (RAF). A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. If missing, BaalChIP will still run but will not correct for relative allele frequency (copy-number) bias 
+#' \item RAF: [Optional] a value ranging from 0 to 1 for each variant denoting the relative allele frequency (RAF). A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. If neither RAF or \code{CorrectWithgDNA} are given, BaalChIP will not correct for relative allele frequency (copy-number) bias. If both RAF and \code{CorrectWithgDNA} are given, BaalChIP will give priority to the RAF values of the 'hets' files and will use these values to correct for relative allele frequency (copy-number) bias.
 #' }
+#' @param CorrectWithgDNA An optional named list with filenames for the \code{.bam} gDNA files to be used. The names in the vector should correspond to group_name strings in the \code{.csv} samplesheet. Allelic read counts from all gDNA files will be pooled together to generate the background allelic ratios directly from input data. If missing, BaalChIP will try to read the background allelic ratios from the information in the RAF column of the 'hets' files indicated by the \code{hets} parameter. If both RAF and \code{CorrectWithgDNA} are missing, BaalChIP will not correct for relative allele frequency (copy-number) bias. 
 #' @description This S4 class includes a series of methods for detecting allele-specific events from multiple ChIP-seq datasets.
 #' @return .Object An object of the \code{\link{BaalChIP}} class.
 #' @examples
@@ -42,28 +43,33 @@ BaalChIP <- setClass(
 	#BaalChIPexperiment class
 	"BaalChIP",
 	
+	
 	slots = c(
                 samples = "data.frame",
                 hets = "character",
+                gDNA = "list",
                 alleleCounts = "list",
                 mergedCounts = "list",
                 assayedVar = "list",
                 VarTable = "list",
                 biasTable = "list",
                 ASB = "list",
-                param   = "list"
+                param   = "list",
+                simulation_stats = "data.frame"
                 ),
 	
 	prototype = c(
 		samplesheet = data.frame(),
 		hets = "",
+		gDNA = list(),
 		alleleCounts = list(),
 		mergedCounts = list(),
 		assayedVar = list(),
 		VarTable = list(),
 		biasTable = list(),
         ASB = list(),
-        param = list()
+        param = list(),
+        simulation_stats = data.frame()
 		)
 	
 )

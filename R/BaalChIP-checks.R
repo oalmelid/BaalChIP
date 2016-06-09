@@ -2,9 +2,8 @@
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 readsamplesheet <- function(samplesheet, .CHECKS=TRUE) {
-	# Read samplesheet
-    try(samples <- read.delim(samplesheet,stringsAsFactors=F), silent = TRUE)
-    if (!exists("samples")) { stop('could not read samplesheet',call.=FALSE) } 
+	  # Read samplesheet
+    samples <- read.delim(samplesheet,stringsAsFactors=F)
     
     #check if colnames exist
     colnames_in_file = c('group_name', 'target', 'replicate_number', 'bam_name', 'bed_name')
@@ -50,6 +49,14 @@ readhettables <- function(hets, .CHECKS=TRUE) {
     }
 }
 
+readbams <- function(bamlist, .CHECKS=TRUE) {
+    if (.CHECKS & length(bamlist)>0) {
+        for (filename in unlist(bamlist)) {
+            if (!file.exists(filename)) { stop(paste('bam file does not exist:',filename),call.=FALSE) } 
+        }
+    }
+}
+
 trycreatedir <- function(dir) {
 	if (!is.null(dir)) {
 		if (!file.exists(dir)){
@@ -61,11 +68,41 @@ trycreatedir <- function(dir) {
 	}
 }
 
-checkmatchingnames <- function(names1, names2) {
-	if (length(names1) > length(names2)) {warning(paste("failed for", setdiff(names1, names2)),call.=FALSE)}
-    if (length(names2) > length(names1)) {stop(paste("failed for", setdiff(names2, names1)),call.=FALSE)}
-    if (!all(names2 %in% names1)) {stop(paste("failed for", names2, names1),call.=FALSE)}
+createtempdir <- function(dirlist) {
     
+    dir1 <- dirlist[["dir"]]
+    prefix <- dirlist[["prefix"]]
+    
+    #create output directory
+    if (is.null(dir1)) {dir1=tempfile(tmpdir=getwd(), pattern="BaalChIP_simulOUT_")}
+    trycreatedir(dir1)
+  
+    #add the prefix
+    if (!is.null(prefix)) { if(prefix == "") {prefix <- NULL}}
+    if (is.null(prefix)) {
+        dir1 <- tempfile(tmpdir=dir1, pattern="")
+    }else{
+        dir1 <- file.path(dir1, prefix)
+    }
+    return(dir1)
+}
+
+
+checkmatchingnames <- function(names1, names2) {
+    
+    if (is.null(names2)) {stop("cannot check names")}
+    
+    #will give a warning for unmatching names
+    if (!all(names1 %in% names2)) {warning("group name not found in samplesheet: ", paste(setdiff(names1, names2), collapse=","), call.=FALSE)}
+    
+    #will Fail if all names2 not in names1 
+	  if (!all(names2 %in% names1)) {stop("'hets' group name not found in samplesheet: ", paste(setdiff(names2, names1), collapse=","), call.=FALSE)}
+    
+}
+
+checkmatchingnames.gDNA <- function(gDNA_names, samplesheet_names) {
+  if (!all(gDNA_names %in% samplesheet_names)) {warning("gDNA group name not found in samplesheet: ", paste(setdiff(gDNA_names, samplesheet_names), collapse=","), call.=FALSE)}
+  
 }
 
 BaalChIP.checks <- function(name, param, .CHECKS= TRUE){
@@ -79,6 +116,11 @@ BaalChIP.checks <- function(name, param, .CHECKS= TRUE){
 	if (name == "hets")
 		{
 		readhettables(param, .CHECKS = .CHECKS)
+	}
+	
+	if (name == "gDNA")
+		{
+		readbams(param, .CHECKS = .CHECKS)
 	}
 	
 	if (name == "min_base_quality") {
@@ -121,9 +163,10 @@ BaalChIP.checks <- function(name, param, .CHECKS= TRUE){
 	}
 	
 	if (name == "simul_output") {
-		trycreatedir(param)
+	    tmpdir <- createtempdir(param)
+	    return(tmpdir)
 	}
-	
+		
 	if (name == "Iter") {
 		if (class(param) != 'numeric') {
 			stop ('Iter must be a numberic value',call.=FALSE)

@@ -40,29 +40,32 @@ applyFiltersPerBam <- function(counts_per_bam, RegionsToFilter, RegionsToKeep) {
     pb <- txtProgressBar(min = 0, max = N, style = 3)
     i=1
     
-    for (cellname in names(counts_per_bam)) {
-    	for (sampleID in names(counts_per_bam[[cellname]])) {
+    for (group_name in names(counts_per_bam)) {
+    
+    	for (sampleID in names(counts_per_bam[[group_name]])) {
 
-			#GRanges of variants		
-    		sigi.ranges <- counts_per_bam[[cellname]][[sampleID]][["sigi"]]
+			  #GRanges of variants		
+    		x <- counts_per_bam[[group_name]][[sampleID]] #get lastset
+    		sigi.ranges <- x[[length(x)]]
+    		#counts_per_bam[[group_name]][[sampleID]][["sigi"]]
     		
     		#QC filter per BAM
     		sigi.filtered1 <- filter_genomicRegions(sigi.ranges, Regions=RegionsToFilter, type="filterOut_overlapping_sites")
     		snp.ranges <- sigi.filtered1[[length(sigi.filtered1)]]
     		sigi.filtered2 <- filter_genomicRegions(snp.ranges, Regions=RegionsToKeep, type="keep_overlapping_sites")
     
-            #merge results in one list of snp.range that pass filters in each step
-            if (is.null(RegionsToFilter))  {res <- list("sigi"=sigi.ranges)}
-            if (!is.null(RegionsToFilter) & is.null(RegionsToKeep)) {  res <- c(list("sigi"=sigi.ranges), sigi.filtered1) }
-            if (is.null(RegionsToFilter)  & !is.null(RegionsToKeep)) { res <- c(list("sigi"=sigi.ranges), sigi.filtered2) }
-            if (!is.null(RegionsToFilter) & !is.null(RegionsToKeep)) { res <- c(list("sigi"=sigi.ranges), sigi.filtered1, sigi.filtered2) }
-            res_per_bam[[cellname]][[sampleID]] <- res    
+        #merge results in one list of snp.range that pass filters in each step
+        if (is.null(RegionsToFilter))  {res <- counts_per_bam[[group_name]][[sampleID]]}
+        if (!is.null(RegionsToFilter) & is.null(RegionsToKeep)) {  res <- c(counts_per_bam[[group_name]][[sampleID]], sigi.filtered1) }
+        if (is.null(RegionsToFilter)  & !is.null(RegionsToKeep)) { res <- c(counts_per_bam[[group_name]][[sampleID]], sigi.filtered2) }
+        if (!is.null(RegionsToFilter) & !is.null(RegionsToKeep)) { res <- c(counts_per_bam[[group_name]][[sampleID]], sigi.filtered1, sigi.filtered2) }
+        res_per_bam[[group_name]][[sampleID]] <- res    
             
-            #set progress bar
-        	setTxtProgressBar(pb, i)
-        	i=i+1
-        }
+        #set progress bar
+        setTxtProgressBar(pb, i)
+        i=i+1
     }
-    close(pb)
-    return(res_per_bam)
+  }
+  close(pb)
+  return(res_per_bam)
 }

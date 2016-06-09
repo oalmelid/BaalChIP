@@ -62,7 +62,7 @@ get_mergedcounts <- function(celldata, metadata, includeForeign=FALSE){
     for (target_name in names(groupCounts)){
         group <- groupCounts[[target_name]]
         if (nrow(group) > 0) {
-            group <- data.frame("score"=1, group)
+            group <- data.frame("score"=1, group, stringsAsFactors=F)
             a <- group[match(ids, group$ID),]
             a$ID <- ids
             rownames(a) <- NULL
@@ -77,7 +77,7 @@ get_mergedcounts <- function(celldata, metadata, includeForeign=FALSE){
     #Are there any columns which are always zero?
     nrsamples <- sum(grepl("score", colnames(res)))
     scores <- res[,grepl("score", colnames(res))]
-    if (nrsamples == 1) {scores = data.frame(scores)}
+    if (nrsamples == 1) {scores = data.frame(scores, stringsAsFactors=F)}
     if (any(rowSums(scores) == 0)) {stop("Something went wrong! There are rows in the merged table for which no TF overlaps")}
     
     #return
@@ -110,7 +110,8 @@ filter_1allele <- function(mergedcounts) {
 applyFilter1allele <- function(res_merged) {
   
   for (cellname in names(res_merged)) {
-        m2 <- filter_1allele(res_merged[[cellname]][[length(res_merged[[cellname]])]])
+        lastset <- res_merged[[cellname]][[length(res_merged[[cellname]])]]
+        m2 <- filter_1allele(lastset)
         res_merged[[cellname]][["Only1Allele"]] <- m2
         #cat(paste0(cellname, ": data frame contains ", nrow(m2), " variants (pass filter)\n"))
   }

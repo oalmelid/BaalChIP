@@ -131,7 +131,9 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
 	} 
 	################################################
     MH_iter <- function(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
-
+    
+    if (identical(SNP_Bias[SNP_id,"RAF"],0)) { SNP_Bias[SNP_id,"RAF"] <- 0.01}
+    if (identical(SNP_Bias[SNP_id,"RAF"],1))  { SNP_Bias[SNP_id,"RAF"] <- 0.99}
     bias <- matrix(0,Iter,1)
     bias[1] <- 0.5
     llh <- matrix(0,Iter,1)
@@ -140,10 +142,12 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
     for (iter in 2:Iter) {
       set.seed(iter)
       bias_new <- bias[iter-1] + rnorm(1,mean=0, sd = 0.2)
-      llh_new <-log_pro_density_bias(bias_new,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id)
+      llh_new <- log_pro_density_bias(bias_new,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id)
       ratio <- llh_new -llh[iter-1]
       
       U <- log(runif(1))
+      
+            
       if(U < min(0,ratio)) {
         bias[iter] <- bias_new 
         llh[iter] <- llh_new

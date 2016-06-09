@@ -5,8 +5,8 @@
 \alias{plotQC}
 \title{Plots QC results}
 \usage{
-\S4method{plotQC}{BaalChIP}(.Object, what = c("overall_pie",
-  "boxplot_per_filter", "barplot_per_group"), addlegend = TRUE)
+\S4method{plotQC}{BaalChIP}(.Object, what = "barplot_per_group",
+  addlegend = TRUE, plot = TRUE)
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
@@ -33,7 +33,7 @@ plotQC(BaalObject, "barplot_per_group")
 Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 }
 \seealso{
-\code{\link{BaalChIP.QC}}, \code{\link{summaryQC}}
+\code{\link{BaalChIP.run}}, \code{\link{summaryQC}}
 #'
 }
 

@@ -14,16 +14,26 @@
 A named list, with a data.frame per group.
 }
 \description{
-Generates a data.frame per group with significant allele-specific binding (ASB) variants
+Generates a data.frame per group with all variants and a label for all identified allele-specific binding (ASB) variants
 }
 \details{
 The reported data frame contains the following columns:
 \itemize{
 \item ID: unique identifier string per analysed variant
-\item Bayes_lower: Lower interval for the estimated allelic ratio (allelic ratio is given by REF / TOTAL)
-\item Bayes_upper: Uper interval for the estimated allelic ratio (allelic ratio is given by REF / TOTAL)
-\item Bayes_sig_A: classification of variants into allele-specific towards the reference allele. 1/0 means TRUE/FALSE
-\item Bayes_sig_B: classification of variants into allele-specific towards the non-reference allele. 1/0 means TRUE/FALSE
+\item CHROM: chromosome identifier from the reference genome per variant
+\item POS: the reference position (1-based)
+\item REF: reference base. Each base must be one of A,C,G,T in uppercase.
+\item ALT: alternate non-reference base. Each base must be one of A,C,G,T in uppercase.
+\item REF.counts: pooled counts of all reads with the reference allele
+\item ALT.counts: pooled counts of all reads with the non-reference allele
+\item Total.counts: pooled counts of all reads (REF + ALT)
+\item AR: allelic ratio calculated directly from sequencing reads (REF / TOTAL)
+\item RMbias: numerical value indicating the value estimated and applied by BaalChIP for the reference mapping bias. A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternative allele.
+\item RAF: numerical value indicating the value applied by BaalChIP for the relative allele frequency (RAF) bias correction. A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternative allele.
+\item Bayes_lower: lower interval for the estimated allelic ratio (allelic ratio is given by REF / TOTAL).
+\item Bayes_upper: upper interval for the estimated allelic ratio (allelic ratio is given by REF / TOTAL).
+\item Corrected.AR: average estimated allelic ratio (average between Bayes_lower and Bayes_upper). A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternative allele.
+\item isASB: logical value indicating BaalChIP's classification of variants into allele-specific
 }
 }
 \examples{
@@ -34,7 +44,7 @@ report <- BaalChIP.report(BaalObject)
 names(report)
 
 #check out the report for one of the groups:
-head(report[["MCF10"]])
+head(report[["MCF7"]])
 }
 \author{
 Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz

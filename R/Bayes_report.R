@@ -28,7 +28,7 @@ Bayesian_report <- function(iter_matrix,conf_level,threshold_lower,threshold_upp
     conf_itval[SNP,4] = (threshold_lower >= conf_itval[SNP,2])
     
   }
-  conf_itval <- data.frame(as.character(SNP_hit_Peaks[,1]),conf_itval)
+  conf_itval <- data.frame(as.character(SNP_hit_Peaks[,1]),conf_itval, stringsAsFactors=F)
   
   ##################
   colnames(conf_itval) <- c("ID","Bayes_lower", "Bayes_upper","Bayes_sig_A", "Bayes_sig_B") 

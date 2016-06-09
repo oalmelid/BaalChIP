@@ -31,16 +31,25 @@ concordance=TRUE
 
 Allele-specific binding (ASB) measurements of transcription-factor binding from ChIP-seq data have provided important insights into the allelic effects of non-coding variants and its contribution to phenotypic diversity. However, such approaches are designed to examine the allelic imbalances in diploid samples and do not address copy number differences between the two alleles, a known phenotypical feature of cancer cells.
 
-BaalChIP (Baysian Anaysis of Allelic imbalances from ChIP-seq data) tests the differential read counts of the alleles at each heterozygous variant using the quantitative information of ChIP-seq read counts at the reference and alternative alleles and accomodating the information about the allele presence and other sources of ChIP-seq mapping biases.
+\Biocpkg{BaalChIP} (Baysian Anaysis of Allelic imbalances from ChIP-seq data) tests the differential read counts of the alleles at each heterozygous variant using the quantitative information of ChIP-seq read counts at the reference and alternative alleles and accomodating the information about the allele presence and other sources of ChIP-seq mapping biases.
 
 
-\section{Example}
+\section{A sample session}
 
-This section offers a quick example of how to use BaalChIP to identify ASB events with correction for relative allele frequency.
+This section offers a quick example of how to use \Biocpkg{BaalChIP} to identify ASB events with correction for relative allele frequency.
 
-\subsection{Identifying allele-specific binding (ASB) events from ChIP-seq data obtained from cancer cells}
+\section{Example datasets in this vignette}
 
-The example dataset contains ChIP-seq data obtained for two cell lines: A cancer cell-line (MCF7) and a normal cell line (GM12891). For each cell line, ChIP-seq data exists for four transcription factors and two biological replicates for each of the transcription factors.
+Two example datasets are included in this vignette.
+\begin{itemize}
+\item{the first one contains ChIP-seq data obtained for two cell lines: A cancer cell-line (MCF7) and a normal cell line (GM12891). For each cell line, ChIP-seq data exists for four transcription factors and two biological replicates for each of the transcription factors. This example dataset also contains the B-allele frequency (BAF) scores obtained using Genome-Wide Human SNP Array 6.0 Affymetrix microarrays. In this example dataset, the BAF scores are used to correct the allelic read counts.}
+\item{The second dataset contains FAIRE-seq targeted sequencing for two cancer cell lines (MDA134 and T47D). For each cell line, there are two biological replicates and two replicates of targeted sequencing data for the input genomic DNA. In this example, the allelic-ratios obtained from the deeply sequenced input gDNA samples are used to correct the read counts obtained from the target enriched library.}
+
+Note that the example data in this vignette does not reveal real biology and was build only for demonstration purposes.
+
+\subsection{Reading in data}
+
+The first thing to do is to read some data.
 
 The metadata and all files necessary for this example are available in the extra subdirectory
 of the BaalChIP package directory; you can make this your working directory by entering:
@@ -49,46 +58,49 @@ of the BaalChIP package directory; you can make this your working directory by e
 library(BaalChIP)
 setwd(system.file("test",package="BaalChIP"))
 @
-Note that the example data in this vignette does not reveal real biology and was build only for demonstration purposes.
 
-The first step is to contruct a BaalChIP object:
+The first step is to contruct a \Rclass{BaalChIP} object:
 <<first, eval=FALSE>>=
-samplesheet <- "example.tsv"
+samplesheet <- "exampleChIP.tsv"
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 @
 
-Given a new BaalChIP object, allele-specific binding events can be identified as follows:
-<<quick, eval=FALSE>>=
+\subsection{BaalChIP analysis}
 
-#first load some data
+The BaalChIP analysis can either be run with various commands (e.g. \Rfunction{alleleCounts}, \Rfunction{QCfilter}, \Rfunction{mergePerGroup}, \Rfunction{filter1allele}) one at the time, or use the function \Rfunction{BaalChIP.run} which will run a typical analysis. 
+
+Given a new BaalChIP object, to run a BaalChIP analysis and identigy allele-specific binding events, type:
+<<quick1, eval=FALSE>>=
+res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
+res <- BaalChIP.run(res)
+@
+
+If you whish to have more control over the input options, the same analysis above can be performed with various commands as follows:
+
+<<quick2, eval=FALSE>>=
+
+#load data
 data(blacklist_hg19)
 data(pickrell2011cov1_hg19)
 data(UniqueMappability50bp_hg19)
 
-#run example
+#run one at the time
 res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
-res <- QCfilter(res, 
-                RegionsToFilter=list("blacklist"=blacklist_hg19, 
-                                     "highcoverage"=pickrell2011cov1_hg19), 
-                RegionsToKeep=list("UniqueMappability"=UniqueMappability50bp_hg19))
+res <- QCfilter(res, RegionsToFilter=c("blacklist_hg19", "pickrell2011cov1_hg19"),                                      
+                RegionsToKeep="UniqueMappability50bp_hg19")
 res <- mergePerGroup(res)
 res <- filter1allele(res)
-res <- getASB(res, Iter=5000, conf_level=0.95)
-@
-
-If you trust the package defaults, the first four steps can be replaced by a wrapper function, making BaalChIP workflow possible to run a 3-step script:
-<<quick2, eval=FALSE>>=
-res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
-res <- BaalChIP.QC(res)
-res <- getASB(res)
+res <- getASB(res, Iter=5000, conf_level=0.95, RMcorrection = TRUE, RAFcorrection=TRUE)
 @
 
 The following sections describe these steps in more detail.
 
-\subsection{Data preparation}
+\section{Notes on data entry}
 
-In order to run BaalChIP, one needs to generate a sample sheet describing the samples and the groups within each study. This file should be saved as a tab-delimited file.
+\subsection{The samplesheet}
+
+In order to run BaalChIP, one needs to generate a sample sheet describing the samples and the groups within each study. This file should be saved as a tab-delimited file. The extension of this file is not important, for example it can be \Rcode{.txt} as long as it is a tab-delimited file.
 A .tsv sample sheet has been included in this vignette and can be assessed as follows:
 
 <<samplesheet>>=
@@ -97,23 +109,25 @@ samplesheet <- read.delim("example.tsv")
 samplesheet
 @
 
-This sample sheet details the metadata for ChIP-seq studies in MCF7 and GM12891 cell lines. For each study, ChIP-seq data exists for four transcription factors (\texttt{target}). The first column \texttt{group name} identifies the group label of each study (MCF7, GM12891). The column \texttt{replicate number} shows that there are two biological replicates for each ChIP-seq factor. The sample sheet also contains file paths to the BAM files (\texttt{bam name}) with the aligned reads and the BED files (\texttt{bed name}) with the previously called peaks. 
+This sample sheet details the metadata for ChIP-seq studies in MCF7 and GM12891 cell lines. For each study, ChIP-seq data exists for four transcription factors (\texttt{target}). The first column \texttt{group name} identifies the group label of each study (MCF7, GM12891). The column \texttt{replicate number} shows that there are two biological replicates for each ChIP-seq factor. The sample sheet also contains file paths to the BAM files (\texttt{bam name}) with the aligned reads and the BED files (\texttt{bed name}) with  the genomic regions of signal enrichment that the user is interested in (tipically these are the ChIP-seq peaks files).   
 
+\subsection{The hets files}
 
-Note that the sample sheet should be saved as a .csv file, you do not have to first load it into a data frame (the filename is passed directly to BaalChIP).
+BaalChIP requires a 'variant file' containning the list of heterozygous variants to be analysed. As an example, a small set of heterozygous variants for each cell line has been included in this vignette and can be assessed as follows:
 
-In addition to the sample sheet, BaalChIP requires a 'variant file' containning the list of heterozygous variants to be analysed. As an example, a small set of heterozygous variants for each cell line has been included in this vignette and can be assessed as follows:
-
-<<hetSNP, eval=FALSE>>=
+<<hetSNP>>=
 head(read.delim("MCF7_hetSNP.txt"))
-head(read.delim("GM12891_hetSNP.txt"))
 @
 
-The information in the variant file should include an \texttt{ID} column with a unique identifier string per variant, the (1-based) genomic coordinates \texttt{CHROM, POS}, and the A,C,G,T bases for the reference \texttt{REF} and the non-reference alternate \texttt{ALT} allele. The final column \texttt{RAF} consists of a 
-value ranging from 0 to 1 for each variant denoting the relative allele frequency. A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. This column is optional, if missing BaalChIP will still run but will not correct for relative allele frequency (copy-number) bias.
+The information in the variant file should include an \texttt{ID} column with a unique identifier string per variant, the (1-based) genomic coordinates \texttt{CHROM, POS}, and the A,C,G,T bases for the reference \texttt{REF} and the non-reference alternate \texttt{ALT} allele. 
 
+The final column \texttt{RAF} consists of a value ranging from 0 to 1 for each variant denoting the relative allele frequency. A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. This column is optional, and will not be necessary if we ask BaalChIP to calcuate the RAF values from the input gDNA libraries. If both gDNA and RAF values are missing BaalChIP will still run but will not correct for relative allele frequency (copy-number) bias.
 
-\subsection{Constructing a BaalChIP object}
+\section{the gDNA files}
+
+These argument is an optional list of input genomic DNA samples CONTINUE HERE AND ADD EXAMPLE
+
+\section{Constructing a BaalChIP object}
 
 The first step is to generate a BaalChIP object. The function \texttt{new} accepts a samplesheet and a named vector containing the filenames for the variant files to be used. The names in the vector should correspond to \texttt{group_name} strings in the \texttt{.csv} samplesheet, in this case it should be "MCF7" and "GM12891".
 
@@ -129,20 +143,32 @@ the samplesheet is saved in the \texttt{samples} slot of a BaalChIP object:
 res@samples
 @
 
-\subsection{Obtainning allele-specific counts for BAM files}
+\section{Obtainning allele-specific counts for BAM files}
 
-The next step is to compute the read coverage at each allele. BaalChIP will read in the information whithin the \texttt{samples} slot of a BaalChIP object and it will primarly find all variants overlapping peaks. Then, for each variant, computes the number of reads carrying the reference (REF) and alternative (ALT) alleles.
+The next step is to compute, for each variant the number of reads carrying the reference (REF) and alternative (ALT) alleles. The \Rfunction{alleleCounts} function will read and scan all BAM files  whithin the \texttt{samples} slot of a BaalChIP object and compute the read coverage at each allele. Allele counts are computed using the \Rfunction{pileup} function and the \Rcode{PileupParam} constructor of the \Biocpkg{Rsamtools} package. 
+For each BAM file, it will only consider heterozygous SNPs overlapping the genomic regions in the corresponding BED files. Two arguments can be manipulated by the user: the \Rcode{min_mapq} refers to the minimum 'MAPQ' value for an alignment to be included in pileup (default is 15); and the \Rcode{min_base_quality} which refers to the minimum 'QUAL' value for each nucleotide in an alignment.
 
 <<alleleCounts, eval=FALSE>>=
 res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 res
 @
 
-\subsection{QC: Filtering variants that may be problematic for allele-specific detection}
+\section{Filtering variants that may be problematic for allele-specific detection}
 
-BaalChIP contains an extensive set of filters...
+After computing the read counts per allele, the next step in the BaalChIP pipeline is an extensive quality control step to consider technical biases that may contribute to the false identification of regulatory SNPs.
+
+\subsection{QCfilter: A filter to exclude SNPs in regions of known problematic read alignment}
+The function \Rfunction{QCfilter} is used to excluded sites susceptible to allelic mapping bias in regions of known problematic read alignment (Pickrell et al., 2011; Consortium, 2012). This function accepts two arguments: 'RegionsToFilter' with the genomic regions to be excluded, and 'RegionsToKeep' with the genomic regions to be kept. 
+
+Three datafiles are included with BaalChIP package for the human genome: 
+
+(1) blacklisted regions downloaded from the UCSC Genome Browser (mappability track; release 3, October 2011; thewgEncodeDacMapabilityConsensusExcludable and wgEncodeDukeMapabilityRegionsExcludable tables), (2) non-unique regions selected from DUKE uniqueness mappability track of the UCSC genome browser (release 3, October 2011; wgEncodeCrgMapabilityAlign50mer table), and (3) collapsed repeat regions downloaded from Pickrell et al., 2010 at the 0.1\% threshold. 
 
 <<filters, eval=FALSE>>=
+data(blacklist_hg19)
+data(pickrell2011cov1_hg19)
+data(UniqueMappability50bp_hg19)
+
 res <- QCfilter(res, 
                 RegionsToFilter=list("blacklist"=blacklist_hg19, "highcoverage"=pickrell2011cov1_hg19), 
                 RegionsToKeep=list("UniqueMappability"=UniqueMappability50bp_hg19))
@@ -150,12 +176,15 @@ res <- mergePerGroup(res)
 res <- filter1allele(res)
 @
 
-\subsection{Allele counts and QC in 1-step script}
+\subsection{filtIntBias: A simulation-based filtering to exclude SNPs with intrinsic bias}
+The function \Rfunction{filtIntBias} can be used to apply a simulation-based filtering to exclude SNPs with intrinsic bias to one of the alleles (Degner et al., 2009; Pickrell et al., 2010)
 
-<<QC1step, eval=FALSE>>=
-res <- new("BaalChIP", samplesheet, hets)
-res <- BaalChIP.QC(res)
-@
+\subsection{Merge allele counts per group}
+The function \Rfunction{mergePerGroup} is used to considered only SNPs that pass all filters in all replicated samples; 
+The function \Rfunction{filter1allele} is used to exclude variants where only one allele was observed after pooling ChIP-seq reads from all examined samples, indicating that those variants are possibly homozygous (Lappalainen et al., 2013; Kilpinen et al., 2013). 
+
+\section{An example with ENCODE dataset}
+
 
 \subsection{summarysing and plotting QC data}
 
@@ -173,9 +202,10 @@ plotQC(res, "overall_pie")
 summaryQC(res)
 @
 
-\subsection{Identifying allele-specific binding events}
+REPORT
+summaryASB
 
-\subsubsection{with RAF copy-number correction}
+\subsubsection{Identifying allele-specific binding events with RAF copy-number correction}
 
 <<asb1, eval=FALSE>>=
 res1 <- getASB(res, Iter=5000, conf_level=0.95, RAFcorrection=TRUE)
@@ -183,13 +213,16 @@ result_Corrected <- BaalChIP.report(res1)
 summaryASB(res1)
 @
 
-\subsubsection{without RAF copy-number correction}
+\subsubsection{Identifying allele-specific binding events with without RAF copy-number correction}
 
 <<asb2, eval=FALSE>>=
 res2 <- getASB(res, Iter=5000, conf_level=0.95, RAFcorrection=FALSE)
 result_NOTcorrected <- BaalChIP.report(res2)
 summaryASB(res2)
 @
+
+\section{An example with genomic DNA files}
+
 
 
 \section{Acknowledgements}

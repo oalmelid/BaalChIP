@@ -30,7 +30,7 @@ BaalChIP.get(BaalObject,"param")
 
 #retrieve a GRanges list with allele-specific read counts per BAM file:
 counts <- BaalChIP.get(BaalObject,"alleleCountsPerBam")
-counts[["MCF10"]][[1]]
+counts[["MCF7"]][[1]]
 
 #retrieve a data.frame with allele-specific read counts per group:
 counts <- BaalChIP.get(BaalObject,"mergedCounts")

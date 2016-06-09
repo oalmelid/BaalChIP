@@ -5,9 +5,8 @@
 \alias{QCfilter}
 \title{Removes variants that may be problematic for identification of allele-specific events}
 \usage{
-\S4method{QCfilter}{BaalChIP}(.Object, RegionsToFilter = list(blacklist =
-  blacklist_hg19, highcoverage = pickrell2011cov1_hg19),
-  RegionsToKeep = list(UniqueMappability = UniqueMappability50bp_hg19))
+\S4method{QCfilter}{BaalChIP}(.Object, RegionsToFilter = NULL,
+  RegionsToKeep = NULL)
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class}
@@ -24,8 +23,8 @@ Quality control step for removing variants that may be problematic for identific
 }
 \examples{
 setwd(system.file("test",package="BaalChIP"))
-samplesheet <- "example.tsv"
-hets <- c("MCF10"="MCF10_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+samplesheet <- "exampleChIP.tsv"
+hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 data(blacklist_hg19)
@@ -35,15 +34,9 @@ res <- QCfilter(res,
                RegionsToFilter=list("blacklist"=blacklist_hg19, "highcoverage"=pickrell2011cov1_hg19),
                RegionsToKeep=list("UniqueMappability"=UniqueMappability50bp_hg19))
 
-#retrieve alleleCounts:
-counts <- BaalChIP.get(res, "alleleCountsPerBam")
-
-#alleleCounts are grouped by bam_name and group_name:
-names(counts)
-names(counts[["MCF10"]])
-
-#check out the result for one of the bam files:
-counts[["MCF10"]][[1]]
+#check results
+plotQC(res,"barplot")
+summaryQC(res)
 }
 \author{
 Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
