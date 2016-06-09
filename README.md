@@ -42,14 +42,13 @@ res <- filter1allele(res)
 res <- getASB(res, Iter=5000, conf_level=0.95)
 ```
 
-## Example run in a 3-step wrapper script
+## Example run in a 2-step wrapper script
 
 If you trust the package defaults, the first four steps can be replaced by a wrapper function, making BaalChIP workflow possible to run in a 3-step script:
 
 ```r
 res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
-res <- BaalChIP.QC(res)
-res <- getASB(res)
+res <- BaalChIP.run(res)
 ```
 
 The package vignette describes these steps in more detail.
