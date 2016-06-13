@@ -75,7 +75,7 @@ summary_ASB <- function(object) {
 	
 	if (length(object@ASB) == 0) {return(NULL)}else{asb <- object@ASB}
 	
-	asb_stats <- do.call("rbind", lapply(asb, function(x) {c("Ref"=sum(x$Bayes_sig_A),"Alt"=sum(x$Bayes_sig_B))}))
+	  asb_stats <- do.call("rbind", lapply(asb, function(x) {c("Ref"=sum(x$Bayes_sig_A),"Alt"=sum(x$Bayes_sig_B))}))
     asb_stats <- cbind(asb_stats, "Total"=rowSums(asb_stats))
     return(asb_stats)
 	

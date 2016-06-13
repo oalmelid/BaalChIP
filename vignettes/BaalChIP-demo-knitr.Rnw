@@ -7,6 +7,7 @@
 <<style, eval=TRUE, echo=FALSE, results='asis'>>=
 BiocStyle::latex()
 @ 
+\usepackage{float}
 
 \begin{document}
 
@@ -19,9 +20,9 @@ concordance=TRUE
 
 
 \title{Detecting allele-specific events from ChIP-seq data}
-\author{Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz}
+\author{Ines de Santiago, Wei Liu, Ke Yuan, Bruce Ponder, Kerstin Meyer, Florian Markowetz}
 
-\date{Edited: 2015; Compiled: \today}
+\date{Edited: 2016; Compiled: \today}
 
 \maketitle
 
@@ -31,19 +32,30 @@ concordance=TRUE
 
 Allele-specific binding (ASB) measurements of transcription-factor binding from ChIP-seq data have provided important insights into the allelic effects of non-coding variants and its contribution to phenotypic diversity. However, such approaches are designed to examine the allelic imbalances in diploid samples and do not address copy number differences between the two alleles, a known phenotypical feature of cancer cells.
 
-\Biocpkg{BaalChIP} (Baysian Anaysis of Allelic imbalances from ChIP-seq data) tests the differential read counts of the alleles at each heterozygous variant using the quantitative information of ChIP-seq read counts at the reference and alternative alleles and accomodating the information about the allele presence and other sources of ChIP-seq mapping biases.
+\Biocpkg{BaalChIP} (Bayesian Analysis of Allelic imbalances from ChIP-seq data) tests the differential read counts of the alleles at each heterozygous variant using a Bayesian framework to account for the background allele composition and other sources of bias that might influence the overall ChIP-seq read count, and takes advantage of the fact that multiple transcription factor ChIP-seq data may be available for the same variant to improve ASB detection (Figure \ref{fig:baalFramewor}).
+
+\begin{center}
+\begin{figure}[H]
+\includegraphics[scale=0.5]{baal.pdf}
+\caption{Description of Baal-ChIP model frame work. (a) Input data: the reference mapping (RM) bias and reference allele frequency (RAF) have been included in the input data. The first column of peak file is the binary data used to state the calling peaks and the other columns are ChIP-seq reads count. (b) Baal-ChIP package has two modules: SNP QC filters to remove the false identified SNPs causing by technical biases and beta-binomial Bayesian model to consider RM and RAF bias. (c) Model output: the output from Baal-ChIP is posterior distribution for each SNP and user can use defined threshold to identify the SNPs with allele bias (default value for threshold is 0.5)}
+\label{fig:baalFramewor}
+\end{figure}
+\end{center}
 
 
 \section{A sample session}
 
 This section offers a quick example of how to use \Biocpkg{BaalChIP} to identify ASB events with correction for relative allele frequency.
 
-\section{Example datasets in this vignette}
+\subsection{Example datasets in this vignette}
 
-Two example datasets are included in this vignette.
-\begin{itemize}
-\item{the first one contains ChIP-seq data obtained for two cell lines: A cancer cell-line (MCF7) and a normal cell line (GM12891). For each cell line, ChIP-seq data exists for four transcription factors and two biological replicates for each of the transcription factors. This example dataset also contains the B-allele frequency (BAF) scores obtained using Genome-Wide Human SNP Array 6.0 Affymetrix microarrays. In this example dataset, the BAF scores are used to correct the allelic read counts.}
-\item{The second dataset contains FAIRE-seq targeted sequencing for two cancer cell lines (MDA134 and T47D). For each cell line, there are two biological replicates and two replicates of targeted sequencing data for the input genomic DNA. In this example, the allelic-ratios obtained from the deeply sequenced input gDNA samples are used to correct the read counts obtained from the target enriched library.}
+The example dataset in this vignette contains ChIP-seq data obtained for two cell lines: A cancer cell-line (MCF7) and a normal cell line (GM12891). For each cell line, ChIP-seq data exists for four transcription factors and two biological replicates for each of the transcription factors. This example dataset also contains the B-allele frequency (BAF) scores obtained using Genome-Wide Human SNP Array 6.0 Affymetrix microarrays. In this example dataset, the BAF scores are used to correct the allelic read counts.
+
+%Two example datasets are included in this vignette.
+%\begin{itemize}
+%\item{the first one contains ChIP-seq data obtained for two cell lines: A cancer cell-line (MCF7) and a normal cell line (GM12891). For each cell line, ChIP-seq data exists for four transcription factors and two biological replicates for each of the transcription factors. This example dataset also contains the B-allele frequency (BAF) scores obtained using Genome-Wide Human SNP Array 6.0 Affymetrix microarrays. In this example dataset, the BAF scores are used to correct the allelic read counts.}
+%\item{The second dataset contains FAIRE-seq targeted sequencing for two cancer cell lines (MDA134 and T47D). For each cell line, there are two biological replicates and two replicates of targeted sequencing data for the input genomic DNA. In this example, the allelic-ratios obtained from the deeply sequenced input gDNA samples are used to correct the read counts obtained from the target enriched library.}
+%\end{itemize}
 
 Note that the example data in this vignette does not reveal real biology and was build only for demonstration purposes.
 
@@ -59,7 +71,7 @@ library(BaalChIP)
 setwd(system.file("test",package="BaalChIP"))
 @
 
-The first step is to contruct a \Rclass{BaalChIP} object:
+The first step is to construct a \Rclass{BaalChIP} object:
 <<first, eval=FALSE>>=
 samplesheet <- "exampleChIP.tsv"
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
@@ -70,13 +82,13 @@ res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 
 The BaalChIP analysis can either be run with various commands (e.g. \Rfunction{alleleCounts}, \Rfunction{QCfilter}, \Rfunction{mergePerGroup}, \Rfunction{filter1allele}) one at the time, or use the function \Rfunction{BaalChIP.run} which will run a typical analysis. 
 
-Given a new BaalChIP object, to run a BaalChIP analysis and identigy allele-specific binding events, type:
+Given a new BaalChIP object, to run a BaalChIP analysis and identify allele-specific binding events, type:
 <<quick1, eval=FALSE>>=
 res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 res <- BaalChIP.run(res)
 @
 
-If you whish to have more control over the input options, the same analysis above can be performed with various commands as follows:
+If you wish to have more control over the input options, the same analysis above can be performed with various commands as follows:
 
 <<quick2, eval=FALSE>>=
 
@@ -100,36 +112,38 @@ The following sections describe these steps in more detail.
 
 \subsection{The samplesheet}
 
-In order to run BaalChIP, one needs to generate a sample sheet describing the samples and the groups within each study. This file should be saved as a tab-delimited file. The extension of this file is not important, for example it can be \Rcode{.txt} as long as it is a tab-delimited file.
+In order to run BaalChIP, one needs to generate a sample sheet describing the samples and the groups within each study. This file should be saved as a tab-delimited file. The extension of this file is not important, for example it can be \texttt{.txt} as long as it is a tab-delimited file.
 A .tsv sample sheet has been included in this vignette and can be assessed as follows:
 
 <<samplesheet>>=
 setwd(system.file("test",package="BaalChIP"))
-samplesheet <- read.delim("example.tsv")
+samplesheet <- read.delim("exampleChIP.tsv")
 samplesheet
 @
 
-This sample sheet details the metadata for ChIP-seq studies in MCF7 and GM12891 cell lines. For each study, ChIP-seq data exists for four transcription factors (\texttt{target}). The first column \texttt{group name} identifies the group label of each study (MCF7, GM12891). The column \texttt{replicate number} shows that there are two biological replicates for each ChIP-seq factor. The sample sheet also contains file paths to the BAM files (\texttt{bam name}) with the aligned reads and the BED files (\texttt{bed name}) with  the genomic regions of signal enrichment that the user is interested in (tipically these are the ChIP-seq peaks files).   
+This sample sheet details the metadata for ChIP-seq studies in MCF7 and GM12891 cell lines. For each study, ChIP-seq data exists for four transcription factors (\texttt{target}). The first column \texttt{group name} identifies the group label of each study (MCF7, GM12891). The column \texttt{replicate number} shows that there are two biological replicates for each ChIP-seq factor. The sample sheet also contains file paths to the BAM files (\texttt{bam name}) with the aligned reads and the BED files (\texttt{bed name}) with  the genomic regions of signal enrichment that the user is interested in (typically these are the ChIP-seq peaks files).   
 
 \subsection{The hets files}
 
-BaalChIP requires a 'variant file' containning the list of heterozygous variants to be analysed. As an example, a small set of heterozygous variants for each cell line has been included in this vignette and can be assessed as follows:
+BaalChIP requires a \textquotedbl{}variant file\textquotedbl{} containing the list of heterozygous variants to be analysed. As an example, a small set of heterozygous variants for each cell line has been included in this vignette and can be assessed as follows:
 
 <<hetSNP>>=
+setwd(system.file("test",package="BaalChIP"))
 head(read.delim("MCF7_hetSNP.txt"))
 @
 
 The information in the variant file should include an \texttt{ID} column with a unique identifier string per variant, the (1-based) genomic coordinates \texttt{CHROM, POS}, and the A,C,G,T bases for the reference \texttt{REF} and the non-reference alternate \texttt{ALT} allele. 
 
-The final column \texttt{RAF} consists of a value ranging from 0 to 1 for each variant denoting the relative allele frequency. A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. This column is optional, and will not be necessary if we ask BaalChIP to calcuate the RAF values from the input gDNA libraries. If both gDNA and RAF values are missing BaalChIP will still run but will not correct for relative allele frequency (copy-number) bias.
+The final column \texttt{RAF} consists of a value ranging from 0 to 1 for each variant denoting the relative allele frequency. A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. This column is optional, and will not be necessary if we ask BaalChIP to calculate the RAF values from the input gDNA libraries. If both gDNA and RAF values are missing BaalChIP will still run but will not correct for relative allele frequency (copy-number) bias.
 
-\section{the gDNA files}
+%\subsection{the gDNA files}
 
-These argument is an optional list of input genomic DNA samples CONTINUE HERE AND ADD EXAMPLE
+%These argument is an optional list of input genomic DNA samples.
+%Continue here
 
 \section{Constructing a BaalChIP object}
 
-The first step is to generate a BaalChIP object. The function \texttt{new} accepts a samplesheet and a named vector containing the filenames for the variant files to be used. The names in the vector should correspond to \texttt{group_name} strings in the \texttt{.csv} samplesheet, in this case it should be "MCF7" and "GM12891".
+The first step is to generate a BaalChIP object. The function \texttt{new} accepts a samplesheet and a named vector containing the filenames for the variant files to be used. The names in the vector should correspond to \texttt{group\_name} strings in the \texttt{.csv} samplesheet, in this case it should be \textquotedbl{}MCF7\textquotedbl{} and \textquotedbl{}GM12891\textquotedbl{}.
 
 <<new, eval=FALSE>>=
 samplesheet <- "example.tsv"
@@ -143,22 +157,23 @@ the samplesheet is saved in the \texttt{samples} slot of a BaalChIP object:
 res@samples
 @
 
-\section{Obtainning allele-specific counts for BAM files}
+\subsection{Obtaining allele-specific counts for BAM files}
 
-The next step is to compute, for each variant the number of reads carrying the reference (REF) and alternative (ALT) alleles. The \Rfunction{alleleCounts} function will read and scan all BAM files  whithin the \texttt{samples} slot of a BaalChIP object and compute the read coverage at each allele. Allele counts are computed using the \Rfunction{pileup} function and the \Rcode{PileupParam} constructor of the \Biocpkg{Rsamtools} package. 
-For each BAM file, it will only consider heterozygous SNPs overlapping the genomic regions in the corresponding BED files. Two arguments can be manipulated by the user: the \Rcode{min_mapq} refers to the minimum 'MAPQ' value for an alignment to be included in pileup (default is 15); and the \Rcode{min_base_quality} which refers to the minimum 'QUAL' value for each nucleotide in an alignment.
+The next step is to compute, for each variant the number of reads carrying the reference (REF) and alternative (ALT) alleles. The \Rfunction{alleleCounts} function will read and scan all BAM files  within the \texttt{samples} slot of a BaalChIP object and compute the read coverage at each allele. Allele counts are computed using the \Rfunction{pileup} function and the \texttt{PileupParam} constructor of the \Biocpkg{Rsamtools} package (Morgan et al., 2016). 
+For each BAM file, it will only consider heterozygous SNPs overlapping the genomic regions in the 
+corresponding BED files. Two arguments can be manipulated by the user: the \texttt{min\_mapq} refers to the minimum \textquotedbl{}MAPQ\textquotedbl{} value for an alignment to be included in pileup (default is 15); and the \texttt{min\_base\_quality} which refers to the minimum \textquotedbl{}QUAL\textquotedbl{} value for each nucleotide in an alignment (default is 10).
 
 <<alleleCounts, eval=FALSE>>=
 res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 res
 @
 
-\section{Filtering variants that may be problematic for allele-specific detection}
+
+\subsection{QCfilter: A filter to exclude SNPs in regions of known problematic read alignment}
 
 After computing the read counts per allele, the next step in the BaalChIP pipeline is an extensive quality control step to consider technical biases that may contribute to the false identification of regulatory SNPs.
 
-\subsection{QCfilter: A filter to exclude SNPs in regions of known problematic read alignment}
-The function \Rfunction{QCfilter} is used to excluded sites susceptible to allelic mapping bias in regions of known problematic read alignment (Pickrell et al., 2011; Consortium, 2012). This function accepts two arguments: 'RegionsToFilter' with the genomic regions to be excluded, and 'RegionsToKeep' with the genomic regions to be kept. 
+The function \Rfunction{QCfilter} is used to excluded sites susceptible to allelic mapping bias in regions of known problematic read alignment (Pickrell et al., 2011; Consortium, 2012). This function accepts two arguments: \textquotedbl{}RegionsToFilter\textquotedbl{} with the genomic regions to be excluded, and \textquotedbl{}RegionsToKeep\textquotedbl{} with the genomic regions to be kept. 
 
 Three datafiles are included with BaalChIP package for the human genome: 
 
@@ -176,63 +191,79 @@ res <- mergePerGroup(res)
 res <- filter1allele(res)
 @
 
-\subsection{filtIntBias: A simulation-based filtering to exclude SNPs with intrinsic bias}
-The function \Rfunction{filtIntBias} can be used to apply a simulation-based filtering to exclude SNPs with intrinsic bias to one of the alleles (Degner et al., 2009; Pickrell et al., 2010)
+%\subsection{filtIntBias: A simulation-based filtering to exclude SNPs with intrinsic bias}
+%The function \Rfunction{filtIntBias} can be used to apply a simulation-based filtering to exclude SNPs with intrinsic bias to one of the alleles (Degner et al., 2009; Pickrell et al., 2010)
 
-\subsection{Merge allele counts per group}
-The function \Rfunction{mergePerGroup} is used to considered only SNPs that pass all filters in all replicated samples; 
-The function \Rfunction{filter1allele} is used to exclude variants where only one allele was observed after pooling ChIP-seq reads from all examined samples, indicating that those variants are possibly homozygous (Lappalainen et al., 2013; Kilpinen et al., 2013). 
+%\subsection{Merge allele counts per group}
+%The function \Rfunction{mergePerGroup} is used to considered only SNPs that pass all filters in all replicated samples; 
+%The function \Rfunction{filter1allele} is used to exclude variants where only one allele was observed after pooling ChIP-seq reads from all examined samples, indicating that those variants are possibly homozygous (Lappalainen et al., 2013; Kilpinen et al., 2013). 
 
-\section{An example with ENCODE dataset}
+%\section{An example with ENCODE dataset}
 
 
-\subsection{summarysing and plotting QC data}
+\section{Summarizing and plotting QC data}
 
 <<load, include=FALSE, eval=TRUE>>=
 library(BaalChIP)
-data(baalObject)
+data(BaalObject)
 res <- BaalObject
 @
 
 <<QCplots, fig.align='center', fig.height=6, fig.width=4.5, eval=TRUE>>=
-data(baalObject)
 plotQC(res, "barplot_per_group")
 plotQC(res, "boxplot_per_filter")
 plotQC(res, "overall_pie")
 summaryQC(res)
 @
 
-REPORT
-summaryASB
+The function BaalChIP.report outputs a table with all assayed variants and with additional information about their ASB status:
 
-\subsubsection{Identifying allele-specific binding events with RAF copy-number correction}
-
-<<asb1, eval=FALSE>>=
-res1 <- getASB(res, Iter=5000, conf_level=0.95, RAFcorrection=TRUE)
-result_Corrected <- BaalChIP.report(res1)
-summaryASB(res1)
+<<>>=
+result <- BaalChIP.report(res)
+head(result[["MCF7"]])
 @
 
-\subsubsection{Identifying allele-specific binding events with without RAF copy-number correction}
+%\subsubsection{Identifying allele-specific binding events with RAF copy-number correction}
 
-<<asb2, eval=FALSE>>=
-res2 <- getASB(res, Iter=5000, conf_level=0.95, RAFcorrection=FALSE)
-result_NOTcorrected <- BaalChIP.report(res2)
-summaryASB(res2)
-@
+%<<asb1, eval=FALSE>>=
+%res1 <- getASB(res, Iter=5000, conf_level=0.95, RAFcorrection=TRUE)
+%result_Corrected <- BaalChIP.report(res1)
+%summaryASB(res1)
+%@
 
-\section{An example with genomic DNA files}
+%\subsubsection{Identifying allele-specific binding events with without RAF copy-number correction}
+
+%<<asb2, eval=FALSE>>=
+%res2 <- getASB(res, Iter=5000, conf_level=0.95, RAFcorrection=FALSE)
+%result_NOTcorrected <- BaalChIP.report(res2)
+%summaryASB(res2)
+%@
+
+%\section{An example with genomic DNA files}
 
 
+\section*{Acknowledgements}
+We thank Thomas Carroll and Gordon Brown for suggestions and advice
+about ChIP-seq data analysis, and the ENCODE Consortium and the ENCODE
+production laboratories for generating the datasets used in this study.
+We thank the \href{https://give.bcrfcure.org/checkout/donation?eid=31404&_ga=1.141086386.1225939115.1465824174}{"Breast Cancer Research Foundation"} for financial support of this work.
 
-\section{Acknowledgements}
-We thank Thomas Carroll and Gordon Brown for suggestions and advice about ChIP-seq data analysis.
 
-
-\section{Session Info}
-<<sessionInfo, results='asis', eval=TRUE>>=
+\section*{Session Info}
+<<sessionInfo, results='asis', eval=TRUE, include=TRUE, echo=FALSE>>=
 toLatex(sessionInfo())
 @
-\bibliography{BaalChIP}
+
+\section*{References}
+
+Consortium EP. 2012. An integrated encyclopedia of dna elements in the human genome. Nature 489: 57–74.
+
+Degner JF, Marioni JC, Pai AA, Pickrell JK, Nkadori E, Gilad Y, and Pritchard JK. 2009. Effect of read-mapping biases on detecting allele-specific expression from rna-sequencing data. Bioinformatics 25: 3207–3212.
+
+Morgan M, Pagès H, Obenchain V and Hayden N (2016). Rsamtools: Binary alignment (BAM), FASTA, variant call (BCF), and tabix file import. R package version 1.24.0, \href{http://bioconductor.org/packages/release/bioc/html/Rsamtools.html}{http://bioconductor.org/packages/release/bioc/html/Rsamtools.html}. 
+
+Pickrell JK, Marioni JC, Pai AA, Degner JF, Engelhardt BE, Nkadori E, Veyrieras JB, Stephens M, Gilad Y, and Pritchard JK. 2010. Understanding mechanisms underlying human gene expression variation with rna sequencing. Nature 464: 768–772.
+
+R Core Team. 2014. R: A Language and Environment for Statistical Computing. R Foundation for Statistical Computing, Vienna, Austria.
 
 \end{document}
