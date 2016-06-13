@@ -1,3 +1,5 @@
+We thank the [Breast Cancer Research Foundation](https://give.bcrfcure.org/checkout/donation?eid=31404&_ga=1.141086386.1225939115.1465824174) for financial support of this work.
+
 # Installation
 
 To install the development version of BaalChIP R package from GitHub type:
