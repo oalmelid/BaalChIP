@@ -1,5 +1,5 @@
 Package: BaalChIP
-Title: Provides a framework for detecting allele-specific events from ChIP-seq data.
+Title: BaalChIP: Bayesian Analysis of Allelic imbalances from ChIP-seq data from cancer genomes correcting for allele copy-number frequency
 Version: 0.1.0
 Authors: Ines de Santiago, Wei Liu, Ke Yuan, Bruce Ponder, Kerstin Meyer, Florian Markowetz
 Mantainer: Ines de Santiago <ines.deSantiago@cruk.cam.ac.uk>
