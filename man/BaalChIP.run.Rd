@@ -32,7 +32,7 @@ summaryQC(res)
 summaryASB(res)
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Ines de Santiago
 }
 \seealso{
 \code{\link{summaryQC}}, \code{\link{plotQC}}

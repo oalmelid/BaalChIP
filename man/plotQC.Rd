@@ -30,7 +30,7 @@ plotQC(BaalObject, "boxplot_per_filter", addlegend=FALSE)
 plotQC(BaalObject, "barplot_per_group")
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Ines de Santiago
 }
 \seealso{
 \code{\link{BaalChIP.run}}, \code{\link{summaryQC}}

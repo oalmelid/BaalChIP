@@ -37,7 +37,7 @@ plotSimul(res)
 summaryQC(res)
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Ines de Santiago
 }
 \seealso{
 \code{\link{BaalChIP.get}}, \code{\link{plotQC}}, \code{\link{summaryQC}}

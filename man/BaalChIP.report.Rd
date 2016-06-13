@@ -47,7 +47,7 @@ names(report)
 head(report[["MCF7"]])
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Ines de Santiago
 }
 \seealso{
 \code{\link{summaryASB}}, \code{\link{getASB}}

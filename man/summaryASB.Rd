@@ -21,7 +21,7 @@ data(BaalObject)
 summaryASB(BaalObject)
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Ines de Santiago
 }
 \seealso{
 \code{\link{getASB}}, \code{\link{BaalChIP.report}}

@@ -21,7 +21,7 @@ adjustmentBaalPlot(BaalObject)
 adjustmentBaalPlot(BaalObject, col=alpha(c( "blue","pink")))
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Ines de Santiago
 }
 \seealso{
 \code{\link{BaalChIP.report}}, \code{\link{summaryQC}}

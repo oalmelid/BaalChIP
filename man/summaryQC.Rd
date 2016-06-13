@@ -25,7 +25,7 @@ data(BaalObject)
 summaryQC(BaalObject)
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Ines de Santiago
 }
 \seealso{
 \code{\link{BaalChIP.run}}, \code{\link{plotQC}}

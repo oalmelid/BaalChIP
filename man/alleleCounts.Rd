@@ -45,7 +45,7 @@ names(counts[["MCF7"]])
 counts[["MCF7"]][[1]]
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Ines de Santiago
 }
 \seealso{
 \code{\link{BaalChIP.get}}

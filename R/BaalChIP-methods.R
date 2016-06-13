@@ -1,5 +1,5 @@
 #BaalChIP: all methods
-#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+
 
 ##initialization method
 setMethod("initialize",
@@ -46,7 +46,7 @@ setMethod("show", "BaalChIP",
 
 #' Generates allele-specific read count data
 #' @name alleleCounts
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @description Generates allele-specific read count data from each BAM ChIP-seq dataset for each variant.
 #' @param .Object An object of the \code{\link{BaalChIP}} class 
 #' @param min_base_quality A numeric value indicating the minumum read base quality below which the base is ignored when summarizing pileup information (default 10)
@@ -97,7 +97,7 @@ setMethod(
 )
     
 #' Removes variants that may be problematic for identification of allele-specific events
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name QCfilter
 #' @description Quality control step for removing variants that may be problematic for identification of allele-specific events.
 #' @param .Object An object of the \code{\link{BaalChIP}} class 
@@ -166,7 +166,7 @@ setMethod(
 
 
 #' Removes variants for which simulated single-end reads don't align correctly to the original simulated position. 
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name filterIntbias
 #' @description Filters the data frame available within a \code{\link{BaalChIP}} object (slot \code{alleleCounts}). This filter performs simulations of reads of the same length as the original ChIP-seq reads, aligns the simulated reads to the genome, calculates the allelic ratios for each variant and finally and ignores those variants for which the allelic ratio (REF/TOTAL) is different than 0.5. 
 #' @param .Object An object of the \code{\link{BaalChIP}} class 
@@ -241,7 +241,7 @@ setMethod(
 
 
 #' Merges allele-specific read count data per group
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name mergePerGroup
 #' @description Merges all ChIP-seq datasets within a group of samples creating a data.frame that contains allele-specific read count data for all variants that need to be analysed. 
 #' @param .Object An object of the \code{\link{BaalChIP}} class 
@@ -293,7 +293,7 @@ setMethod(
   }
 )
 #' Filters out variants with only 1 observed allele
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name filter1allele
 #' @description Filters the data frame available within a \code{\link{BaalChIP}} object (slot \code{mergedCounts}). This filter ignores variants for which only one allele is observed after pooling ChIP-seq reads from all datasets. 
 #' @param .Object An object of the \code{\link{BaalChIP}} class 
@@ -347,7 +347,7 @@ setMethod(
 
 
 #' BaalChIP pipeline - allele counts,  QC and getting ASB variants
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name BaalChIP.run
 #' @description BaalChIP.run is a wrapper convenience function, to compute allele counts and perform quality controls in one step. This function will use the package's defaults.
 #' @param .Object An object of the \code{\link{BaalChIP}} class
@@ -405,7 +405,7 @@ setMethod(
 )
 
 #' Identifies allele-specific binding events
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Wei Liu, Ke Yuan, Ines de Santiago
 #' @name getASB
 #' @description getASB identifies allele-specific binding events using a bayesian framework.
 #' @param .Object An object of the \code{\link{BaalChIP}} class.
@@ -505,7 +505,7 @@ setMethod(
 )			
 
 #' Get slots from a BaalChIP object
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name BaalChIP.get
 #' @description Get information from individual slots in a BaalChIP object.
 #' @param .Object An object of the \code{\link{BaalChIP}} class
@@ -551,7 +551,7 @@ setMethod(
 
 
 #' Report ASB variants
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name BaalChIP.report
 #' @description Generates a data.frame per group with all variants and a label for all identified allele-specific binding (ASB) variants
 #' @param .Object An object of the \code{\link{BaalChIP}} class
@@ -599,7 +599,7 @@ setMethod(
 )
 
 #' Summary of QC 
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name summaryQC
 #' @description Generates summary of QC result.
 #' @param .Object An object of the \code{\link{BaalChIP}} class
@@ -624,7 +624,7 @@ setMethod(
 
 
 #' Summary of ASB test
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name summaryASB
 #' @description Generates summary of ASB test result.
 #' @param .Object An object of the \code{\link{BaalChIP}} class
@@ -644,7 +644,7 @@ setMethod(
 )
 
 #' Plots QC results
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name plotQC
 #' @description Produces different plots of QC results.
 #' @param .Object An object of the \code{\link{BaalChIP}} class.
@@ -701,7 +701,7 @@ setMethod(
 )
 
 #' Plots Allelic Ratios before and after adjustment
-#' @author Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+#' @author Ines de Santiago
 #' @name adjustmentBaalPlot
 #' @description Produces a density plot of the distribution of allelic ratios (REF/TOTAL) before and after BaalChIP adjustment for RM and RAF biases.
 #' @param .Object An object of the \code{\link{BaalChIP}} class.

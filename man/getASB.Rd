@@ -41,7 +41,7 @@ summaryASB(res)
 res <- BaalChIP.report(res)
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Wei Liu, Ke Yuan, Ines de Santiago
 }
 \seealso{
 \code{\link{summaryASB}}, \code{\link{BaalChIP.report}}

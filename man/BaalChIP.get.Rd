@@ -37,6 +37,6 @@ counts <- BaalChIP.get(BaalObject,"mergedCounts")
 head(counts[[1]])
 }
 \author{
-Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+Ines de Santiago
 }
 
