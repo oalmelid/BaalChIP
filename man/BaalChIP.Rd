@@ -35,7 +35,7 @@ This S4 class includes a series of methods for detecting allele-specific events 
 }
 \examples{
 setwd(system.file("test",package="BaalChIP"))
-samplesheet <- "example.tsv"
+samplesheet <- "exampleChIP.tsv"
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 }

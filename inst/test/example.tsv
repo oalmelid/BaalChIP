@@ -1,0 +1,17 @@
+group_name	target	replicate_number	bam_name	bed_name
+MCF7	cFOS	1	bamFiles/MCF7_cFOS_Rep1.bam	bedFiles/MCF7_cFOS.bed
+MCF7	cFOS	2	bamFiles/MCF7_cFOS_Rep2.bam	bedFiles/MCF7_cFOS.bed
+MCF7	cMYC	1	bamFiles/MCF7_cMYC_Rep1.bam	bedFiles/MCF7_cMYC.bed
+MCF7	cMYC	2	bamFiles/MCF7_cMYC_Rep2.bam	bedFiles//MCF7_cMYC.bed
+MCF7	POL2	1	bamFiles/MCF7_POL2_Rep1.bam	bedFiles/MCF7_POL2.bed
+MCF7	POL2	2	bamFiles/MCF7_POL2_Rep2.bam	bedFiles/MCF7_POL2.bed
+MCF7	STAT3	1	bamFiles/MCF7_STAT3_Rep1.bam	bedFiles/MCF7_STAT3.bed
+MCF7	STAT3	2	bamFiles/MCF7_STAT3_Rep2.bam	bedFiles/MCF7_STAT3.bed
+GM12891	POL2	1	bamFiles/GM12891_POL2_Rep1.bam	bedFiles/GM12891_POL2.bed
+GM12891	POL2	2	bamFiles/GM12891_POL2_Rep2.bam	bedFiles/GM12891_POL2.bed
+GM12891	PAX5	1	bamFiles/GM12891_PAX5_Rep1.bam	bedFiles/GM12891_PAX5.bed
+GM12891	PAX5	2	bamFiles/GM12891_PAX5_Rep2.bam	bedFiles/GM12891_PAX5.bed
+GM12891	PU1	1	bamFiles/GM12891_PU1_Rep1.bam	bedFiles/GM12891_PU1.bed
+GM12891	PU1	2	bamFiles/GM12891_PU1_Rep2.bam	bedFiles/GM12891_PU1.bed
+GM12891	TAF1	1	bamFiles/GM12891_TAF1_Rep1.bam	bedFiles/GM12891_TAF1.bed
+GM12891	TAF1	2	bamFiles/GM12891_TAF1_Rep2.bam	bedFiles/GM12891_TAF1.bed
