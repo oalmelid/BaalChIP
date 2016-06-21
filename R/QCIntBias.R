@@ -8,7 +8,7 @@ get_readlen <- function(bamfile, snp.ranges) {
     if (length(snp.ranges) >= 100) {Param <- ScanBamParam(which= snp.ranges[1:100])}
     if (length(snp.ranges) < 100)  {Param <- ScanBamParam(which= snp.ranges)}
     bf <- BamFile(bamfile) #create a bamfile instance 
-    temp <- readGAlignmentsFromBam(bf,param=Param)
+    temp <- readGAlignments(bf,param=Param)
     readlength=round(mean(qwidth(temp)))
     readlength
 }
