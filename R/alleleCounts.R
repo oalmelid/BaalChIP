@@ -2,25 +2,25 @@
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 get_snp_ranges <- function(snps) {
-    suppressPackageStartupMessages(require(GenomicRanges))
+    #suppressPackageStartupMessages(require(GenomicRanges))
     GRanges(snps$CHROM, IRanges(snps$POS, snps$POS,names=snps$ID), REF=snps$REF, ALT=snps$ALT)
 }
 
 bed2ranges <- function(bed) {
-    suppressPackageStartupMessages(require(GenomicRanges))
+    #suppressPackageStartupMessages(require(GenomicRanges))
     gi.ranges <- GRanges(bed[,1], IRanges(as.numeric(bed[,2])+1, as.numeric(bed[,3])))
     gi.ranges
 }
 
 get_snps_in_GI <- function(snpfile, bedfile){
-    suppressPackageStartupMessages(require(GenomicRanges))
+    #suppressPackageStartupMessages(require(GenomicRanges))
 
-    snps <- read.delim(snpfile, stringsAsFactors=F, head=T) 
-    bed <- read.delim(bedfile, stringsAsFactors=F, head=F) 
+    snps <- read.delim(snpfile, stringsAsFactors=F, head=T)
+    bed <- read.delim(bedfile, stringsAsFactors=F, head=F)
     snp.ranges <- get_snp_ranges(snps)
     gi.ranges <- bed2ranges(bed)
     ov <- suppressWarnings(overlapsAny(snp.ranges, gi.ranges, ignore.strand = TRUE))
-    
+
     #Snps in genomic intervals
     sigi.ranges <- snp.ranges[ov,]
     sigi.ranges
@@ -30,14 +30,14 @@ filter_sigi <- function(snpfile, bedfile) {
     #get snps in bed file
     if (!is.null(bedfile)) {
         sigi.ranges <- get_snps_in_GI(snpfile, bedfile)
-    } 
-    
+    }
+
     #if no genomic regions are given, get snp range object
     else {
-        snps <- read.delim(snpfile, stringsAsFactors=F, head=T) 
+        snps <- read.delim(snpfile, stringsAsFactors=F, head=T)
         sigi.ranges <- get_snp_ranges(snps)
     }
-    
+
     sigi.ranges
 }
 
@@ -64,55 +64,55 @@ tablenucs <- function(pileupres) {
 }
 
 get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_quality=10,min_mapq=15) {
-    
-    suppressPackageStartupMessages(require(Rsamtools))
-    suppressPackageStartupMessages(require(GenomicRanges))
-    
+
+    #suppressPackageStartupMessages(require(Rsamtools))
+    #suppressPackageStartupMessages(require(GenomicRanges))
+
     #match sequences between snp.ranges and bamfile
     #snp.ranges cannot contain ranges that are not in the bamheader, otherwise pileup will give an error
-    bf <- BamFile(bamfile) #create a bamfile instance 
+    bf <- BamFile(bamfile) #create a bamfile instance
     bam_seqlengths <- seqlengths(bf)
-    olap <- suppressWarnings(overlapsAny(snp.ranges, GRanges(names(bam_seqlengths), 
+    olap <- suppressWarnings(overlapsAny(snp.ranges, GRanges(names(bam_seqlengths),
                                          IRanges(rep(1, length(bam_seqlengths)), as.numeric(bam_seqlengths)))))
-    
-    if (sum(olap) == 0) {stop(c("SNPs do not overlap sequence names in bam file\nBAM seqlengths:\n", 
+
+    if (sum(olap) == 0) {stop(c("SNPs do not overlap sequence names in bam file\nBAM seqlengths:\n",
     paste(names(bam_seqlengths),collapse=","),"\n\nSNP ranges:\n",paste(levels(seqnames(snp.ranges)),collapse=",")))}
-    
+
     snp.ranges <- snp.ranges[olap]
-        
+
     #compute pileup
-    bf <- BamFile(bamfile) #create a bamfile instance 
+    bf <- BamFile(bamfile) #create a bamfile instance
     param <- ScanBamParam(which=snp.ranges)
     pileupres <- pileup(bf, scanBamParam=param, pileupParam=PileupParam(
-    max_depth=1000, 
+    max_depth=1000,
     min_mapq=min_mapq, min_base_quality=min_base_quality,
     distinguish_nucleotides=TRUE, distinguish_strands=FALSE, ignore_query_Ns=FALSE))
-    
-    #get table of nucleotide counts 
+
+    #get table of nucleotide counts
     if (nrow(pileupres)==0) {return(NULL)} #there are no reads overlapping any snp.ranges
     nuctab <- tablenucs(pileupres)
-    
-    
+
+
     #merge with snp.ranges to get info about REF, ALT alleles
     snps <- data.frame("names"= names(snp.ranges), "seqnames"=seqnames(snp.ranges),
                                "start"=start(snp.ranges),
-                               "REF"=as.character(values(snp.ranges)$REF), 
+                               "REF"=as.character(values(snp.ranges)$REF),
                                "ALT"=as.character(values(snp.ranges)$ALT),
                                stringsAsFactors=F)
-    
+
     #snps <- as.data.frame(snp.ranges)
     #snps$names <- rownames(snps)
     snps <- merge(snps, nuctab, by=c("seqnames","start"))
     #snps$REF <- as.character(snps$REF)
     #snps$ALT <- as.character(snps$ALT)
-    
-    
+
+
     ref.counts <- sapply(1:nrow(snps), function(x) {snps[x,snps[x,"REF"]]})
     alt.counts <- sapply(1:nrow(snps), function(x) {snps[x,snps[x,"ALT"]]})
     total.counts <- ref.counts + alt.counts
     total.counts.withForeignReads <- rowSums(snps[, (colnames(nuctab)[-c(1,2)])])
     foreign.counts <-  total.counts.withForeignReads - total.counts
-    
+
     #-------------------- return d.frame --------------------#
     allelecounts <- data.frame("ID"=snps$names, "CHROM"=snps$seqnames,
                                "POS"=snps$start,
@@ -123,11 +123,11 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
                                "Foreign.counts"=foreign.counts,
                                "AR" = ref.counts / total.counts,
                                stringsAsFactors=F)
-                               
+
     allelecounts <- allelecounts[allelecounts$Total.counts > 0 ,] #eliminate if it is all zero!
     if (!returnRanges) {return(allelecounts)}
-    
-    
+
+
     #-------------------- return ranges --------------------#
     if (returnRanges) {
         sigi.ranges <- makeGRangesFromDataFrame(allelecounts, seqnames.field="CHROM",
@@ -147,23 +147,23 @@ applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_qua
     cat("-computing allele counts per BAM\n")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
     for (rownr in 1:nrow(samples)) {
-        
+
         x <- samples[rownr,]
-        
+
         #get SNPs in genomic intervals (peaks, genes)
         snpfile = hets[[x[["group_name"]]]]
         sigi.ranges <- filter_sigi(snpfile=snpfile, bedfile = x[["bed_name"]])
-                
+
         #Count frequency of Ref and alternative alleles
         #print (x[["bam_name"]])
         sigi.ranges <- get_allele_counts(bamfile = x[["bam_name"]], snp.ranges = sigi.ranges, returnRanges=TRUE, min_base_quality=min_base_quality, min_mapq=min_mapq)
         res_per_bam[[x[["group_name"]]]][[x[["sampleID"]]]] <- list("sigi"=sigi.ranges)
-        
+
         #set progress bar
         setTxtProgressBar(pb, rownr)
     }
     close(pb)
-    
+
     return(res_per_bam)
 
 }

@@ -3,21 +3,20 @@
 
 
 filter_regions <- function(snp.ranges, region.ranges, type=c("filterOut_overlapping_sites","keep_overlapping_sites")) {
-    suppressPackageStartupMessages(require(GenomicRanges))
     ov <- suppressWarnings(overlapsAny(snp.ranges,region.ranges,ignore.strand = TRUE))
     if (type == "filterOut_overlapping_sites") {return(snp.ranges[!ov,])}
     if (type == "keep_overlapping_sites") {return(snp.ranges[ov,])}
 }
 
 filter_genomicRegions <- function (snp.ranges, Regions, type=c("filterOut_overlapping_sites","keep_overlapping_sites")) {
-    #loops through RegionsToFilter and returns a list of filtered SNPs 
+    #loops through RegionsToFilter and returns a list of filtered SNPs
     #(applies hierarchy within RegionsToFilter)
-    
+
     if (is.null(Regions)) {
         return(list(snp.ranges)) #nothing to filter
-    
+
     }
-    
+
     sigi.filtered <- list()
     snps2filter <- snp.ranges
     for (region_name in names(Regions)) {
@@ -33,34 +32,34 @@ filter_genomicRegions <- function (snp.ranges, Regions, type=c("filterOut_overla
 applyFiltersPerBam <- function(counts_per_bam, RegionsToFilter, RegionsToKeep) {
 
     res_per_bam <- list()
-    
+
     N <- sum(sapply(counts_per_bam, length))
-    
+
     cat("-applying filters per BAM\n")
     pb <- txtProgressBar(min = 0, max = N, style = 3)
     i=1
-    
+
     for (group_name in names(counts_per_bam)) {
-    
+
     	for (sampleID in names(counts_per_bam[[group_name]])) {
 
-			  #GRanges of variants		
+			  #GRanges of variants
     		x <- counts_per_bam[[group_name]][[sampleID]] #get lastset
     		sigi.ranges <- x[[length(x)]]
     		#counts_per_bam[[group_name]][[sampleID]][["sigi"]]
-    		
+
     		#QC filter per BAM
     		sigi.filtered1 <- filter_genomicRegions(sigi.ranges, Regions=RegionsToFilter, type="filterOut_overlapping_sites")
     		snp.ranges <- sigi.filtered1[[length(sigi.filtered1)]]
     		sigi.filtered2 <- filter_genomicRegions(snp.ranges, Regions=RegionsToKeep, type="keep_overlapping_sites")
-    
+
         #merge results in one list of snp.range that pass filters in each step
         if (is.null(RegionsToFilter))  {res <- counts_per_bam[[group_name]][[sampleID]]}
         if (!is.null(RegionsToFilter) & is.null(RegionsToKeep)) {  res <- c(counts_per_bam[[group_name]][[sampleID]], sigi.filtered1) }
         if (is.null(RegionsToFilter)  & !is.null(RegionsToKeep)) { res <- c(counts_per_bam[[group_name]][[sampleID]], sigi.filtered2) }
         if (!is.null(RegionsToFilter) & !is.null(RegionsToKeep)) { res <- c(counts_per_bam[[group_name]][[sampleID]], sigi.filtered1, sigi.filtered2) }
-        res_per_bam[[group_name]][[sampleID]] <- res    
-            
+        res_per_bam[[group_name]][[sampleID]] <- res
+
         #set progress bar
         setTxtProgressBar(pb, i)
         i=i+1

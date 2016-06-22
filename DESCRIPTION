@@ -1,11 +1,11 @@
 Package: BaalChIP
 Title: BaalChIP: Bayesian Analysis of Allelic imbalances from ChIP-seq data of cancer genomes correcting for allele copy-number frequency
 Description: The package offers functions to process multiple ChIP-seq BAM files and detect allele-specific events. Computes allele counts at individual variants (SNPs/SNVs), implements extensive QC steps to remove problematic variants, and utilizes a bayesian framework to identify statistically significant allele-specific events. The bayesian framework is able to account for copy number differences between the two alleles, a known phenotypical feature of cancer samples. 
-Version: 0.1.7
+Version: 0.1.8
 Author: Ines de Santiago, Wei Liu, Ke Yuan, Bruce Ponder, Kerstin Meyer, Florian Markowetz
 Maintainer: Ines de Santiago <ines.deSantiago@cruk.cam.ac.uk>
-Depends: R (>= 3.1.2), GenomicRanges, Rsamtools, GenomicAlignments
-Imports: ggplot2, reshape2, doBy, coda, foreach, doParallel, GenomeInfoDb, scales
+Depends: R (>= 3.1.2), GenomicRanges, Rsamtools, GenomicAlignments, coda, doParallel, foreach, doBy, ggplot2, reshape2, scales, GenomeInfoDb
+Imports: GenomicRanges, Rsamtools, GenomicAlignments, coda, foreach, doParallel
 Suggests: RUnit, BiocGenerics
 License: Artistic-2.0
 LazyData: true
