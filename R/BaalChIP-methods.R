@@ -656,11 +656,12 @@ setMethod(
 #' }
 #' @param addlegend A logical value indicating if legend should be included in the plot (default TRUE)
 #' @seealso \code{\link{BaalChIP.run}}, \code{\link{summaryQC}}
-#' #' @examples
+#' @usage plotQC(.Object, what= "barplot_per_group", addlegend=TRUE, plot=TRUE)
+#' @examples
 #'data(BaalObject)
-#'plotQC(BaalObject, "overall_pie")
-#'plotQC(BaalObject, "boxplot_per_filter", addlegend=FALSE)
-#'plotQC(BaalObject, "barplot_per_group")
+#'plotQC(BaalObject, what = "overall_pie")
+#'plotQC(BaalObject, what =  "boxplot_per_filter", addlegend=FALSE)
+#'plotQC(BaalObject, what =  "barplot_per_group")
 #' @export
 setMethod(
   "plotQC",
