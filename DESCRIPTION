@@ -8,33 +8,34 @@ Description: The package offers functions to process multiple ChIP-seq BAM files
     specific events. The bayesian framework is able to account for copy number
     differences between the two alleles, a known phenotypical feature of cancer
     samples.
-Version: 0.1.9
+Version: 0.99.0
 Author: Ines de Santiago, Wei Liu, Ke Yuan, Bruce Ponder, Kerstin Meyer, Florian
     Markowetz
 Maintainer: Ines de Santiago <ines.deSantiago@cruk.cam.ac.uk>
 Depends:
-    R (>= 3.1.2),
+    R (>= 3.2.1), 
     GenomicRanges,
+    IRanges,
     Rsamtools,
+Imports:   
     GenomicAlignments,
-    coda,
+    GenomeInfoDb,
     doParallel,
-    foreach,
+    parallel,
     doBy,
-    ggplot2,
     reshape2,
     scales,
-    GenomeInfoDb
-Imports:
-    GenomicRanges,
-    Rsamtools,
-    GenomicAlignments,
     coda,
     foreach,
-    doParallel
+    ggplot2,
+    methods,
+    utils,
+    graphics,
+    stats
 Suggests:
     RUnit,
     BiocGenerics
 License: Artistic-2.0
 LazyData: true
 RoxygenNote: 5.0.1
+biocViews: Software, ChIPSeq, Bayesian, Sequencing

@@ -1,103 +1,98 @@
 #BaalChIP: estimation of reference bias ans ASB funtions
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
-pooldata <- function(merged)
-    {
-    REF.counts <- rowSums(merged[,which(grepl("REF", colnames(merged)))],na.rm=T)
-    ALT.counts <- rowSums(merged[,which(grepl("ALT", colnames(merged)))],na.rm=T)
+pooldata <- function(merged) {
+    REF.counts <- rowSums(merged[,which(grepl("REF", colnames(merged)))],na.rm=TRUE)
+    ALT.counts <- rowSums(merged[,which(grepl("ALT", colnames(merged)))],na.rm=TRUE)
     Total.counts <- REF.counts + ALT.counts
     AR <- REF.counts / Total.counts
-    res <- data.frame("ID"=merged$ID, REF.counts, ALT.counts, Total.counts, AR, stringsAsFactors=F)
+    res <- data.frame("ID"=merged$ID, REF.counts, ALT.counts, Total.counts, AR, stringsAsFactors=FALSE)
     return(res)
     }
 
 estimateRefBias <- function(assayed, GTtable, min_n=200) {
-  
-  #Pool data
-  counts <- pooldata(assayed)
-  globalEst <- mean(counts$AR)
-  
-  #merge tables
-  counts <- merge(GTtable, counts, by="ID")
-  if(nrow(counts) != nrow(assayed)) {stop("an error occured")}
-  
-  #Get genotype for snps in pooled data
-  GT <- paste0(counts$REF, counts$ALT)
-  counts$GT <- GT
-  
-  ##Get AR estimate
-  datasplit <- split(counts, counts$GT)
-  RES <- lapply(datasplit, function(x) {mean(x$AR)})
-  N <- unlist(lapply(datasplit, nrow))
-    
-  #Order results
-  gtord <- c('AG','GA','TC','CT','AC','CA','TG','GT','AT','TA','CG','GC')
-  RES <- RES[gtord]
-  N <- N[gtord]
-  RES[is.na(names(RES))] <- NA
-  N[is.na(N)] <- 0
-  names(RES) <- names(N) <- gtord
-  
-  #Replace by the global estimate if N<min_n
-  toreplace <- names(RES[N < min_n])
-  RES[N < min_n] <- globalEst
-  
-  unlist(RES)
+
+    if (nrow(assayed) == 0) {return(data.frame())} #in case there were no variants left
+
+    #Pool data
+    counts <- pooldata(assayed)
+    globalEst <- mean(counts$AR)
+
+    #merge tables
+    counts <- merge(GTtable, counts, by="ID")
+    if(nrow(counts) != nrow(assayed)) {stop("an error occured")}
+
+    #Get genotype for snps in pooled data
+    GT <- paste0(counts$REF, counts$ALT)
+    counts$GT <- GT
+
+    ##Get AR estimate
+    datasplit <- split(counts, counts$GT)
+    RES <- lapply(datasplit, function(x) {mean(x$AR)})
+    N <- unlist(lapply(datasplit, nrow))
+
+    #Order results
+    gtord <- c('AG','GA','TC','CT','AC','CA','TG','GT','AT','TA','CG','GC')
+    RES <- RES[gtord]
+    N <- N[gtord]
+    RES[is.na(names(RES))] <- NA
+    N[is.na(N)] <- 0
+    names(RES) <- names(N) <- gtord
+
+    #Replace by the global estimate if N<min_n
+    toreplace <- names(RES[N < min_n])
+    RES[N < min_n] <- globalEst
+
+    unlist(RES)
 }
 
+#' @importFrom stats na.omit
 getbiasTable <- function(assayed, GTtable, ARestimate){
 
-  biastable <- GTtable[GTtable$ID %in% assayed$ID,c("ID","RAF")]
-  
-  if (!is.null(ARestimate)) {
+    if(nrow(assayed)==0) {return(list(data.frame(), data.frame()))}
+
+    biastable <- GTtable[GTtable$ID %in% assayed$ID,c("ID","RAF")]
+
+    if (!is.null(ARestimate)) {
     GT <- paste(GTtable$REF, GTtable$ALT, sep="")
     biastable$RMbias <- ARestimate[match(GT, names(ARestimate))]
-  }else{
+    }else{
     biastable$RMbias <- 0.5
-  }
-    
-  biastable <- biastable[,c("ID","RMbias", "RAF")]
-  
-  #check
-  if (nrow(assayed) != nrow(biastable)) {stop('some error occured')}
-  if (!(is.numeric(biastable[,"RMbias"]))) {stop('RM is not numeric')}
-  if (!(is.numeric(biastable[,"RAF"]))) {stop('RAF is not numeric')}
-  
-  #order
-  biastable <- data.frame(na.omit(biastable))
-  m <- merge(assayed, biastable, by="ID")
-  if (nrow(m) == 0) {stop('No variants left after merging counts with biastable')}
-  assayed <- m[,1:ncol(assayed)]
-  biastable <- m[,c(1, (ncol(assayed)+1):ncol(m))]
-  if (any(assayed$ID != biastable$ID)) {stop('some error occured')}
+    }
 
-  return(list(assayed, biastable))
+    biastable <- biastable[,c("ID","RMbias", "RAF")]
+
+    #check
+    if (nrow(assayed) != nrow(biastable)) {stop('some error occured')}
+    if (!(is.numeric(biastable[,"RMbias"]))) {stop('RM is not numeric')}
+    if (!(is.numeric(biastable[,"RAF"]))) {stop('RAF is not numeric')}
+
+    #order
+    biastable <- data.frame(na.omit(biastable))
+    m <- merge(assayed, biastable, by="ID")
+    if (nrow(m) == 0) {stop('No variants left after merging counts with biastable')}
+    assayed <- m[,1:ncol(assayed)]
+    biastable <- m[,c(1, (ncol(assayed)+1):ncol(m))]
+    if (any(assayed$ID != biastable$ID)) {stop('some error occured')}
+
+    return(list(assayed, biastable))
 }
 
 
 getbiasparam <- function(biastable){
+    if (nrow(biastable) == 0) {
+        return(c("RAF"=NA, "RMbias"=NA))
+    }
+
     biasparam = c("RAF"=TRUE,"RMbias"=TRUE)
     if (all(biastable$RMbias == 0.5)) {biasparam["RMbias"] <- FALSE}
     if (all(biastable$RAF == 0.5)) {biasparam["RAF"] <- FALSE}
     return (biasparam)
 }
 
-#get_assayedVar 
-#get_Vartable <- function(assayedVar, hetsTable) {
-#    Vartable <- list()
-#    for (ID in names(hetsTable)){
-#        assayed <- assayedVar[[ID]]
-#        snps <- hetsTable[[ID]]
-#        snps <- snps[snps$ID %in% assayed$ID,]
-#        Vartable[[ID]] <- snps
-#    }
-#    return(Vartable)
-#}
-
 
 getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=15) {
     AllCounts <- list()
-    
     cat("-computing allele counts per gDNA BAM\n")
     pb <- txtProgressBar(min = 0, max = length(bamFiles), style = 3)
     for (i in 1:length(bamFiles)) {
@@ -108,45 +103,48 @@ getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=
         setTxtProgressBar(pb, i)
     }
     close(pb)
-    
-    snpIDs <- names(snp.ranges)  
-    if (length(AllCounts) > 1) {          
-    	refcounts <- rowSums(sapply(AllCounts, function(x) {x$REF.counts[match(snpIDs, x$ID)]}), na.rm=T)
-    	altcounts <- rowSums(sapply(AllCounts, function(x) {x$ALT.counts[match(snpIDs, x$ID)]}), na.rm=T)
+
+    snpIDs <- names(snp.ranges)
+    if (length(AllCounts) > 1) {
+        refcounts <- rowSums(sapply(AllCounts, function(x) {x$REF.counts[match(snpIDs, x$ID)]}), na.rm=TRUE)
+        altcounts <- rowSums(sapply(AllCounts, function(x) {x$ALT.counts[match(snpIDs, x$ID)]}), na.rm=TRUE)
     }
     if (length(AllCounts) == 1)   {
-    	x <- AllCounts[[1]]
-    	refcounts <- x$REF.counts[match(snpIDs, x$ID)]
-    	altcounts <- x$ALT.counts[match(snpIDs, x$ID)]
-    } 
+        x <- AllCounts[[1]]
+        refcounts <- x$REF.counts[match(snpIDs, x$ID)]
+        altcounts <- x$ALT.counts[match(snpIDs, x$ID)]
+    }
     if (length(AllCounts) == 0) {
-    	return(NULL)
+        return(NULL)
     }
     refcounts [ is.na(refcounts) ] <- 0
     altcounts [ is.na(altcounts) ] <- 0
     totalcounts <- (refcounts + altcounts)
     RAF <- refcounts / totalcounts
-    RAF <- data.frame("ID"=snpIDs, "RAF"=RAF, stringsAsFactors=F)
+    RAF <- data.frame("ID"=snpIDs, "RAF"=RAF, stringsAsFactors=FALSE)
     #RAF[totalcounts <= 5] <- NA
     return(RAF)
-            
+
 }
 
 useRAFfromhets <- function(snps, ID) {
-    
+    if (nrow(snps)==0) {return(data.frame())} #in case there were no snps left after filtering
+
     if (!("RAF" %in% colnames(snps))) {
-        #oops... there are no RAF value in hets table... 
+        #oops... there are no RAF value in hets table...
         warning("no RAF values found for ",ID," will use 0.5 for all variants")
         snps$RAF <- 0.5
     }else{
         #will use the RAF values in this case:
-        message("will use RAF values for ", ID," group from file:",hets[[ID]]) 
+        message("will use RAF values for ", ID," group from hets file")
     }
         return(snps)
 }
 
 useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15) {
-    
+
+    if (nrow(snps)==0) {return(data.frame())} #in case there were no snps left after filtering
+
     cat("-calculating RAF from gDNA for group",ID,"\n")
     bamFiles <- gDNAbams
     snp.ranges <- get_snp_ranges(snps)
@@ -156,41 +154,42 @@ useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15)
     #message("will use RAF values estimated from all gDNA bam files for ",ID, " group:", gDNA[[ID]])
     return(snps)
 }
-        
+
 get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min_mapq=15, RAFcorrection=TRUE) {
-    
+
     Vartable <- list()
-    
+
     if (length(gDNA)==0) {gDNA <- NULL}
-    
+
     for (ID in names(hets)){
-        
-        snps <- read.delim(hets[[ID]], stringsAsFactors=F, head=T)
+
+        snps <- read.delim(hets[[ID]], stringsAsFactors=FALSE, header=TRUE)
         assayed <- assayedVar[[ID]]
         snps <- snps[snps$ID %in% assayed$ID,]
         gDNAbams <- gDNA[[ID]]
-        
+
+
         #RAF correction is TRUE, and gDNA is null --> go directly to RAF
         if (is.null(gDNAbams) & RAFcorrection) { snps <- useRAFfromhets(snps, ID) }
-        
-        #RAF correction is TRUE and gDNA is not null   
+
+        #RAF correction is TRUE and gDNA is not null
         if (!is.null(gDNAbams) & RAFcorrection) {
-            
+
             if ("RAF" %in% colnames(snps)) {
                 #There are both gDNA and RAF in hets tables.. will use the RAF instead!
                 message("both gDNA and hets file found for group ", ID)
-                snps <- useRAFfromhets(snps, ID) 
+                snps <- useRAFfromhets(snps, ID)
             }else{
-                snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq)    
-            
+                snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq)
+
             }
-                
-        
+
+
         }
-        
+
     Vartable[[ID]] <- snps
     }
-    
+
     return(Vartable)
 }
 
@@ -198,13 +197,13 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
 addVarTable <- function(object, RAFcorrection=TRUE) {
     assayedVar <- object@assayedVar
     hets <- object@hets
-      
+
     ##-----Read hets table and update "RAF" values accordingly
     QCparam <- object@param$QCparam
     gDNA=object@gDNA
     min_base_quality <- QCparam[["min_base_quality"]] #will not be used if gDNA is null or RAFcorrection==FALSE
     min_mapq <- QCparam[["min_mapq"]] #will not be used if gDNA is null or RAFcorrection==FALSE
-    
+
     VarTable <- get_Vartable(assayedVar, hets, gDNA, min_base_quality, min_mapq, RAFcorrection)
     return(VarTable)
 }

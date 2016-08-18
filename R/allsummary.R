@@ -9,7 +9,7 @@ get_filterstats <- function (sampledata, mergeddata=NULL) {
     #total number of snp ids per filter (combine across all samples)
     allcounts <- sapply(filtnames1, function(filtname) {
                                                 a <- lapply(sampledata, "[[",filtname)
-                                                length(unique(unlist(lapply(a,names), use.names=F)))
+                                                length(unique(unlist(lapply(a,names), use.names=FALSE)))
                                     })
     names(allcounts) <- filtnames1
 
@@ -33,49 +33,54 @@ get_filterstats <- function (sampledata, mergeddata=NULL) {
 
 
 get_average_stats <- function(filtering_stats) {
-	#suppressPackageStartupMessages(require(reshape2))
+    #suppressPackageStartupMessages(require(reshape2))
     #suppressPackageStartupMessages(require(doBy))
     total <- rowSums(filtering_stats)
-    filtering_perc <- data.frame(apply(filtering_stats,2, function (x) 100 * x / total), stringsAsFactors=F)
+    filtering_perc <- data.frame(apply(filtering_stats,2, function (x) 100 * x / total), stringsAsFactors=FALSE)
     filtering_stats$cellname <- rownames(filtering_stats)
     filtering_perc$cellname <- rownames(filtering_perc)
     data2plot_stats <- melt(filtering_stats, id="cellname")
     data2plot_perc <-  melt(filtering_perc, id="cellname")
-    means     <- data.frame(summaryBy(value ~ variable , data2plot_stats, FUN=c(mean)), stringsAsFactors=F)
-    meansPERC <- data.frame(summaryBy(value ~ variable , data2plot_perc, FUN=c(mean)), stringsAsFactors=F)
+    means <- data.frame(summaryBy(value ~ variable , data2plot_stats, FUN=c(mean)), stringsAsFactors=FALSE)
+    meansPERC <- data.frame(summaryBy(value ~ variable , data2plot_perc, FUN=c(mean)), stringsAsFactors=FALSE)
     return(cbind(means, "perc"=meansPERC[,2]))
 }
 
 applyFilteringStats <- function(res_per_bam, res_merged) {
-	if (is.null(res_per_bam)) {return(list())}
+    if (is.null(res_per_bam)) {return(list())}
     filtering_summary_perSample <- t(do.call("cbind",lapply(res_per_bam, sapply, sapply, length)))
     filtering_stats <- lapply(names(res_per_bam), function(cellname) {
-    		sampledata=res_per_bam[[cellname]]
-    		if (!is.null(res_merged)) {mergeddata=res_merged[[cellname]]}else{mergeddata=NULL}
-    		get_filterstats(sampledata, mergeddata)})
+            sampledata=res_per_bam[[cellname]]
+            if (!is.null(res_merged)) {mergeddata=res_merged[[cellname]]}else{mergeddata=NULL}
+            if (all(sapply(mergeddata,length) == 0)) {mergeddata <- NULL}
+            get_filterstats(sampledata, mergeddata)
+            })
+
     if (all(sapply(filtering_stats,length) == 0)) {return(list())}
     names(filtering_stats) <- names(res_per_bam)
-    filtering_stats <- data.frame(do.call("rbind",filtering_stats), stringsAsFactors=F)
+    filtering_stats <- data.frame(do.call("rbind",filtering_stats), stringsAsFactors=FALSE)
     average_stats <- get_average_stats(filtering_stats)
     #return(list("filtering_summary_perSample"=filtering_summary_perSample, "filtering_stats"=filtering_stats, "average_stats"=average_stats))
-	return(list("filtering_stats"=filtering_stats, "average_stats"=average_stats))
+    return(list("filtering_stats"=filtering_stats, "average_stats"=average_stats))
 }
 
 summary_QC <- function(object) {
-	if (length(object@mergedCounts) == 0) {res_merged=NULL}else{res_merged =object@mergedCounts}
-	if (length(object@alleleCounts) == 0) {res_per_bam=NULL}else{res_per_bam =object@alleleCounts}
+    if (length(object@mergedCounts) == 0) {res_merged=NULL}else{res_merged =object@mergedCounts}
+    if (length(object@alleleCounts) == 0) {res_per_bam=NULL}else{res_per_bam =object@alleleCounts}
 
-	filtering_stats <- applyFilteringStats(res_per_bam, res_merged)
+    filtering_stats <- applyFilteringStats(res_per_bam, res_merged)
 
-	if(length(filtering_stats)==0) {return(NULL)}
-	return(filtering_stats)
+    if(length(filtering_stats)==0) {
+        message("-no filters applied yet")
+        return(NULL)
+    }
+    return(filtering_stats)
 }
 
 summary_ASB <- function(object) {
 
-	if (length(object@ASB) == 0) {return(NULL)}else{asb <- object@ASB}
-
-	  asb_stats <- do.call("rbind", lapply(asb, function(x) {c("Ref"=sum(x$Bayes_sig_A),"Alt"=sum(x$Bayes_sig_B))}))
+    if (length(object@ASB) == 0) {return(NULL)}else{asb <- object@ASB}
+    asb_stats <- do.call("rbind", lapply(asb, function(x) {c("Ref"=sum(x$Bayes_sig_A),"Alt"=sum(x$Bayes_sig_B))}))
     asb_stats <- cbind(asb_stats, "Total"=rowSums(asb_stats))
     return(asb_stats)
 
@@ -96,8 +101,8 @@ getReport <- function(object, group_name) {
                     "Bayes_lower"=correctedAR$Bayes_lower,
                     "Bayes_upper"=correctedAR$Bayes_upper,
                     "Corrected.AR"=rowMeans(correctedAR[,c("Bayes_lower","Bayes_upper")]),
-                     stringsAsFactors=F)
-    baalSig <- as.character(asb$ID[asb[,4]==1 | asb[,5] == 1])
+                     stringsAsFactors=FALSE)
+    baalSig <- as.character(asb$ID[asb[,"Bayes_sig_A"]==1 | asb[,"Bayes_sig_B"] == 1])
     snps <- merge(varTable, pooled, by="ID")
     snps <- merge(snps, RAFtable, by="ID")
     snps <- merge(snps, correctedAR, by="ID")
@@ -106,24 +111,3 @@ getReport <- function(object, group_name) {
 }
 
 
-
-
-
-#setGeneric(name="simulationStats",
-#                       def=function(.Object,...)
-#                       {
-#                               standardGeneric("simulationStats")
-#                       }
-#                       )
-#
-#setMethod(
-#  "simulationStats",
-#  "BaalChIP",
-#  function(.Object) {
-#    FiltIntBias = .Object@param[["QCparam"]][["FiltIntBias"]]
-#    if (FiltIntBias) {
-#    		query <- Object@QCstats[["simulation_stats"]]
-#    		return(query)
-#    }else{print("FiltIntBias=FALSE"); return(NULL)}
-#  }
-#)

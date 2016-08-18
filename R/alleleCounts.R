@@ -1,6 +1,7 @@
 #BaalChIP: functions to compute alleleCounts
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
+
 get_snp_ranges <- function(snps) {
     #suppressPackageStartupMessages(require(GenomicRanges))
     GRanges(snps$CHROM, IRanges(snps$POS, snps$POS,names=snps$ID), REF=snps$REF, ALT=snps$ALT)
@@ -15,8 +16,8 @@ bed2ranges <- function(bed) {
 get_snps_in_GI <- function(snpfile, bedfile){
     #suppressPackageStartupMessages(require(GenomicRanges))
 
-    snps <- read.delim(snpfile, stringsAsFactors=F, head=T)
-    bed <- read.delim(bedfile, stringsAsFactors=F, head=F)
+    snps <- read.delim(snpfile, stringsAsFactors=FALSE, header=TRUE)
+    bed <- read.delim(bedfile, stringsAsFactors=FALSE, header=FALSE)
     snp.ranges <- get_snp_ranges(snps)
     gi.ranges <- bed2ranges(bed)
     ov <- suppressWarnings(overlapsAny(snp.ranges, gi.ranges, ignore.strand = TRUE))
@@ -34,7 +35,7 @@ filter_sigi <- function(snpfile, bedfile) {
 
     #if no genomic regions are given, get snp range object
     else {
-        snps <- read.delim(snpfile, stringsAsFactors=F, head=T)
+        snps <- read.delim(snpfile, stringsAsFactors=FALSE, header=TRUE)
         sigi.ranges <- get_snp_ranges(snps)
     }
 
@@ -52,16 +53,17 @@ tablenucs <- function(pileupres) {
                         tablecounts <- sapply(nucleotides, function (n) {sum(each$count[each$nucleotide == n])})
                         c(chr,pos, tablecounts)
                     })
-        nuctab <- data.frame(do.call("rbind", nuctab),stringsAsFactors=F)
+        nuctab <- data.frame(do.call("rbind", nuctab),stringsAsFactors=FALSE)
         rownames(nuctab) <- NULL
         nuctab
     })
-    res <- data.frame(do.call("rbind", res),stringsAsFactors=F)
+    res <- data.frame(do.call("rbind", res),stringsAsFactors=FALSE)
     rownames(res) <- NULL
     colnames(res) <- c("seqnames","start",levels(pileupres$nucleotide))
     res[3:ncol(res)] <- apply(res[3:ncol(res)], 2, as.numeric)
     res
 }
+
 
 get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_quality=10,min_mapq=15) {
 
@@ -98,7 +100,7 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
                                "start"=start(snp.ranges),
                                "REF"=as.character(values(snp.ranges)$REF),
                                "ALT"=as.character(values(snp.ranges)$ALT),
-                               stringsAsFactors=F)
+                               stringsAsFactors=FALSE)
 
     #snps <- as.data.frame(snp.ranges)
     #snps$names <- rownames(snps)
@@ -122,7 +124,7 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
                                "Total.counts"= total.counts,
                                "Foreign.counts"=foreign.counts,
                                "AR" = ref.counts / total.counts,
-                               stringsAsFactors=F)
+                               stringsAsFactors=FALSE)
 
     allelecounts <- allelecounts[allelecounts$Total.counts > 0 ,] #eliminate if it is all zero!
     if (!returnRanges) {return(allelecounts)}

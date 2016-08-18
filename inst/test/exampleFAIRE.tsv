@@ -1,5 +1,0 @@
-group_name	target	replicate_number	bam_name	bed_name
-MDA134	regions	1	bamFiles/MDA134_1.test.bam	bedFiles/MDA134_peaks_example.bed
-MDA134	regions	2	bamFiles/MDA134_2.test.bam	bedFiles/MDA134_peaks_example.bed
-T47D	regions	1	bamFiles/T47D_1.test.bam	bedFiles/MDA134_peaks_example.bed
-T47D	regions	2	bamFiles/T47D_2.test.bam	bedFiles/MDA134_peaks_example.bed

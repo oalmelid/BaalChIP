@@ -1,6 +1,7 @@
 #BaalChIP: plot funtions
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
+
 plot.simul <- function(simulation_stats, plot=TRUE) {
     #suppressPackageStartupMessages(require(ggplot2))
     p <- ggplot(simulation_stats, aes(x = readslen, y = perc_right)) +
@@ -8,6 +9,7 @@ plot.simul <- function(simulation_stats, plot=TRUE) {
                     ylab("Right calls (%)") + xlab("read length")
     if (plot) {plot(p)} else{return(p)}
 }
+
 
 plot.filt.barplot <- function(filtering_stats, col=NULL, X_ORDER=NULL, addlegend=TRUE, plot=TRUE) {
     #plot filtering_stats
@@ -33,7 +35,7 @@ plot.filt.boxplot <- function(filtering_stats, col=NULL, COLORGROUPS=NULL, addle
     #suppressPackageStartupMessages(require(doBy))
     #suppressPackageStartupMessages(require(ggplot2))
     total <- rowSums(filtering_stats)
-    filtering_perc <- data.frame(apply(filtering_stats,2, function (x) 100 * x / total), stringsAsFactors=F)
+    filtering_perc <- data.frame(apply(filtering_stats,2, function (x) 100 * x / total), stringsAsFactors=FALSE)
     filtering_perc$cellname <- rownames(filtering_perc)
     data2plot_perc <-  melt(filtering_perc, id="cellname")
 
@@ -58,6 +60,7 @@ plot.filt.boxplot <- function(filtering_stats, col=NULL, COLORGROUPS=NULL, addle
     if (plot) {plot(p); return(NULL)} else{return(p)}
 }
 
+
 plot.filt.pie <- function(filtering_stats, col=NULL, addlegend=TRUE, plot=TRUE) {
     #plot filtering_stats
     #suppressPackageStartupMessages(require(ggplot2))
@@ -74,7 +77,7 @@ plot.filt.pie <- function(filtering_stats, col=NULL, addlegend=TRUE, plot=TRUE) 
     #suppressPackageStartupMessages(require(doBy))
     #suppressPackageStartupMessages(require(ggplot2))
     total <- rowSums(filtering_stats)
-    filtering_perc <- data.frame(apply(filtering_stats,2, function (x) 100 * x / total), stringsAsFactors=F)
+    filtering_perc <- data.frame(apply(filtering_stats,2, function (x) 100 * x / total), stringsAsFactors=FALSE)
     filtering_perc$cellname <- rownames(filtering_perc)
     data2plot_perc <-  melt(filtering_perc, id="cellname")
     meansPERC <- summaryBy(value ~ variable , data2plot_perc, FUN=c(mean))
@@ -93,8 +96,8 @@ plotfilters <- function(stats, what=c("barplot_per_group","boxplot_per_filter","
     if (is.null(col)) {
             N <- ncol(stats$filtering_stats)
             if (N < 6) {col <- cbPalette1[c(1:(N-1),6)]}
-    		if (N == 6) {col <- cbPalette1}
-    		if (N == 7) {col <- cbPalette2}
+            if (N == 6) {col <- cbPalette1}
+            if (N == 7) {col <- cbPalette2}
     }
     what <- match.arg(what, c("barplot_per_group","boxplot_per_filter","overall_pie"))
     switch(what,
@@ -123,7 +126,7 @@ plotadjustment <- function(report, col=c( "green3","gray50")) {
     group_names <- unique(names(report))
     for(group_name in group_names) {report[[group_name]][["group_name"]] <- group_name}
 
-    data2plot <- data.frame(do.call("rbind", report), stringsAsFactors=F)
+    data2plot <- data.frame(do.call("rbind", report), stringsAsFactors=FALSE)
     rownames(data2plot) <- NULL
     data2plot$group_name <- factor(data2plot$group_name, levels=group_names)
     data2plot2 <- data2plot[,c("group_name","ID","AR","Corrected.AR")]

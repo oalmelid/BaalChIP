@@ -1,0 +1,1 @@
+group_name	target	replicate_number	bam_name	bed_nameTaT1	regions	1	bamFiles/TaT1_1.test.bam	bedFiles/TaT1_peaks_example.bedTaT1	regions	2	bamFiles/TaT1_2.test.bam	bedFiles/TaT1_peaks_example.bedAMOVC	regions	1	bamFiles/AMOVC_1.test.bam	bedFiles/AMOVC_peaks_example.bedAMOVC	regions	2	bamFiles/AMOVC_2.test.bam	bedFiles/AMOVC_peaks_example.bed
