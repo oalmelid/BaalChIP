@@ -115,7 +115,7 @@ The following sections describe all these steps in more detail.
 
 The second dataset contains ChIP-seq and genomic DNA (gDNA) data obtained from two ChIP-seq studies. In this example, the allelic-ratios obtained from the sequenced gDNA samples are used to correct the allelic read counts for biases caused by copy number alterations.
 
-First, we create a named list of filenames for the ‘.bam’ gDNA files to be used. The names in the list ("TaT1" and "AMOVC") should correspond to *group_name* strings in the samplesheet.
+First, we create a named list of filenames for the '.bam' gDNA files to be used. The names in the list ("TaT1" and "AMOVC") should correspond to *group_name* strings in the samplesheet.
   
 ```{r}
 gDNA <- list("TaT1"=
