@@ -771,6 +771,7 @@ setMethod(
 #' }
 #' @param addlegend A logical value indicating if legend should be included in the plot (default TRUE).
 #' @param plot a logical value to whether it should plot (TRUE) or not (FALSE). Default is TRUE.
+#' @return A plot
 #' @seealso \code{\link{BaalChIP.run}}, \code{\link{summaryQC}}
 #' @examples
 #'data("BaalObject")
@@ -808,6 +809,7 @@ setMethod(
 #' @description Produces a plot of the proportion of variants that displayed the correct number of mapped simulated reads.
 #' @param .Object An object of the \code{\link{BaalChIP}} class.
 #' @param plot a logical value to whether it should plot (TRUE) or not (FALSE). Default is TRUE.
+#' @return A plot
 #' @examples
 #'data("BaalObject")
 #'plotSimul(BaalObject)
@@ -835,6 +837,7 @@ setMethod(
 #' @description Produces a density plot of the distribution of allelic ratios (REF/TOTAL) before and after BaalChIP adjustment for RM and RAF biases.
 #' @param .Object An object of the \code{\link{BaalChIP}} class.
 #' @param col A character vector indicating the colours for the density plot ( default is c( "green3","gray50") ).
+#' @return A plot
 #' @seealso \code{\link{BaalChIP.report}}, \code{\link{summaryQC}}
 #' @examples
 #'data("BaalObject")

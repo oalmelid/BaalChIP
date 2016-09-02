@@ -15,6 +15,9 @@ plotSimul(.Object, plot = TRUE)
 
 \item{plot}{a logical value to whether it should plot (TRUE) or not (FALSE). Default is TRUE.}
 }
+\value{
+A plot
+}
 \description{
 Method plotSimul
 

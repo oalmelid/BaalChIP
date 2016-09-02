@@ -25,6 +25,9 @@ plotQC(.Object, what = "barplot_per_group", addlegend = TRUE, plot = TRUE)
 
 \item{plot}{a logical value to whether it should plot (TRUE) or not (FALSE). Default is TRUE.}
 }
+\value{
+A plot
+}
 \description{
 Method plotQC
 

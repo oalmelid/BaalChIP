@@ -15,6 +15,9 @@ adjustmentBaalPlot(.Object, col = c("green3", "gray50"))
 
 \item{col}{A character vector indicating the colours for the density plot ( default is c( "green3","gray50") ).}
 }
+\value{
+A plot
+}
 \description{
 Method adjustmentBaalPlot
 
