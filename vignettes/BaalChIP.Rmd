@@ -17,7 +17,7 @@ output:
   BiocStyle::pdf_document:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{Analyzing ChIP-seq and FAIRE-seq data with the "BaalChIP" package}
+  %\VignetteIndexEntry{Analyzing ChIP-seq and FAIRE-seq data with the BaalChIP package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteDepends{knitr}
   %\usepackage[utf8]{inputenc}
