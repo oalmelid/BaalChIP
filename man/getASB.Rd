@@ -37,7 +37,7 @@ getASB identifies allele-specific binding events using a bayesian framework.
 setwd(system.file("test",package="BaalChIP"))
 samplesheet <- "exampleChIP.tsv"
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
-res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
+res <- BaalChIP(samplesheet=samplesheet, hets=hets)
 res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 res <- mergePerGroup(res)
 res <- getASB(res, cores=2)

@@ -30,7 +30,7 @@
 #' \item ALT: alternate non-reference base. Each base must be one of A,C,G,T in uppercase. Multiple bases are not permitted
 #' \item RAF: [Optional] a value ranging from 0 to 1 for each variant denoting the relative allele frequency (RAF). A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. If neither RAF or \code{CorrectWithgDNA} are given, BaalChIP will not correct for relative allele frequency (copy-number) bias. If both RAF and \code{CorrectWithgDNA} are given, BaalChIP will give priority to the RAF values of the 'hets' files and will use these values to correct for relative allele frequency (copy-number) bias.
 #' }
-#' @param CorrectWithgDNA An optional named list with filenames for the \code{.bam} gDNA files to be used. The names in the list should correspond to \code{group_name} strings in the \code{.tsv} samplesheet. Allelic read counts from all gDNA files are pooled together to generate the Reference Allelic Ratios (RAF) directly from input data. If missing, BaalChIP will try to read the background allelic ratios from the information in the RAF column of the 'hets' files indicated by the \code{hets} parameter. If both \code{RAF} and \code{CorrectWithgDNA} are missing, BaalChIP will not correct for relative allele frequency (copy-number) bias.
+#' @param CorrectWithgDNA An optional named list with comple file paths for the \code{.bam} gDNA files to be used. The names in the list should correspond to \code{group_name} strings in the \code{.tsv} samplesheet. Allelic read counts from all gDNA files are pooled together to generate the Reference Allelic Ratios (RAF) directly from input data. If missing, BaalChIP will try to read the background allelic ratios from the information in the RAF column of the 'hets' files indicated by the \code{hets} parameter. If both \code{RAF} and \code{CorrectWithgDNA} are missing, BaalChIP will not correct for relative allele frequency (copy-number) bias.
 #' @description This S4 class includes a series of methods for detecting allele-specific events from multiple ChIP-seq datasets.
 #' @return .Object An object of the \code{\link{BaalChIP}} class.
 #' @examples
@@ -38,6 +38,7 @@
 #'samplesheet <- "exampleChIP.tsv"
 #'hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 #'res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
+#'res <- BaalChIP(samplesheet=samplesheet, hets=hets)
 
 BaalChIP <- setClass(
     #BaalChIPexperiment class

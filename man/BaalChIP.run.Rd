@@ -30,7 +30,7 @@ This function is a wrapper of the following functions: \code{\link{alleleCounts}
 setwd(system.file("test",package="BaalChIP"))
 samplesheet <- "exampleChIP.tsv"
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
-res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
+res <- BaalChIP(samplesheet=samplesheet, hets=hets)
 res <- BaalChIP.run(res, cores=2)
 
 #summary of the QC step

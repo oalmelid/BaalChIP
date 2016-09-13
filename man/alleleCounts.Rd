@@ -36,7 +36,7 @@ BaalChIP computes allelic counts at each variant position with Rsamtools pileup 
 setwd(system.file("test",package="BaalChIP"))
 samplesheet <- "exampleChIP.tsv"
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
-res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
+res <- BallChIP("BaalChIP", samplesheet=samplesheet, hets=hets)
 res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
 
 #retrieve alleleCounts:
