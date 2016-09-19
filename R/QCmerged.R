@@ -30,12 +30,12 @@ get_mergedcounts <- function(celldata, metadata, includeForeign=FALSE){
 
     groupCounts <- lapply(metadata, function (targetGroup) {
         #order by replicate: 1,2,3,...
-        targetGroup <- targetGroup[order(targetGroup$replicate_number),]
+        targetGroup <- targetGroup[order(targetGroup$replicate_number),,drop=FALSE]
 
         #Get the counts tables to merge
         data2group <- celldata[targetGroup$sampleID]
-        if (!includeForeign) {data2group <- lapply(data2group, subset, select = c("ID","REF.counts","ALT.counts"))}
-        if (includeForeign) {data2group <- lapply(data2group, subset, select = c("ID","REF.counts","ALT.counts","Foreign.counts"))}
+        if (!includeForeign) {data2group <- lapply(data2group, subset, select = c("ID","REF.counts","ALT.counts"), drop=FALSE)}
+        if (includeForeign) {data2group <- lapply(data2group, subset, select = c("ID","REF.counts","ALT.counts","Foreign.counts"), drop=FALSE)}
 
         #group tables
         group <- merge(data2group[[1]],data2group[[2]], by=c("ID"))
@@ -64,11 +64,11 @@ get_mergedcounts <- function(celldata, metadata, includeForeign=FALSE){
         group <- groupCounts[[target_name]]
         if (nrow(group) > 0) {
             group <- data.frame("score"=1, group, stringsAsFactors=FALSE)
-            a <- group[match(ids, group$ID),]
+            a <- group[match(ids, group$ID),,drop=FALSE]
             a$ID <- ids
             rownames(a) <- NULL
             a$score[is.na(a$score)] <- 0
-            a <- a[,- which(colnames(a)=="ID")]
+            a <- a[,- which(colnames(a)=="ID"),drop=FALSE]
             colnames(a) <- paste0(target_name,".",colnames(a))
             res <- cbind(res, a)
         }
@@ -77,7 +77,7 @@ get_mergedcounts <- function(celldata, metadata, includeForeign=FALSE){
     #debug
     #Are there any columns which are always zero?
     nrsamples <- sum(grepl("score", colnames(res)))
-    scores <- res[,grepl("score", colnames(res))]
+    scores <- res[,grepl("score", colnames(res)),drop=FALSE]
     if (nrsamples == 1) {scores = data.frame(scores, stringsAsFactors=FALSE)}
     if (any(rowSums(scores) == 0)) {stop("Something went wrong! There are rows in the merged table for which no TF overlaps")}
 
@@ -93,7 +93,7 @@ applyMergeResults <- function(samples, res_per_bam, includeForeign=FALSE) {
     names(res_merged) <- cells
     for (cellname in cells) {
         lastset <- lapply(res_per_bam[[cellname]], function(x) {return(x[[length(x)]])})
-        m1 <- get_mergedcounts(celldata=lastset, metadata=samples[samples$group_name==cellname,], includeForeign=includeForeign)
+        m1 <- get_mergedcounts(celldata=lastset, metadata=samples[samples$group_name==cellname,,drop=FALSE], includeForeign=includeForeign)
         if (nrow(m1) == 0) {m1 <- data.frame()}
         res_merged[[cellname]][["replicates_merged"]] <- m1
 
@@ -104,9 +104,9 @@ applyMergeResults <- function(samples, res_per_bam, includeForeign=FALSE) {
 }
 
 filter_1allele <- function(mergedcounts) {
-    REFsums <- rowSums(mergedcounts[,grepl("REF", colnames(mergedcounts))], na.rm=TRUE)
-    ALTsums <- rowSums(mergedcounts[,grepl("ALT", colnames(mergedcounts))], na.rm=TRUE)
-    mergedcounts[(REFsums > 0 & ALTsums > 0), ]
+    REFsums <- rowSums(mergedcounts[,grepl("REF", colnames(mergedcounts)),drop=FALSE], na.rm=TRUE)
+    ALTsums <- rowSums(mergedcounts[,grepl("ALT", colnames(mergedcounts)),drop=FALSE], na.rm=TRUE)
+    mergedcounts[(REFsums > 0 & ALTsums > 0),,drop=FALSE]
 }
 
 applyFilter1allele <- function(res_merged) {

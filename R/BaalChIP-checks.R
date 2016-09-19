@@ -27,7 +27,7 @@ readsamplesheet <- function(samplesheet, .CHECKS=TRUE) {
     #check if all files exist in samplesheet
     if (.CHECKS) {
         for (rownr in seq_len(nrow(samples))) {
-            x <- samples[rownr,]
+            x <- samples[rownr,, drop=FALSE]
             if (!file.exists(x[["bam_name"]]))
                 {stop(paste('BAM file does not exist:', x[["bam_name"]]),call.=FALSE)}
             if (!file.exists(paste0(x[["bam_name"]],".bai")))

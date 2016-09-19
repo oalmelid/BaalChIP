@@ -126,7 +126,7 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
                                "AR" = ref.counts / total.counts,
                                stringsAsFactors=FALSE)
 
-    allelecounts <- allelecounts[allelecounts$Total.counts > 0 ,] #eliminate if it is all zero!
+    allelecounts <- allelecounts[allelecounts$Total.counts > 0 ,, drop=FALSE] #eliminate if it is all zero!
     if (!returnRanges) {return(allelecounts)}
 
 
@@ -150,7 +150,7 @@ applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_qua
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
     for (rownr in seq_len(nrow(samples))) {
 
-        x <- samples[rownr,]
+        x <- samples[rownr,,drop=FALSE]
 
         #get SNPs in genomic intervals (peaks, genes)
         snpfile = hets[[x[["group_name"]]]]

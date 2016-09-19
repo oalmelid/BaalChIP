@@ -17,7 +17,7 @@ applyReadlenPerBam <- function(samples, res_per_bam) {
     message("-getting read lengths per sample")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
     for (rownr in seq_len(nrow(samples))) {
-        x <- samples[rownr,]
+        x <- samples[rownr,,drop=FALSE]
 
         x1 <- res_per_bam[[x[["group_name"]]]][[x[["sampleID"]]]] #get lastset
         lastset <- x1[[length(x1)]]
@@ -43,7 +43,7 @@ get_lastset <- function(res_per_bam) {
                                "REF"=values(x)$REF,
                                "ALT"=values(x)$ALT)
         })
-        l <- lapply(l, subset, select=c("ID","seqnames","start","REF","ALT"))
+        l <- lapply(l, subset, select=c("ID","seqnames","start","REF","ALT"), drop=FALSE)
         l <- lapply(l, function(x) {rownames(x) <- NULL; x})
         lastset[[group_name]] <- l
     }
@@ -62,7 +62,7 @@ run_sim <- function (snpframe, readlenvector, outputPath, simulation_script) {
     snpout <- paste0(outputPath,"_snplist.txt")
 
     #save snp.ranges into a file to be used by perl scripts
-    a <- cbind(snpframe[,c("ID","CHROM","POS")], "+",snpframe[,c("REF","ALT")])
+    a <- cbind(snpframe[,c("ID","CHROM","POS"),drop=FALSE], "+",snpframe[,c("REF","ALT"),drop=FALSE])
     write.table(a, file = snpout, sep=" ", row.names=FALSE, col.names=FALSE, quote=FALSE)
 
     #run external simulation script
@@ -158,7 +158,7 @@ applyIntBiasFilterPerBam <- function(samples, res_per_bam, simcounts) {
     message("-filtering intrinsic bias")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
     for (rownr in seq_len(nrow(samples))) {
-            x <- samples[rownr,]
+            x <- samples[rownr,,drop=FALSE]
 
             #get appropriate simulation data set (based on read length)
             sim <- simcounts[[as.character(x[["readlen"]])]]

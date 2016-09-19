@@ -51,7 +51,7 @@ getbiasTable <- function(assayed, GTtable, ARestimate){
 
     if(nrow(assayed)==0) {return(list(data.frame(), data.frame()))}
 
-    biastable <- GTtable[GTtable$ID %in% assayed$ID,c("ID","RAF")]
+    biastable <- GTtable[GTtable$ID %in% assayed$ID,c("ID","RAF"), drop=FALSE]
 
     if (!is.null(ARestimate)) {
     GT <- paste(GTtable$REF, GTtable$ALT, sep="")
@@ -60,7 +60,7 @@ getbiasTable <- function(assayed, GTtable, ARestimate){
     biastable$RMbias <- 0.5
     }
 
-    biastable <- biastable[,c("ID","RMbias", "RAF")]
+    biastable <- biastable[,c("ID","RMbias", "RAF"), drop=FALSE]
 
     #check
     if (nrow(assayed) != nrow(biastable)) {stop('some error occured')}
@@ -71,8 +71,8 @@ getbiasTable <- function(assayed, GTtable, ARestimate){
     biastable <- data.frame(na.omit(biastable))
     m <- merge(assayed, biastable, by="ID")
     if (nrow(m) == 0) {stop('No variants left after merging counts with biastable')}
-    assayed <- m[,1:ncol(assayed)]
-    biastable <- m[,c(1, (ncol(assayed)+1):ncol(m))]
+    assayed <- m[,1:ncol(assayed), drop=FALSE]
+    biastable <- m[,c(1, (ncol(assayed)+1):ncol(m)), drop=FALSE]
     if (any(assayed$ID != biastable$ID)) {stop('some error occured')}
 
     return(list(assayed, biastable))
@@ -98,7 +98,7 @@ getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=
     for (i in 1:length(bamFiles)) {
         bamfile <- bamFiles[i]
         acounts <- get_allele_counts(bamfile, snp.ranges, returnRanges=FALSE, min_base_quality=min_base_quality,min_mapq=min_mapq)
-        acounts <- acounts[,c("ID","CHROM","POS","REF.counts","ALT.counts")]
+        acounts <- acounts[,c("ID","CHROM","POS","REF.counts","ALT.counts"), drop=FALSE]
         AllCounts[[bamfile]] <- acounts
         setTxtProgressBar(pb, i)
     }
@@ -165,7 +165,7 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
 
         snps <- read.delim(hets[[ID]], stringsAsFactors=FALSE, header=TRUE)
         assayed <- assayedVar[[ID]]
-        snps <- snps[snps$ID %in% assayed$ID,]
+        snps <- snps[snps$ID %in% assayed$ID,,drop=FALSE]
         gDNAbams <- gDNA[[ID]]
 
 

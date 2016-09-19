@@ -129,7 +129,7 @@ plotadjustment <- function(report, col=c( "green3","gray50")) {
     data2plot <- data.frame(do.call("rbind", report), stringsAsFactors=FALSE)
     rownames(data2plot) <- NULL
     data2plot$group_name <- factor(data2plot$group_name, levels=group_names)
-    data2plot2 <- data2plot[,c("group_name","ID","AR","Corrected.AR")]
+    data2plot2 <- data2plot[,c("group_name","ID","AR","Corrected.AR"), drop=FALSE]
     data2plot2 <- melt(data2plot2, id=c("ID","group_name"))
 
     a <- ggplot(data=data2plot2, aes(x=value, fill=variable, colour=variable)) +
