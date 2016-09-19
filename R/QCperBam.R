@@ -72,7 +72,7 @@ applyFiltersPerBam <- function(counts_per_bam, RegionsToFilter, RegionsToKeep) {
 
     N <- sum(sapply(counts_per_bam, length))
 
-    cat("-applying filters per BAM\n")
+    message("-applying filters per BAM")
     pb <- txtProgressBar(min = 0, max = N, style = 3)
     i=1
 

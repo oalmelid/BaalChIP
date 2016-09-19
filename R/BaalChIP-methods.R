@@ -14,7 +14,7 @@ setMethod("initialize",
         BaalChIP.checks(name="gDNA",CorrectWithgDNA, .CHECKS=.CHECKS)
 
         #passed all checks:
-        message.message("-samplesheet checks: OK!\n")
+        message("-samplesheet checks: OK!")
 
 
         if (is.null(CorrectWithgDNA)) {CorrectWithgDNA <- list()}
@@ -516,17 +516,17 @@ setMethod(
           #
 
         ##-----merge replicates
-        cat("-merging replicated samples\n")
+        message("-merging replicated samples...")
         .Object <- mergePerGroup(.Object)
 
         ##-----filter 'Only1Allele'
-        cat("-filtering out SNPs with only 1 observed allele\n")
+        message("-filtering out SNPs with only 1 observed allele...")
         .Object <- filter1allele(.Object)
 
-        cat("-QC complete!\n\n")
+        message("-QC complete!\n")
 
         ##-----get ASB
-        cat("-geting ASB counts\n")
+        message("-geting ASB counts...")
         .Object <- getASB(.Object, Iter=5000, conf_level=0.95, cores = cores)
 
         .Object
@@ -611,7 +611,7 @@ setMethod(
     applyedCorrection <- list()
 
     for (ID in Expnames) {
-        print (paste("... calculating ASB for:", ID))
+        message("... calculating ASB for: ", ID)
         assayed <- assayedVar[[ID]]
         GTtable <- VarTable[[ID]]
 
@@ -652,7 +652,7 @@ setMethod(
     .Object@biasTable <- biasTable
     .Object@ASB <- results
     }
-    cat("-ASB identification complete!\n\n")
+    message("-ASB identification complete!")
     .Object
   }
 )

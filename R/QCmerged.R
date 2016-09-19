@@ -98,7 +98,7 @@ applyMergeResults <- function(samples, res_per_bam, includeForeign=FALSE) {
         res_merged[[cellname]][["replicates_merged"]] <- m1
 
         #print
-        #cat(paste0("data frame contains ", nrow(m1), " variants\n"))
+        #messsage(paste0("data frame contains ", nrow(m1), " variants\n"))
     }
     return(res_merged)
 }
@@ -115,7 +115,7 @@ applyFilter1allele <- function(res_merged) {
         lastset <- res_merged[[cellname]][[length(res_merged[[cellname]])]]
         m2 <- filter_1allele(lastset)
         res_merged[[cellname]][["Only1Allele"]] <- m2
-        #cat(paste0(cellname, ": data frame contains ", nrow(m2), " variants (pass filter)\n"))
+        #message(paste0(cellname, ": data frame contains ", nrow(m2), " variants (pass filter)\n"))
   }
   return(res_merged)
 }

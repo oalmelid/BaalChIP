@@ -146,7 +146,7 @@ applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_qua
     res_per_bam <- list()
     res_per_bam <- lapply(cells, function(x) {res_per_bam[[x]] <- list()})
     names(res_per_bam) <- cells
-    cat("-computing allele counts per BAM\n")
+    message("-computing allele counts per BAM")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
     for (rownr in 1:nrow(samples)) {
 

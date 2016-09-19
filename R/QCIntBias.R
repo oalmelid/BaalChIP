@@ -14,7 +14,7 @@ get_readlen <- function(bamfile, snp.ranges) {
 
 applyReadlenPerBam <- function(samples, res_per_bam) {
     readlens <- c()
-    cat("-getting read lengths per sample\n")
+    message("-getting read lengths per sample")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
     for (rownr in 1:nrow(samples)) {
         x <- samples[rownr,]
@@ -68,7 +68,7 @@ run_sim <- function (snpframe, readlenvector, outputPath, simulation_script) {
     #run external simulation script
     if (!is.null(simulation_script)) {
 
-        cat ("-running simulations for each read length\n")
+        message("-running simulations for each read length")
         pb <- txtProgressBar(min = 0, max = length(readlenvector), style = 3)
 
         for (i in 1:length(readlenvector)) {
@@ -95,7 +95,7 @@ run_sim <- function (snpframe, readlenvector, outputPath, simulation_script) {
 
 get_simcounts <- function(snpframe, readlenvector, outputPath) {
 
-    cat("-calculating allelecounts for simulated reads\n")
+    message("-calculating allelecounts for simulated reads")
 
     #get simcounts
     pb <- txtProgressBar(min = 0, max = length(readlenvector), style = 3)
@@ -155,7 +155,7 @@ filter_intbias <- function(snp.ranges, sim, r){
 }
 
 applyIntBiasFilterPerBam <- function(samples, res_per_bam, simcounts) {
-    cat("-filtering intrinsic bias\n")
+    message("-filtering intrinsic bias")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
     for (rownr in 1:nrow(samples)) {
             x <- samples[rownr,]

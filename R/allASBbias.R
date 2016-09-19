@@ -93,7 +93,7 @@ getbiasparam <- function(biastable){
 
 getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=15) {
     AllCounts <- list()
-    cat("-computing allele counts per gDNA BAM\n")
+    message("-computing allele counts per gDNA BAM")
     pb <- txtProgressBar(min = 0, max = length(bamFiles), style = 3)
     for (i in 1:length(bamFiles)) {
         bamfile <- bamFiles[i]
@@ -145,7 +145,7 @@ useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15)
 
     if (nrow(snps)==0) {return(data.frame())} #in case there were no snps left after filtering
 
-    cat("-calculating RAF from gDNA for group",ID,"\n")
+    message("-calculating RAF from gDNA for group ",ID)
     bamFiles <- gDNAbams
     snp.ranges <- get_snp_ranges(snps)
     RAF <- getRAFfromgDNA(bamFiles, snp.ranges, min_base_quality=min_base_quality, min_mapq=min_mapq)
