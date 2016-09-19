@@ -109,8 +109,8 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
     #snps$ALT <- as.character(snps$ALT)
 
 
-    ref.counts <- sapply(1:nrow(snps), function(x) {snps[x,snps[x,"REF"]]})
-    alt.counts <- sapply(1:nrow(snps), function(x) {snps[x,snps[x,"ALT"]]})
+    ref.counts <- sapply(seq_len(nrow(snps)), function(x) {snps[x,snps[x,"REF"]]})
+    alt.counts <- sapply(seq_len(nrow(snps)), function(x) {snps[x,snps[x,"ALT"]]})
     total.counts <- ref.counts + alt.counts
     total.counts.withForeignReads <- rowSums(snps[, (colnames(nuctab)[-c(1,2)])])
     foreign.counts <-  total.counts.withForeignReads - total.counts
@@ -148,7 +148,7 @@ applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_qua
     names(res_per_bam) <- cells
     message("-computing allele counts per BAM")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
-    for (rownr in 1:nrow(samples)) {
+    for (rownr in seq_len(nrow(samples))) {
 
         x <- samples[rownr,]
 

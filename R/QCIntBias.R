@@ -16,7 +16,7 @@ applyReadlenPerBam <- function(samples, res_per_bam) {
     readlens <- c()
     message("-getting read lengths per sample")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
-    for (rownr in 1:nrow(samples)) {
+    for (rownr in seq_len(nrow(samples))) {
         x <- samples[rownr,]
 
         x1 <- res_per_bam[[x[["group_name"]]]][[x[["sampleID"]]]] #get lastset
@@ -157,7 +157,7 @@ filter_intbias <- function(snp.ranges, sim, r){
 applyIntBiasFilterPerBam <- function(samples, res_per_bam, simcounts) {
     message("-filtering intrinsic bias")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
-    for (rownr in 1:nrow(samples)) {
+    for (rownr in seq_len(nrow(samples))) {
             x <- samples[rownr,]
 
             #get appropriate simulation data set (based on read length)
