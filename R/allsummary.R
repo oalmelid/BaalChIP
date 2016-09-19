@@ -65,8 +65,10 @@ applyFilteringStats <- function(res_per_bam, res_merged) {
 }
 
 summary_QC <- function(object) {
-    if (length(object@mergedCounts) == 0) {res_merged=NULL}else{res_merged =object@mergedCounts}
-    if (length(object@alleleCounts) == 0) {res_per_bam=NULL}else{res_per_bam =object@alleleCounts}
+    mergedCounts <- getBaalSlot(object, "mergedCounts")
+    alleleCounts <- getBaalSlot(object, "alleleCounts")
+    if (length(mergedCounts) == 0) {res_merged=NULL}else{res_merged = mergedCounts}
+    if (length(alleleCounts) == 0) {res_per_bam=NULL}else{res_per_bam = alleleCounts}
 
     filtering_stats <- applyFilteringStats(res_per_bam, res_merged)
 
@@ -79,7 +81,8 @@ summary_QC <- function(object) {
 
 summary_ASB <- function(object) {
 
-    if (length(object@ASB) == 0) {return(NULL)}else{asb <- object@ASB}
+    asb <- getBaalSlot(object, "ASB")
+    if (length(asb) == 0) {return(NULL)}
     asb_stats <- do.call("rbind", lapply(asb, function(x) {c("Ref"=sum(x$Bayes_sig_A),"Alt"=sum(x$Bayes_sig_B))}))
     asb_stats <- cbind(asb_stats, "Total"=rowSums(asb_stats))
     return(asb_stats)
@@ -89,21 +92,21 @@ summary_ASB <- function(object) {
 
 getReport <- function(object, group_name) {
 
-    if (length(object@ASB) == 0) {return(NULL)}else{asb <- object@ASB}
+    asb <- getBaalSlot(object, "ASB")
+    if (length(asb) == 0) {return(NULL)}
 
-    asb <- object@ASB[[group_name]]
-    assayed <- object@assayedVar[[group_name]]
+    asb <- asb[[group_name]]
+    assayed <- getBaalSlot(object, "assayedVar")[[group_name]]
     pooled <- pooldata(assayed)
-    varTable <- object@VarTable[[group_name]][,c("ID","CHROM","POS","REF","ALT")]
-    RAFtable <- object@biasTable[[group_name]]
-    correctedAR <- object@ASB[[group_name]]
-    correctedAR <- data.frame("ID"=as.character(correctedAR$ID),
-                    "Bayes_lower"=correctedAR$Bayes_lower,
-                    "Bayes_upper"=correctedAR$Bayes_upper,
-                    "Corrected.AR"=rowMeans(correctedAR[,c("Bayes_lower","Bayes_upper")]),
+    VarTable <- getBaalSlot(object, "VarTable")[[group_name]][,c("ID","CHROM","POS","REF","ALT")]
+    RAFtable <- getBaalSlot(object, "biasTable")[[group_name]]
+    correctedAR <- data.frame("ID"=as.character(asb$ID),
+                    "Bayes_lower"=asb$Bayes_lower,
+                    "Bayes_upper"=asb$Bayes_upper,
+                    "Corrected.AR"=rowMeans(asb[,c("Bayes_lower","Bayes_upper")]),
                      stringsAsFactors=FALSE)
     baalSig <- as.character(asb$ID[asb[,"Bayes_sig_A"]==1 | asb[,"Bayes_sig_B"] == 1])
-    snps <- merge(varTable, pooled, by="ID")
+    snps <- merge(VarTable, pooled, by="ID")
     snps <- merge(snps, RAFtable, by="ID")
     snps <- merge(snps, correctedAR, by="ID")
     snps$isASB <- snps$ID %in% baalSig

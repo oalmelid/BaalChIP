@@ -13,6 +13,10 @@ setMethod("initialize",
         BaalChIP.checks(name="hets",hets, .CHECKS=.CHECKS)
         BaalChIP.checks(name="gDNA",CorrectWithgDNA, .CHECKS=.CHECKS)
 
+        #passed all checks:
+        message.message("-samplesheet checks: OK!\n")
+
+
         if (is.null(CorrectWithgDNA)) {CorrectWithgDNA <- list()}
 
         ##-----check matching names
@@ -35,8 +39,8 @@ setMethod("show", "BaalChIP",
     function(object){
     cat(" Type :", class(object), "\n")
     QCstats <- summaryQC(object)[["filtering_stats"]]
-    asb <- object@ASB
-    samples <- object@samples
+    asb <- getBaalSlot(object, "ASB")
+    samples <-  getBaalSlot(object, "samples")
     cat(" Samples                 :  ", nrow(samples), "\n")
     cat(" Experiments             :  ", unique(samples[,"group_name"]), "\n")
     cat(" Filtering and QC        :  ", ifelse(is.null(QCstats), "None", paste(ncol(QCstats) - 1, "filter(s) applied")), "\n")
@@ -77,9 +81,9 @@ BaalChIP <- function(samplesheet = NULL, hets=NULL, CorrectWithgDNA=list()) {
         ##-----check arguments
         if(missing(samplesheet))stop("NOTE: 'samplesheet' is missing!")
         if(missing(hets))stop("NOTE: 'hets' is missing!")
-        samples <- BaalChIP.checks(name="samplesheet",samplesheet, .CHECKS=.CHECKS)
-        BaalChIP.checks(name="hets",hets, .CHECKS=.CHECKS)
-        BaalChIP.checks(name="gDNA",CorrectWithgDNA, .CHECKS=.CHECKS)
+        samples <- BaalChIP.checks(name="samplesheet",samplesheet, .CHECKS=TRUE)
+        BaalChIP.checks(name="hets",hets, .CHECKS=TRUE)
+        BaalChIP.checks(name="gDNA",CorrectWithgDNA, .CHECKS=TRUE)
 
         if (is.null(CorrectWithgDNA)) {CorrectWithgDNA <- list()}
 
@@ -89,7 +93,7 @@ BaalChIP <- function(samplesheet = NULL, hets=NULL, CorrectWithgDNA=list()) {
         if (!is.null(names(CorrectWithgDNA))) {checkmatchingnames.gDNA(names(CorrectWithgDNA), cells1)}
 
         ##-----initialization
-        .Object <- new("BaalChIP", samplesheet, hets, CorrectWithgDNA, .CHECKS=.CHECKS)
+        .Object <- new("BaalChIP", samplesheet, hets, CorrectWithgDNA, .CHECKS=TRUE)
         .Object
 
 }
@@ -139,8 +143,8 @@ setMethod(
            min_mapq=15){
 
         ##-----check input arguments
-        samples <- .Object@samples
-        hets <- .Object@hets
+        samples <- getBaalSlot(.Object, "samples")
+        hets <- getBaalSlot(.Object, "hets")
         BaalChIP.checks(name="min_base_quality", min_base_quality)
         BaalChIP.checks(name="min_mapq", min_mapq)
 
@@ -205,7 +209,7 @@ setMethod(
         RegionsToKeep <- BaalChIP.checks(name="RegionsToKeep", RegionsToKeep)
 
         ##-----check that mergedCounts and ASB have not been computed yet
-        asb <- .Object@ASB
+        asb <- getBaalSlot(.Object, "ASB")
         merged <- .Object@mergedCounts
         if (!all(length(asb)==0 & length(merged) == 0)) {
             #cat(prompt="Running this QC step at the single BAM files level will delete any downstream analysis. Continue?[y/n]")
@@ -220,7 +224,7 @@ setMethod(
         }
 
         ##-----assign parameters
-        counts_per_bam <- .Object@alleleCounts
+        counts_per_bam <- getBaalSlot(.Object, "alleleCounts")
         .Object@param$QCparam$RegionsToFilter <- names(RegionsToFilter)
         .Object@param$QCparam$RegionsToKeep <- names(RegionsToKeep)
 
@@ -284,8 +288,8 @@ setMethod(
         BaalChIP.checks(skipScriptRun, "skipScriptRun")
 
         ##-----assign parameters
-        res_per_bam <- .Object@alleleCounts
-        samples <- .Object@samples
+        res_per_bam <- getBaalSlot(.Object, "alleleCounts")
+        samples <- getBaalSlot(.Object, "samples")
         .Object@param$QCparam$FiltIntBias <- TRUE
         .Object@param$QCparam$simul_output <- simul_output
 
@@ -371,8 +375,8 @@ setMethod(
     function(.Object){
 
         ##-----assign parameters
-        res_per_bam <- .Object@alleleCounts
-        samples <- .Object@samples
+        res_per_bam <- getBaalSlot(.Object,"alleleCounts")
+        samples <- getBaalSlot(.Object, "samples")
 
         ##-----do not run if alleleCounts not found
         if (length(res_per_bam) == 0) {stop("Please run alleleCounts (and optionally QCfilter and/or filtIntBias) functions before running mergePerGroup")}
@@ -589,13 +593,16 @@ setMethod(
     if (length(assayedVar) == 0) {stop("there are no variants in 'mergedCounts' slot. Make sure you have run alleleCounts and mergedCounts functions before continuing")}
 
     #------get VarTable
-    .Object@VarTable <- addVarTable(.Object, RAFcorrection=RAFcorrection)
-    VarTable <- .Object@VarTable
+    VarTable <- addVarTable(.Object, RAFcorrection=RAFcorrection)
+    .Object@VarTable <- VarTable
 
     ##-----check matching cellnames
-    cells1 <- unique(.Object@samples$group_name)
-    checkmatchingnames(names(.Object@assayedVar), cells1)
-    checkmatchingnames(names(.Object@VarTable), cells1)
+    samples <- getBaalSlot(.Object, "samples")
+    assayedVar <- getBaalSlot(.Object, "assayedVar")
+    VarTable <- getBaalSlot(.Object, "VarTable")
+    cells1 <- unique(samples$group_name)
+    checkmatchingnames(names(assayedVar), cells1)
+    checkmatchingnames(names(VarTable), cells1)
 
     ##-----run
     Expnames <- names(assayedVar)
@@ -622,7 +629,8 @@ setMethod(
 
         #run bayes
         if (nrow(counts) > 0 ) {
-        Bayes_report <- runBayes(counts=counts, bias=biastable, Iter=Iter, conf_level=conf_level, cores=cores)
+        Bayes_report <- runBayes(counts=counts, bias=biastable, Iter=Iter,
+                                 conf_level=conf_level, cores=cores)
         }else{
             message("no variants left for ", ID)
             Bayes_report <- data.frame()}
@@ -636,7 +644,8 @@ setMethod(
 
     ##-----assign parameters
     applyedCorrection <- t(do.call("rbind",applyedCorrection))
-    .Object@param$ASBparam <- list(Iter=Iter, conf_level=conf_level, applyedCorrection=applyedCorrection)
+    .Object@param$ASBparam <- list(Iter=Iter, conf_level=conf_level,
+                                   applyedCorrection=applyedCorrection)
 
     ##-----update status and return
     if (!all(sapply(results, nrow)==0)) {
@@ -648,6 +657,7 @@ setMethod(
   }
 )
 
+
 #' Get slots from a BaalChIP object
 #' @import methods
 #' @author Ines de Santiago
@@ -655,7 +665,7 @@ setMethod(
 #' @aliases BaalChIP.get,BaalChIP-method
 #' @description Get information from individual slots in a BaalChIP object.
 #' @param .Object An object of the \code{\link{BaalChIP}} class.
-#' @param what a single character value specifying which information should be retrieved. Options: 'samples', 'param', 'alleleCountsPerBam', 'mergedCounts', 'assayedVar', 'biasTable'.
+#' @param what a single character value specifying which information should be retrieved. Options: 'samples', 'param', 'alleleCountsPerBam', 'mergedCounts'.
 #' @return The slot content from an object of the \code{\link{BaalChIP}} class.
 #' @examples
 #'data("BaalObject")
@@ -677,7 +687,8 @@ setMethod(
 setMethod(
     "BaalChIP.get",
     "BaalChIP",
-    function(.Object, what=c("samples","param","alleleCountsPerBam","mergedCounts","assayedVar", "biasTable")) {
+    function(.Object, what=c("samples","param","alleleCountsPerBam",
+                             "mergedCounts")) {
         ##-----check input arguments
         BaalChIP.checks(name="get.what",param=what)
         ##-----get query
@@ -690,15 +701,29 @@ setMethod(
             query<- lapply(.Object@mergedCounts, function (x) {x[[length(x)]]})
         } else if(what=="alleleCountsPerBam"){
             query <-  lapply(.Object@alleleCounts, lapply, function (x) {x[[length(x)]]})
-        } else if(what=="assayedVar"){
-            query <-  .Object@assayedVar
-        } else if(what=="biasTable"){
-            query <-  .Object@biasTable
         }
     return(query)
     }
 )
 
+getBaalSlot <- function(.Object, what) {
+    match.arg(what, c("samples", "param", "mergedCounts",
+        "alleleCounts","assayedVar","biasTable","hets","simulation_stats","ASB","VarTable","gDNA"))
+    switch(what,
+            samples={query <- .Object@samples},
+            param={query <-.Object@param},
+            mergedCounts={query <-.Object@mergedCounts},
+            alleleCounts={query <- .Object@alleleCounts},
+            assayedVar={query <-.Object@assayedVar},
+            biasTable={query <-.Object@biasTable},
+            hets={query <- .Object@hets},
+            simulation_stats={query <-.Object@simulation_stats},
+            ASB={query <-.Object@ASB},
+            VarTable={query <- .Object@VarTable},
+            gDNA={query <- .Object@gDNA},
+            )
+    return(query)
+}
 
 #' Report ASB variants
 #' @import methods
@@ -741,7 +766,8 @@ setMethod(
     "BaalChIP.report",
     "BaalChIP",
     function(.Object) {
-        group_names <- unique(.Object@samples[["group_name"]])
+        samples <- getBaalSlot(.Object, "samples")
+        group_names <- unique(samples[["group_name"]])
         query <- lapply(group_names, function (x) getReport(.Object,group_name=x))
         names(query) <- group_names
         if (all(sapply(query, is.null))) {query <- NULL}
@@ -833,7 +859,8 @@ setMethod(
     "BaalChIP",
     function(.Object, what= "barplot_per_group", addlegend=TRUE, plot=TRUE) {
         ##-----check input arguments
-        match.arg(what, c("overall_pie", "boxplot_per_filter", "barplot_per_group","pie","boxplot","barplot"))
+        match.arg(what, c("overall_pie", "boxplot_per_filter", "barplot_per_group",
+        "pie","boxplot","barplot"))
         switch(what,
             pie={what <- "overall_pie"},
             boxplot={what <- "boxplot_per_filter"},
@@ -868,7 +895,8 @@ setMethod(
     "BaalChIP",
     function(.Object, plot=TRUE) {
 
-        p <- plot.simul(.Object@simulation_stats, plot=plot)
+        simulation_stats <- getBaalSlot(.Object, "simulation_stats")
+        p <- plot.simul(simulation_stats, plot=plot)
         if (!plot) {return(p)}
     }
 )

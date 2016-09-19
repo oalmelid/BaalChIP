@@ -195,12 +195,12 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
 
 
 addVarTable <- function(object, RAFcorrection=TRUE) {
-    assayedVar <- object@assayedVar
-    hets <- object@hets
+    assayedVar <- getBaalSlot(object, "assayedVar")
+    hets <- getBaalSlot(object, "hets")
 
     ##-----Read hets table and update "RAF" values accordingly
-    QCparam <- object@param$QCparam
-    gDNA=object@gDNA
+    QCparam <- getBaalSlot(object, "param")$QCparam
+    gDNA=getBaalSlot(object, "gDNA")
     min_base_quality <- QCparam[["min_base_quality"]] #will not be used if gDNA is null or RAFcorrection==FALSE
     min_mapq <- QCparam[["min_mapq"]] #will not be used if gDNA is null or RAFcorrection==FALSE
 

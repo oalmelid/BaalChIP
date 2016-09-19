@@ -37,8 +37,6 @@ readsamplesheet <- function(samplesheet, .CHECKS=TRUE) {
         }
     }
 
-    #return
-    cat("-samplesheet checks: OK!\n")
     return(samples)
 }
 
@@ -97,7 +95,7 @@ checkmatchingnames <- function(names1, names2) {
     if (!all(names1 %in% names2)) {warning("group name not found in samplesheet: ", paste(setdiff(names1, names2), collapse=","), call.=FALSE)}
 
     #will Fail if all names2 not in names1
-    if (!all(names2 %in% names1)) {stop("'hets' group name not found in samplesheet: ", paste(setdiff(names2, names1), collapse=","), call.=FALSE)}
+    if (!all(names2 %in% names1)) {stop("samplesheet group name not found in 'hets' vector: ", paste(setdiff(names2, names1), collapse=","), call.=FALSE)}
 
 }
 
@@ -221,7 +219,7 @@ BaalChIP.checks <- function(name, param, .CHECKS= TRUE){
     #}
 
     if (name == "get.what") {
-        opts<-c("samples", "param", "mergedCounts", "alleleCountsPerBam", "assayedVar","biasTable")
+        opts<-c("samples", "param", "mergedCounts", "alleleCountsPerBam")
          if(!is.character(param) || length(param)!=1 || !(param %in% opts))
             stop(paste("'what' should be any one of the options: \n", paste(opts,collapse = ", ") ),call.=FALSE )
     }

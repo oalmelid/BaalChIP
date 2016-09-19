@@ -10,12 +10,12 @@ BaalChIP.get(.Object, what = c("samples", "param", "alleleCountsPerBam",
   "mergedCounts"))
 
 \S4method{BaalChIP.get}{BaalChIP}(.Object, what = c("samples", "param",
-  "alleleCountsPerBam", "mergedCounts", "assayedVar", "biasTable"))
+  "alleleCountsPerBam", "mergedCounts"))
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
 
-\item{what}{a single character value specifying which information should be retrieved. Options: 'samples', 'param', 'alleleCountsPerBam', 'mergedCounts', 'assayedVar', 'biasTable'.}
+\item{what}{a single character value specifying which information should be retrieved. Options: 'samples', 'param', 'alleleCountsPerBam', 'mergedCounts'.}
 }
 \value{
 The slot content from an object of the \code{\link{BaalChIP}} class.
