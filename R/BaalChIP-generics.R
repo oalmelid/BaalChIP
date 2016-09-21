@@ -37,7 +37,9 @@ setGeneric(name="QCfilter",
 #' @exportMethod filterIntbias
 setGeneric(name="filterIntbias",
                        def=function(.Object, simul_output = NULL, tmpfile_prefix = NULL,
-                       simulation_script = "local", skipScriptRun=FALSE,
+                       simulation_script = "local",
+                       alignmentSimulArgs = NULL,
+                       skipScriptRun=FALSE,
                        verbose=TRUE)
                        {
                                standardGeneric("filterIntbias")
@@ -104,7 +106,7 @@ setGeneric(name="getASB",
 #' @rdname BaalChIP.get
 #' @exportMethod BaalChIP.get
 setGeneric(name="BaalChIP.get",
-                       def=function(.Object, what=c("samples","param","alleleCountsPerBam","mergedCounts"))
+                       def=function(.Object, what=c("samples","param","alleleCountsPerBam","mergedCounts","assayedVar", "biasTable"))
                        {
                                standardGeneric("BaalChIP.get")
                        }

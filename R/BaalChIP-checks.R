@@ -226,7 +226,7 @@ BaalChIP.checks <- function(name, param, .CHECKS= TRUE){
     #}
 
     if (name == "get.what") {
-        opts<-c("samples", "param", "mergedCounts", "alleleCountsPerBam")
+        opts<-c("samples", "param", "mergedCounts", "alleleCountsPerBam", "assayedVar", "biasTable")
          if(!is.character(param) || length(param)!=1 || !(param %in% opts))
             stop(paste("'what' should be any one of the options: \n", paste(opts,collapse = ", ") ),call.=FALSE )
     }

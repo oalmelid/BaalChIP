@@ -7,15 +7,15 @@
 \title{Method BaalChIP.get}
 \usage{
 BaalChIP.get(.Object, what = c("samples", "param", "alleleCountsPerBam",
-  "mergedCounts"))
+  "mergedCounts", "assayedVar", "biasTable"))
 
 \S4method{BaalChIP.get}{BaalChIP}(.Object, what = c("samples", "param",
-  "alleleCountsPerBam", "mergedCounts"))
+  "alleleCountsPerBam", "mergedCounts", "assayedVar"))
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
 
-\item{what}{a single character value specifying which information should be retrieved. Options: 'samples', 'param', 'alleleCountsPerBam', 'mergedCounts'.}
+\item{what}{a single character value specifying which information should be retrieved. Options: 'samples', 'param', 'alleleCountsPerBam', 'mergedCounts', 'assayedVar', 'biasTable'.}
 }
 \value{
 The slot content from an object of the \code{\link{BaalChIP}} class.

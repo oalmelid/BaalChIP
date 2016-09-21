@@ -3,43 +3,66 @@
 #BSUB -e BEdup.err.log
 #BSUB -a R
 
+#########################################################################################
 # Will perform simulated set of reads for a list of SNP locations
 # It is build to work within BaalChIP R package pipeline
-# Depends on several external scripts:
-#----- 1. get.overlaps.v2_chrXY.perl (originally published by Degner et al., 2009: Bioinformatics. 2009 Dec 15;25(24):3207-12. doi: 10.1093/bioinformatics/btp579)
-#----- 2. picard
-#----- 3. bowtie
-
-#Arguments to this script
-#snp_dataframe: a table with rsid, chr, pos, ref, alt. 
+# ---*---
+#Arguments:
+# ---*---
+#picard: location to picard
+#bowtie: location to bowtie
+#genome: the location to the genome file
+#genomeBychr: the location to the genome file
+#simscript: complete path to get.overlaps.v2_chrXY.perl script
 #readlen: read length
+#snplist: a table with rsid, chr, pos, ref, alt. 
 #fastaout: location of the output fasta file
 #bamout: location of the output bamfile
-#location_getoverlaps: location to get.overlaps.v2_chrXY.perl script
-#location_picard: location to picard
-#location_bowtie: location to bowtie
-#location_genome: the location to the genome file
+#########################################################################################
 
-#simscript=/lustre/fmlab/santia01/tools/Degner2009/simulate.reads/get.overlaps.v2_chrXY.perl
-#picard=/lustre/fmlab/santia01/tools/picard-tools-1.47
-#bowtie=/lustre/fmlab/santia01/tools/bowtie-1.1.0/bowtie
-#genome=/lustre/fmlab/santia01/tools/genomes/hg19_encodeDCC/male.hg19
-#genomeBychr=/lustre/fmlab/santia01/tools/genomes/hg19_encodeDCC/maleByChrom
-simscript=/Users/santia01/Dropbox/FromHome/baal_package/BaalChIP/inst/extra/get.overlaps.v2_chrXY.perl
-picardSortSam=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/picard-tools-1.119/SortSam.jar
-bowtie=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/bowtie-1.1.1/bowtie
-genome=/Users/santia01/Desktop/genomes_test/male.hg19
-genomeBychr=/Users/santia01/Desktop/genomes_test/maleByChrom
-readlen=$1
-snplist=$2
-fastaout=$3
-bamout=$4
+#########################################################################################
+#Enter the following arguments
+#from R using 'alignmentSimulArgs' argument of filterIntbias function
+#e.g.
+#data(BaalObject)
+#res <- filterIntbias(BaalObject,
+#'       simul_output="~/simuloutput",
+#'       alignmentSimulArgs=c("picard-tools-1.119","bowtie-1.1.1","genomes_test/male.hg19","genomes_test/maleByChrom"))
+picard=$6
+bowtie=$7
+genome=$8
+genomeBychr=$9
+#########################################################################################
+
+#########################################################################################
+#Or 
+#use alignmentSimulArgs=NULL and uncomment the following lines (using the appropriate paths):
+
+#picard=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/picard-tools-1.119
+#bowtie=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/bowtie-1.1.1
+#genome=/Users/santia01/Desktop/genomes_test/male.hg19
+#genomeBychr=/Users/santia01/Desktop/genomes_test/maleByChrom
+#########################################################################################
+
+
+#########################################################################################
+#-----------------#
+#DO NOT CHANGE
+#these next five arguments are arguments of get.overlaps.v2_chrXY.perl 
+#they are computed directly in R and passed to this script as arguments
+#hardcoded within the R command 
+simscript=$1  #simscript=/Users/santia01/Dropbox/FromHome/baal_package/BaalChIP/inst/extra/get.overlaps.v2_chrXY.perl
+readlen=$2
+snplist=$3
+fastaout=$4
+bamout=$5
+#########################################################################################
 
 
 #Run
 readstring=`printf '%*s' "$readlen" | tr ' ' "B"`
 perl $simscript $snplist $genomeBychr $readlen $readstring > $fastaout
-$bowtie --chunkmbs 512 -t --best -q -S -p 8 -l 32 -e 80 -n 2 -m 1 $genome $fastaout $fastaout.sam
+$bowtie/bowtie --chunkmbs 512 -t --best -q -S -p 8 -l 32 -e 80 -n 2 -m 1 $genome $fastaout $fastaout.sam
 java -jar -Xmx3g $picard/SortSam.jar INPUT=$fastaout.sam OUTPUT=$bamout SORT_ORDER=coordinate VALIDATION_STRINGENCY=LENIENT CREATE_INDEX=true
 rm $fastaout.sam
 mv ${bamout%.*}.bai ${bamout%.*}.bam.bai

@@ -63,7 +63,13 @@ get_lastset <- function(res_per_bam) {
     return(lastset)
 }
 
-run_sim <- function (snpframe, readlenvector, outputPath, simulation_script, verbose=TRUE) {
+makeARGSTRING <- function(alignmentSimulArgs) {
+    if (is.null(alignmentSimulArgs)) {return("")}
+    names(alignmentSimulArgs) <- NULL
+    paste(alignmentSimulArgs, collapse=" ")
+}
+
+run_sim <- function (snpframe, readlenvector, outputPath, simulation_script, alignmentSimulArgs=NULL, verbose=TRUE) {
 
     #output snp file name
     snpout <- paste0(outputPath,"_snplist.txt")
@@ -82,10 +88,17 @@ run_sim <- function (snpframe, readlenvector, outputPath, simulation_script, ver
 
         for (i in seq_len(length(readlenvector))) {
 
+
+            #imput arguments of run_simulations.sh
             readlen <- readlenvector[[i]]
             fastaout <- paste0(outputPath,"_aln",readlen,".fasta")
             bamout <- paste0(outputPath,"_aln",readlen,".bam")
-            command_to_run <- paste(simulation_script,readlen,snpout,fastaout,bamout)
+
+            perlScript <- file.path(system.file("extra", package="BaalChIP"),"get.overlaps.v2_chrXY.perl")
+
+            ARGSTRING <- makeARGSTRING(alignmentSimulArgs)
+
+            command_to_run <- paste(simulation_script,perlScript,readlen,snpout,fastaout,bamout,ARGSTRING)
 
             #print(command_to_run) #debug!
             r <- system(command_to_run, intern=TRUE)
@@ -103,8 +116,6 @@ run_sim <- function (snpframe, readlenvector, outputPath, simulation_script, ver
 }
 
 get_simcounts <- function(snpframe, readlenvector, outputPath, verbose=TRUE) {
-
-
 
     #get simcounts
     if(verbose) {
@@ -126,7 +137,7 @@ get_simcounts <- function(snpframe, readlenvector, outputPath, verbose=TRUE) {
 }
 
 
-applySim <- function(samples, res_per_bam, simul_output, simulation_script= "local", testingScript=FALSE, verbose=TRUE) {
+applySim <- function(samples, res_per_bam, simul_output, simulation_script= "local", alignmentSimulArgs=NULL, testingScript=FALSE, verbose=TRUE) {
 
      if (simulation_script == "local") {simulation_script = system.file("extra/run_simulations.sh",package="BaalChIP")}
      lastset <- get_lastset(res_per_bam) #get the data frame for all unique SNPs from the last round of filters
@@ -136,7 +147,7 @@ applySim <- function(samples, res_per_bam, simul_output, simulation_script= "loc
 
      #run_sum
      if (!testingScript) { #will save fasta+bam files in simul_output
-        run_sim(snpframe=lastset, readlenvector, outputPath=simul_output, simulation_script=simulation_script, verbose=verbose)
+        run_sim(snpframe=lastset, readlenvector, outputPath=simul_output, simulation_script=simulation_script, alignmentSimulArgs=alignmentSimulArgs, verbose=verbose)
      }
 
      simcounts <- get_simcounts(snpframe=lastset, readlenvector, outputPath=simul_output, verbose=verbose)
