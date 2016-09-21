@@ -13,27 +13,31 @@ get_readlen <- function(bamfile, snp.ranges) {
 }
 
 applyReadlenPerBam <- function(samples, res_per_bam) {
-    readlens <- c()
+
     message("-getting read lengths per sample")
     pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
-    for (rownr in seq_len(nrow(samples))) {
+    readlens <- lapply(seq_len(nrow(samples)), function(rownr) {
+        #for (rownr in seq_len(nrow(samples))) {
         x <- samples[rownr,,drop=FALSE]
 
         x1 <- res_per_bam[[x[["group_name"]]]][[x[["sampleID"]]]] #get lastset
         lastset <- x1[[length(x1)]]
         sigi.ranges <- lastset
 
-        readlens <- c(readlens, get_readlen(bamfile=x[["bam_name"]], snp.ranges=sigi.ranges))
+        #readlens <- c(readlens, get_readlen(bamfile=x[["bam_name"]], snp.ranges=sigi.ranges))
+        result <- BaalChIP:::get_readlen(bamfile=x[["bam_name"]], snp.ranges=sigi.ranges)
         setTxtProgressBar(pb, rownr)
-    }
+        return(result)
+    })
     close(pb)
+    readlens <- unlist(readlens)
     return(readlens)
 }
 
 get_lastset <- function(res_per_bam) {
 
-    lastset <- list()
-    for (group_name in names(res_per_bam)) {
+    lastset <- lapply(names(res_per_bam) , function(group_name) {
+        #for (group_name in names(res_per_bam)) {
         counts_per_group <- res_per_bam[[group_name]]
         l <- lapply(counts_per_group, function(x) {x[[length(x)]]})
         l <- lapply(l , function(x) {
@@ -45,15 +49,16 @@ get_lastset <- function(res_per_bam) {
         })
         l <- lapply(l, subset, select=c("ID","seqnames","start","REF","ALT"), drop=FALSE)
         l <- lapply(l, function(x) {rownames(x) <- NULL; x})
-        lastset[[group_name]] <- l
-    }
-
+        #lastset[[group_name]] <- l
+        return(l)
+    })
+    names(lastset) <- names(res_per_bam)
 
     lastset <- lapply(lastset, function(l) { l <- do.call("rbind",l); rownames(l) <- NULL; l})
     lastset <- unique(do.call("rbind",lastset))
     rownames(lastset) <- NULL
     colnames(lastset) <- c("ID","CHROM","POS","REF","ALT")
-    lastset
+    return(lastset)
 }
 
 run_sim <- function (snpframe, readlenvector, outputPath, simulation_script) {
@@ -71,7 +76,7 @@ run_sim <- function (snpframe, readlenvector, outputPath, simulation_script) {
         message("-running simulations for each read length")
         pb <- txtProgressBar(min = 0, max = length(readlenvector), style = 3)
 
-        for (i in 1:length(readlenvector)) {
+        for (i in seq_len(length(readlenvector))) {
 
             readlen <- readlenvector[[i]]
             fastaout <- paste0(outputPath,"_aln",readlen,".fasta")
@@ -100,7 +105,7 @@ get_simcounts <- function(snpframe, readlenvector, outputPath) {
     #get simcounts
     pb <- txtProgressBar(min = 0, max = length(readlenvector), style = 3)
 
-    simcounts <-  lapply(1:length(readlenvector), function(i) {
+    simcounts <-  lapply(seq_len(length(readlenvector)), function(i) {
         r <- readlenvector[[i]]
         bamout <- paste0(outputPath,"_aln",r,".bam")
         res <- get_allele_counts(bamfile = bamout, snp.ranges = get_snp_ranges(snpframe), returnRanges=FALSE, min_base_quality=0, min_mapq=0)

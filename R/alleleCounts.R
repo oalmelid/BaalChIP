@@ -142,7 +142,6 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
 
 applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_quality, min_mapq=min_mapq) {
     cells <- unique(samples[["group_name"]])
-    readlens <- c()
     res_per_bam <- list()
     res_per_bam <- lapply(cells, function(x) {res_per_bam[[x]] <- list()})
     names(res_per_bam) <- cells

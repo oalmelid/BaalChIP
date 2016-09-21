@@ -80,7 +80,7 @@ applyFiltersPerBam <- function(counts_per_bam, RegionsToFilter, RegionsToKeep) {
 
         for (sampleID in names(counts_per_bam[[group_name]])) {
 
-              #GRanges of variants
+            #GRanges of variants
             x <- counts_per_bam[[group_name]][[sampleID]] #get lastset
             sigi.ranges <- x[[length(x)]]
             #counts_per_bam[[group_name]][[sampleID]][["sigi"]]

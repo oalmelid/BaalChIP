@@ -60,6 +60,7 @@ get_mergedcounts <- function(celldata, metadata, includeForeign=FALSE){
 
     #add complete data table to "res"
     res <- data.frame("ID"=ids,stringsAsFactors=FALSE)
+
     for (target_name in names(groupCounts)){
         group <- groupCounts[[target_name]]
         if (nrow(group) > 0) {
@@ -88,9 +89,9 @@ get_mergedcounts <- function(celldata, metadata, includeForeign=FALSE){
 
 applyMergeResults <- function(samples, res_per_bam, includeForeign=FALSE) {
     cells <- names(res_per_bam)
-    res_merged <- list()
-    res_merged <- lapply(cells, function(x) {res_merged[[x]] <- list()})
+    res_merged <- lapply(cells, function(x) {list()})
     names(res_merged) <- cells
+
     for (cellname in cells) {
         lastset <- lapply(res_per_bam[[cellname]], function(x) {return(x[[length(x)]])})
         m1 <- get_mergedcounts(celldata=lastset, metadata=samples[samples$group_name==cellname,,drop=FALSE], includeForeign=includeForeign)

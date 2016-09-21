@@ -92,17 +92,23 @@ getbiasparam <- function(biastable){
 
 
 getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=15) {
-    AllCounts <- list()
     message("-computing allele counts per gDNA BAM")
     pb <- txtProgressBar(min = 0, max = length(bamFiles), style = 3)
-    for (i in 1:length(bamFiles)) {
+    AllCounts <- lapply(seq_len(length(bamFiles)), function(i) {
         bamfile <- bamFiles[i]
-        acounts <- get_allele_counts(bamfile, snp.ranges, returnRanges=FALSE, min_base_quality=min_base_quality,min_mapq=min_mapq)
+        acounts <- BaalChIP:::get_allele_counts(bamfile, snp.ranges, returnRanges=FALSE, min_base_quality=min_base_quality,min_mapq=min_mapq)
         acounts <- acounts[,c("ID","CHROM","POS","REF.counts","ALT.counts"), drop=FALSE]
-        AllCounts[[bamfile]] <- acounts
         setTxtProgressBar(pb, i)
-    }
+        return(acounts)
+    })
+    names(AllCounts) <- bamFiles
     close(pb)
+
+    #delete all entries in AllCounts that are NULL
+    if (any(sapply(AllCounts, is.null))) {
+        idx <- which(!(sapply(AllCounts, is.null)))
+        AllCounts <- AllCounts[idx]
+    }
 
     snpIDs <- names(snp.ranges)
     if (length(AllCounts) > 1) {
@@ -157,12 +163,10 @@ useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15)
 
 get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min_mapq=15, RAFcorrection=TRUE) {
 
-    Vartable <- list()
-
     if (length(gDNA)==0) {gDNA <- NULL}
 
-    for (ID in names(hets)){
-
+    Vartable <- lapply(names(hets), function (ID) {
+        #for (ID in names(hets)){
         snps <- read.delim(hets[[ID]], stringsAsFactors=FALSE, header=TRUE)
         assayed <- assayedVar[[ID]]
         snps <- snps[snps$ID %in% assayed$ID,,drop=FALSE]
@@ -187,8 +191,10 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
 
         }
 
-    Vartable[[ID]] <- snps
-    }
+    #Vartable[[ID]] <- snps
+    return(snps)
+    })
+    names(Vartable) <- names(hets)
 
     return(Vartable)
 }

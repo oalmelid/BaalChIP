@@ -3,38 +3,40 @@
 
 ############### SNP_hit_Peaks: sum read counts ##################
 
-Sum_read_counts <- function(SNP_hit_Peaks) {
-    COLname <- colnames(SNP_hit_Peaks)
 
-    if(COLname[1]=="ID") {
-        SNP_hit_Peaks_sum <- data.frame(SNP_hit_Peaks[,1])
-    }else {stop("Please check the column names of SNP table: The first colname should be: ID ")}
+getMergedRepData <- function(id_col, peak_id, SNP_hit_Peaks) {
+    nrTargets <- length(peak_id)
 
-    peak_id <- which(grepl("score", COLname))
-
-    COL_name = "ID"
-    for (id_col in 1:length(peak_id)) {
-
-        if (id_col == length(peak_id)) {
+    if (id_col == nrTargets) {
             id_REF <- seq(peak_id[id_col]+1,ncol(SNP_hit_Peaks), by=2)
             id_TOT <- seq(peak_id[id_col]+1,ncol(SNP_hit_Peaks), by=1)
-        }else {
+    }else {
             id_REF <- seq(peak_id[id_col]+1,peak_id[id_col+1]-1, by=2)
             id_TOT <- seq(peak_id[id_col]+1,peak_id[id_col+1]-1, by=1)
-        }
-
-        if (length(id_REF) ==1) {
-            SNP_hit_Peaks_sum <- cbind(SNP_hit_Peaks_sum, SNP_hit_Peaks[,peak_id[id_col]], SNP_hit_Peaks[,id_REF], rowSums(SNP_hit_Peaks[,id_TOT], na.rm=TRUE))
-        } else {
-            SNP_hit_Peaks_sum <- cbind(SNP_hit_Peaks_sum, SNP_hit_Peaks[,peak_id[id_col]], rowSums(SNP_hit_Peaks[,id_REF], na.rm=TRUE), rowSums(SNP_hit_Peaks[,id_TOT], na.rm=TRUE))
-        }
-
-        COL_name <- cbind(COL_name, COLname[peak_id[id_col]], "Ref", "Total")
     }
 
-    colnames(SNP_hit_Peaks_sum) <- COL_name
+    if (length(id_REF) ==1) {
+            return(cbind(SNP_hit_Peaks[,peak_id[id_col]], SNP_hit_Peaks[,id_REF], rowSums(SNP_hit_Peaks[,id_TOT], na.rm=TRUE)))
+    } else {
+            return(cbind(SNP_hit_Peaks[,peak_id[id_col]], rowSums(SNP_hit_Peaks[,id_REF], na.rm=TRUE), rowSums(SNP_hit_Peaks[,id_TOT], na.rm=TRUE)))
+    }
 
-    return(SNP_hit_Peaks_sum)
+}
+
+Sum_read_counts <- function(SNP_hit_Peaks) {
+
+    if(colnames(SNP_hit_Peaks)[1] !="ID") {
+        stop("Please check the column names of SNP table: The first colname should be: ID ")
+    }
+
+    peak_id <- which(grepl("score", COLname))
+    mergedReps <- lapply(seq_len(length(peak_id)), getMergedRepData, peak_id=peak_id, SNP_hit_Peaks=SNP_hit_Peaks)
+    mergedReps <- data.frame("ID" = SNP_hit_Peaks[,1], do.call(cbind, mergedReps), stringsAsFactors=FALSE)
+
+    COLname <- colnames(SNP_hit_Peaks)
+    colnames(mergedReps) <- c("ID", unlist(lapply(COLname[peak_id], function (x) {c(x,"Ref","Total")})))
+
+    return(mergedReps)
 }
 
 
@@ -64,18 +66,6 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         else if (opt == "jacob_grad") {1-2*x}
     }
 
-    log_sum_exp <- function(log_X) {
-        max_exp = max(log_X)
-        if (is.infinite(max_exp)) {
-            return(max_exp)
-        }else {
-            total = 0
-            for (x in log_X) {
-                total = total + exp(x - max_exp)
-                return(log(total) + max_exp)
-            }
-        }
-    }
 
     log_factorial <- function(n) {
         lgamma(n+1)
@@ -94,12 +84,17 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         lgamma(a) + lgamma(b) - lgamma(a + b)
     }
 
-    log_beta_binomial_pdf <- function(x, n, a, b){
-        log_binomial_coefficient(n, x) + log_beta(a + x, b + n - x) - log_beta(a, b)
+    log_beta_binomial_pdf <- function(X, a, b){
+        if (class(X) == "list") {X <- unlist(X)}
+        if (X[1] == 1) {
+            x = X[2]
+            n = X[3]
+            return(log(pi) + log_binomial_coefficient(n, x) + log_beta(a + x, b + n - x) - log_beta(a, b))
+        }else {return(0)}
     }
 
     ################################################
-    log_genotype_llh <- function(A_count, total_count, bias_in, allele_bias, precision){
+    log_genotype_llh <- function(X_count, bias_in, allele_bias, precision){
 
         mu <- bias_in
         xi <- (allele_bias * mu)/(1-allele_bias-mu + 2*allele_bias*mu)
@@ -107,8 +102,12 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
 
         param_a <- xi * precision
         param_b <- (1 - xi) * precision
-        return(log_beta_binomial_pdf(A_count, total_count, param_a, param_b))
+
+        X_count <- lapply(seq(1, length(X_count), by=3), function(x){X_count[x: (x+2)]})
+        r <- unlist(lapply(X_count, log_beta_binomial_pdf, a=param_a, b=param_b))
+        return(r)
     }
+
     ################################################
     MH_iter <- function(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
         if (identical(SNP_Bias[SNP_id,"RAF"],0)) { SNP_Bias[SNP_id,"RAF"] <- 0.01}
@@ -141,21 +140,14 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
     }
     ################################################
     log_pro_density_bias <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
-        temp <- matrix(0,1,TF_num)
         i <- SNP_id
         precision <- 1000
         pi <- 0.5
         bias_in <- SNP_Bias[i,"RAF"]
 
-        for (id_tf in c(1:TF_num) ) {
-
-          if (SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)]==1) {
-            Ref_count <- SNP_hit_Peaks_sum[i,2+3*(id_tf-1)+1]
-            total_count <- SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)+2]
-            temp[id_tf] <- log(pi) + log_genotype_llh(Ref_count, total_count, bias_in,
-                                                     allele_bias, precision) # likelihood for each TF
-          }
-        }
+        X_count <- SNP_hit_Peaks_sum[i, 2:ncol(SNP_hit_Peaks_sum)]
+        temp <- log_genotype_llh(X_count,bias_in, allele_bias, precision)
+        temp <- matrix(data=unlist(temp), nrow=1, ncol=TF_num)
 
         # refBias as model prior
         mu <- SNP_Bias[i,"RMbias"]
