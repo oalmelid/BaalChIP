@@ -9,7 +9,8 @@
 setGeneric(name="alleleCounts",
                        def=function(.Object,
                        min_base_quality=10,
-                       min_mapq=15)
+                       min_mapq=15,
+                       verbose=TRUE)
                        {
                                standardGeneric("alleleCounts")
                        }
@@ -22,7 +23,8 @@ setGeneric(name="alleleCounts",
 #' @exportMethod QCfilter
 setGeneric(name="QCfilter",
                        def=function(.Object,
-                       RegionsToFilter = NULL, RegionsToKeep = NULL)
+                       RegionsToFilter = NULL, RegionsToKeep = NULL,
+                       verbose=TRUE)
                        {
                                standardGeneric("QCfilter")
                        }
@@ -35,7 +37,8 @@ setGeneric(name="QCfilter",
 #' @exportMethod filterIntbias
 setGeneric(name="filterIntbias",
                        def=function(.Object, simul_output = NULL, tmpfile_prefix = NULL,
-                 simulation_script = "local", skipScriptRun=FALSE)
+                       simulation_script = "local", skipScriptRun=FALSE,
+                       verbose=TRUE)
                        {
                                standardGeneric("filterIntbias")
                        }
@@ -72,7 +75,7 @@ setGeneric(name="filter1allele",
 #' @rdname BaalChIP.run
 #' @exportMethod BaalChIP.run
 setGeneric(name="BaalChIP.run",
-                       def=function(.Object, cores=4)
+                       def=function(.Object, cores=4, verbose=TRUE)
                        {
                                standardGeneric("BaalChIP.run")
                        }
@@ -85,8 +88,11 @@ setGeneric(name="BaalChIP.run",
 #' @rdname getASB
 #' @exportMethod getASB
 setGeneric(name="getASB",
-                       def=function(.Object, Iter = 5000, conf_level = 0.95, cores = 4,
-                 RMcorrection = TRUE, RAFcorrection = TRUE)
+                       def=function(.Object, Iter = 5000,
+                       conf_level = 0.95, cores = 4,
+                       RMcorrection = TRUE,
+                       RAFcorrection = TRUE,
+                       verbose=TRUE)
                        {
                                standardGeneric("getASB")
                        }

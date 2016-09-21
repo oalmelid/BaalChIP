@@ -66,14 +66,16 @@ filter_genomicRegions <- function (snp.ranges, Regions, type=c("filterOut_overla
 }
 
 
-applyFiltersPerBam <- function(counts_per_bam, RegionsToFilter, RegionsToKeep) {
+applyFiltersPerBam <- function(counts_per_bam, RegionsToFilter, RegionsToKeep, verbose=TRUE) {
 
     res_per_bam <- list()
 
     N <- sum(sapply(counts_per_bam, length))
 
-    message("-applying filters per BAM")
-    pb <- txtProgressBar(min = 0, max = N, style = 3)
+    if (verbose) {
+        message("-applying filters per BAM")
+        pb <- txtProgressBar(min = 0, max = N, style = 3)
+    }
     i=1
 
     for (group_name in names(counts_per_bam)) {
@@ -98,10 +100,10 @@ applyFiltersPerBam <- function(counts_per_bam, RegionsToFilter, RegionsToKeep) {
         res_per_bam[[group_name]][[sampleID]] <- res
 
         #set progress bar
-        setTxtProgressBar(pb, i)
+        if (verbose) {setTxtProgressBar(pb, i)}
         i=i+1
     }
   }
-  close(pb)
+  if (verbose) {close(pb)}
   return(res_per_bam)
 }

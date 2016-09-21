@@ -6,10 +6,11 @@
 \alias{QCfilter,BaalChIP-method}
 \title{Method QCfilter}
 \usage{
-QCfilter(.Object, RegionsToFilter = NULL, RegionsToKeep = NULL)
+QCfilter(.Object, RegionsToFilter = NULL, RegionsToKeep = NULL,
+  verbose = TRUE)
 
 \S4method{QCfilter}{BaalChIP}(.Object, RegionsToFilter = NULL,
-  RegionsToKeep = NULL)
+  RegionsToKeep = NULL, verbose = TRUE)
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
@@ -17,6 +18,8 @@ QCfilter(.Object, RegionsToFilter = NULL, RegionsToKeep = NULL)
 \item{RegionsToFilter}{a named list of GRanges objects. Variants overlapping these regions will be removed.}
 
 \item{RegionsToKeep}{a named list of GRanges objects. Works in an oposite way to 'RegionstoFilter', variants NOT overlapping these regions will be removed.}
+
+\item{verbose}{logical. If TRUE reports extra information on the process}
 }
 \value{
 An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects that pass filters.

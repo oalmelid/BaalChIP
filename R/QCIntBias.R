@@ -12,10 +12,12 @@ get_readlen <- function(bamfile, snp.ranges) {
     readlength
 }
 
-applyReadlenPerBam <- function(samples, res_per_bam) {
+applyReadlenPerBam <- function(samples, res_per_bam, verbose=TRUE) {
 
-    message("-getting read lengths per sample")
-    pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
+    if (verbose) {
+        message("-getting read lengths per sample")
+        pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
+    }
     readlens <- lapply(seq_len(nrow(samples)), function(rownr) {
         #for (rownr in seq_len(nrow(samples))) {
         x <- samples[rownr,,drop=FALSE]
@@ -26,10 +28,10 @@ applyReadlenPerBam <- function(samples, res_per_bam) {
 
         #readlens <- c(readlens, get_readlen(bamfile=x[["bam_name"]], snp.ranges=sigi.ranges))
         result <- BaalChIP:::get_readlen(bamfile=x[["bam_name"]], snp.ranges=sigi.ranges)
-        setTxtProgressBar(pb, rownr)
+        if (verbose) {setTxtProgressBar(pb, rownr)}
         return(result)
     })
-    close(pb)
+    if (verbose) {close(pb)}
     readlens <- unlist(readlens)
     return(readlens)
 }
@@ -61,7 +63,7 @@ get_lastset <- function(res_per_bam) {
     return(lastset)
 }
 
-run_sim <- function (snpframe, readlenvector, outputPath, simulation_script) {
+run_sim <- function (snpframe, readlenvector, outputPath, simulation_script, verbose=TRUE) {
 
     #output snp file name
     snpout <- paste0(outputPath,"_snplist.txt")
@@ -73,8 +75,10 @@ run_sim <- function (snpframe, readlenvector, outputPath, simulation_script) {
     #run external simulation script
     if (!is.null(simulation_script)) {
 
-        message("-running simulations for each read length")
-        pb <- txtProgressBar(min = 0, max = length(readlenvector), style = 3)
+        if (verbose) {
+            message("-running simulations for each read length")
+            pb <- txtProgressBar(min = 0, max = length(readlenvector), style = 3)
+        }
 
         for (i in seq_len(length(readlenvector))) {
 
@@ -91,35 +95,38 @@ run_sim <- function (snpframe, readlenvector, outputPath, simulation_script) {
             #debug: if (r != 0) {stop("error running simulation script")}
             #debug: "bsub -q fmlab -R rusage[mem=5000]"
 
-            setTxtProgressBar(pb, i) #set progress bar
+            if (verbose) {setTxtProgressBar(pb, i)}
 
         }
-        close(pb)
+        if (verbose) {close(pb)}
     }
 }
 
-get_simcounts <- function(snpframe, readlenvector, outputPath) {
+get_simcounts <- function(snpframe, readlenvector, outputPath, verbose=TRUE) {
 
-    message("-calculating allelecounts for simulated reads")
+
 
     #get simcounts
-    pb <- txtProgressBar(min = 0, max = length(readlenvector), style = 3)
+    if(verbose) {
+        message("-calculating allelecounts for simulated reads")
+        pb <- txtProgressBar(min = 0, max = length(readlenvector), style = 3)
+    }
 
     simcounts <-  lapply(seq_len(length(readlenvector)), function(i) {
         r <- readlenvector[[i]]
         bamout <- paste0(outputPath,"_aln",r,".bam")
         res <- get_allele_counts(bamfile = bamout, snp.ranges = get_snp_ranges(snpframe), returnRanges=FALSE, min_base_quality=0, min_mapq=0)
-        setTxtProgressBar(pb, i) #set progress bar
+        if (verbose) {setTxtProgressBar(pb, i)}
         return(res)
     })
-    close(pb)
+    if (verbose) {close(pb)}
 
     names(simcounts) <- readlenvector
     simcounts
 }
 
 
-applySim <- function(samples, res_per_bam, simul_output, simulation_script= "local", testingScript=FALSE) {
+applySim <- function(samples, res_per_bam, simul_output, simulation_script= "local", testingScript=FALSE, verbose=TRUE) {
 
      if (simulation_script == "local") {simulation_script = system.file("extra/run_simulations.sh",package="BaalChIP")}
      lastset <- get_lastset(res_per_bam) #get the data frame for all unique SNPs from the last round of filters
@@ -129,19 +136,19 @@ applySim <- function(samples, res_per_bam, simul_output, simulation_script= "loc
 
      #run_sum
      if (!testingScript) { #will save fasta+bam files in simul_output
-        run_sim(snpframe=lastset, readlenvector, outputPath=simul_output, simulation_script=simulation_script)
+        run_sim(snpframe=lastset, readlenvector, outputPath=simul_output, simulation_script=simulation_script, verbose=verbose)
      }
 
-     simcounts <- get_simcounts(snpframe=lastset, readlenvector, outputPath=simul_output)
+     simcounts <- get_simcounts(snpframe=lastset, readlenvector, outputPath=simul_output, verbose=verbose)
 
      #simulation_stats
      total_nr_snps <- nrow(lastset)
      simulation_stats <- lapply(names(simcounts), function(r) {
-                                                                    sim <- simcounts[[r]]
-                                                                    r <- as.numeric(r)
-                                                                    perc_right = sum(sim$AR==0.5 & sim$REF.counts == r*2 & sim$ALT.counts == r*2)
-                                                                    c("readslen"=r,"perc_right"=100*perc_right / total_nr_snps)
-                                                                  })
+                                                sim <- simcounts[[r]]
+                                                r <- as.numeric(r)
+                                                perc_right = sum(sim$AR==0.5 & sim$REF.counts == r*2 & sim$ALT.counts == r*2)
+                                                c("readslen"=r,"perc_right"=100*perc_right / total_nr_snps)
+                                                })
 
 
       simulation_stats <- data.frame(do.call("rbind", simulation_stats), stringsAsFactors=FALSE)
@@ -159,9 +166,11 @@ filter_intbias <- function(snp.ranges, sim, r){
 
 }
 
-applyIntBiasFilterPerBam <- function(samples, res_per_bam, simcounts) {
-    message("-filtering intrinsic bias")
-    pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
+applyIntBiasFilterPerBam <- function(samples, res_per_bam, simcounts, verbose=TRUE) {
+    if (verbose) {
+        message("-filtering intrinsic bias")
+        pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
+    }
     for (rownr in seq_len(nrow(samples))) {
             x <- samples[rownr,,drop=FALSE]
 
@@ -179,9 +188,9 @@ applyIntBiasFilterPerBam <- function(samples, res_per_bam, simcounts) {
             res_per_bam[[x[["group_name"]]]][[x[["sampleID"]]]][["intbias"]] <- res
 
             #set progress bar
-            setTxtProgressBar(pb, rownr)
+            if (verbose) {setTxtProgressBar(pb, rownr)}
         }
-        close(pb)
+        if (verbose) {close(pb)}
         return(res_per_bam)
 }
 

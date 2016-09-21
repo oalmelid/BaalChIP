@@ -6,14 +6,16 @@
 \alias{BaalChIP.run,BaalChIP-method}
 \title{Method BaalChIP.run}
 \usage{
-BaalChIP.run(.Object, cores = 4)
+BaalChIP.run(.Object, cores = 4, verbose = TRUE)
 
-\S4method{BaalChIP.run}{BaalChIP}(.Object, cores = 4)
+\S4method{BaalChIP.run}{BaalChIP}(.Object, cores = 4, verbose = TRUE)
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
 
 \item{cores}{number of cores for parallel computing (default is 4).}
+
+\item{verbose}{logical. If TRUE reports extra information on the process}
 }
 \value{
 An object of the \code{\link{BaalChIP}} class.

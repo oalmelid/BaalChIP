@@ -7,11 +7,11 @@
 \title{Method filterIntbias}
 \usage{
 filterIntbias(.Object, simul_output = NULL, tmpfile_prefix = NULL,
-  simulation_script = "local", skipScriptRun = FALSE)
+  simulation_script = "local", skipScriptRun = FALSE, verbose = TRUE)
 
 \S4method{filterIntbias}{BaalChIP}(.Object, simul_output = NULL,
   tmpfile_prefix = NULL, simulation_script = "local",
-  skipScriptRun = FALSE)
+  skipScriptRun = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
@@ -23,6 +23,8 @@ filterIntbias(.Object, simul_output = NULL, tmpfile_prefix = NULL,
 \item{simulation_script}{the file path for simulation script containing the instructions of simulation and alignment commands. If NULL, the default simulation script distributed with BaalChIP ('extra/simulation_run.sh') will be used.}
 
 \item{skipScriptRun}{a logical value indicating if simulation BAM files should not be generated. If TRUE BaalChIP will look for the BAM files in the 'simul_output/temp_prefix' (default is FALSE).}
+
+\item{verbose}{logical. If TRUE reports extra information on the process}
 }
 \value{
 An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects that pass filters.

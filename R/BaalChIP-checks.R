@@ -1,6 +1,18 @@
 #BaalChIP: functions for argument checking
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
+checkFileExists <- function(fname, wd) {
+    #checks if fname exists, if not will try to see inside wd. Returns right fname
+    if (file.exists(fname)) {
+        return(fname)
+    }else{
+        fname2 <- file.path(wd, fname)
+        if (file.exists(fname2)){
+            return(fname2)
+        }else
+            stop(paste('file does not exist:', fname),call.=FALSE)
+        }
+}
 
 readsamplesheet <- function(samplesheet, .CHECKS=TRUE) {
     # Read samplesheet
@@ -26,26 +38,20 @@ readsamplesheet <- function(samplesheet, .CHECKS=TRUE) {
 
     #check if all files exist in samplesheet
     if (.CHECKS) {
-        for (rownr in seq_len(nrow(samples))) {
-            x <- samples[rownr,, drop=FALSE]
-            if (!file.exists(x[["bam_name"]]))
-                {stop(paste('BAM file does not exist:', x[["bam_name"]]),call.=FALSE)}
-            if (!file.exists(paste0(x[["bam_name"]],".bai")))
-            {stop(paste('BAM index file does not exist:', paste0(x[["bam_name"]],".bai")),call.=FALSE)}
-            if (!file.exists(x[["bed_name"]]))
-                {stop(paste('BED file does not exist:', x[["bed_name"]]),call.=FALSE)}
-        }
+        wd <- dirname(samplesheet)
+        samples$bam_name <- sapply(samples$bam_name, checkFileExists, wd = wd)
+        a <- sapply(paste0(samples$bam_name,".bai"), checkFileExists, wd = dirname(samples$bam_name))
+        samples$bed_name <- sapply(samples$bed_name, checkFileExists, wd = wd)
     }
 
     return(samples)
 }
 
-readhettables <- function(hets, .CHECKS=TRUE) {
+readhettables <- function(hets, wd, .CHECKS=TRUE) {
     if (.CHECKS) {
-        for (filename in hets) {
-            if (!file.exists(filename)) { stop(paste('hetSNP file does not exist:',filename),call.=FALSE) }
-        }
+        hets <- sapply(hets, checkFileExists, wd = wd)
     }
+    return(hets)
 }
 
 readbams <- function(bamlist, .CHECKS=TRUE) {
@@ -114,7 +120,8 @@ BaalChIP.checks <- function(name, param, .CHECKS= TRUE){
 
     if (name == "hets")
         {
-        readhettables(param, .CHECKS = .CHECKS)
+        hets <- readhettables(param[["hets"]], param[["wd"]], .CHECKS = .CHECKS)
+        return(hets)
     }
 
     if (name == "gDNA")

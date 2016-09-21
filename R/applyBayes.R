@@ -25,7 +25,8 @@ getMergedRepData <- function(id_col, peak_id, SNP_hit_Peaks) {
 
 Sum_read_counts <- function(SNP_hit_Peaks) {
 
-    if(colnames(SNP_hit_Peaks)[1] !="ID") {
+    COLname <- colnames(SNP_hit_Peaks)
+    if(COLname[1] !="ID") {
         stop("Please check the column names of SNP table: The first colname should be: ID ")
     }
 
@@ -84,7 +85,7 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         lgamma(a) + lgamma(b) - lgamma(a + b)
     }
 
-    log_beta_binomial_pdf <- function(X, a, b){
+    log_beta_binomial_pdf2 <- function(X, a, b){
         if (class(X) == "list") {X <- unlist(X)}
         if (X[1] == 1) {
             x = X[2]
@@ -93,8 +94,11 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         }else {return(0)}
     }
 
+    log_beta_binomial_pdf <- function(x, n, a, b){
+        log_binomial_coefficient(n, x) + log_beta(a + x, b + n - x) - log_beta(a, b)
+    }
     ################################################
-    log_genotype_llh <- function(X_count, bias_in, allele_bias, precision){
+    log_genotype_llh2 <- function(X_count, bias_in, allele_bias, precision){
 
         mu <- bias_in
         xi <- (allele_bias * mu)/(1-allele_bias-mu + 2*allele_bias*mu)
@@ -104,8 +108,19 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         param_b <- (1 - xi) * precision
 
         X_count <- lapply(seq(1, length(X_count), by=3), function(x){X_count[x: (x+2)]})
-        r <- unlist(lapply(X_count, log_beta_binomial_pdf, a=param_a, b=param_b))
+        r <- unlist(lapply(X_count, log_beta_binomial_pdf2, a=param_a, b=param_b))
         return(r)
+    }
+
+    log_genotype_llh <- function(A_count, total_count, bias_in, allele_bias, precision){
+
+        mu <- bias_in
+        xi <- (allele_bias * mu)/(1-allele_bias-mu + 2*allele_bias*mu)
+
+
+        param_a <- xi * precision
+        param_b <- (1 - xi) * precision
+        return(log_beta_binomial_pdf(A_count, total_count, param_a, param_b))
     }
 
     ################################################
@@ -130,23 +145,53 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
             if(U < min(0,ratio)) {
                 bias[iter] <- bias_new
                 llh[iter] <- llh_new
-                }else{
+            }else{
                 bias[iter] <- bias[iter-1]
                 llh[iter] <- llh[iter-1]
+            }
         }
-    }
 
     return(bias)
     }
     ################################################
     log_pro_density_bias <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
+        temp <- matrix(0,1,TF_num)
+        i <- SNP_id
+        precision <- 1000
+        pi <- 0.5
+        bias_in <- SNP_Bias[i,"RAF"]
+
+        for (id_tf in c(1:TF_num) ) {
+
+          if (SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)]==1) {
+            Ref_count <- SNP_hit_Peaks_sum[i,2+3*(id_tf-1)+1]
+            total_count <- SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)+2]
+            temp[id_tf] <- log(pi) + log_genotype_llh(Ref_count, total_count, bias_in,
+                                                     allele_bias, precision) # likelihood for each TF
+          }
+        }
+
+        # refBias as model prior
+        mu <- SNP_Bias[i,"RMbias"]
+        var <- 0.05
+        alpha <- ( (1-mu)/var- 1/mu) * mu^2
+        beta <- alpha*(1/mu - 1)
+        prior <- log(dbeta(allele_bias,alpha,beta))
+
+        # total posterior = prior * likelihood
+        total_pos <- sum(temp) + prior + log(bias_in/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in)) - allele_bias*bias_in*(2*bias_in-1)/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in))^2)
+        return(total_pos)
+
+   }
+
+   log_pro_density_bias2 <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
         i <- SNP_id
         precision <- 1000
         pi <- 0.5
         bias_in <- SNP_Bias[i,"RAF"]
 
         X_count <- SNP_hit_Peaks_sum[i, 2:ncol(SNP_hit_Peaks_sum)]
-        temp <- log_genotype_llh(X_count,bias_in, allele_bias, precision)
+        temp <- log_genotype_llh2(X_count,bias_in, allele_bias, precision)
         temp <- matrix(data=unlist(temp), nrow=1, ncol=TF_num)
 
         # refBias as model prior

@@ -6,10 +6,11 @@
 \alias{alleleCounts,BaalChIP-method}
 \title{Method alleleCounts}
 \usage{
-alleleCounts(.Object, min_base_quality = 10, min_mapq = 15)
+alleleCounts(.Object, min_base_quality = 10, min_mapq = 15,
+  verbose = TRUE)
 
 \S4method{alleleCounts}{BaalChIP}(.Object, min_base_quality = 10,
-  min_mapq = 15)
+  min_mapq = 15, verbose = TRUE)
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
@@ -17,6 +18,8 @@ alleleCounts(.Object, min_base_quality = 10, min_mapq = 15)
 \item{min_base_quality}{A numeric value indicating the minimum read base quality below which the base is ignored when summarizing pileup information (default 10).}
 
 \item{min_mapq}{A numeric value indicating the minimum mapping quality (MAPQ) below which the entire read is ignored (default 15).}
+
+\item{verbose}{logical. If TRUE reports extra information on the process}
 }
 \value{
 An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects.

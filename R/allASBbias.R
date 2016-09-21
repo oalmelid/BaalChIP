@@ -91,18 +91,22 @@ getbiasparam <- function(biastable){
 }
 
 
-getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=15) {
-    message("-computing allele counts per gDNA BAM")
-    pb <- txtProgressBar(min = 0, max = length(bamFiles), style = 3)
+getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=15, verbose=TRUE) {
+    if (verbose) {
+        message("-computing allele counts per gDNA BAM")
+        pb <- txtProgressBar(min = 0, max = length(bamFiles), style = 3)
+    }
+
     AllCounts <- lapply(seq_len(length(bamFiles)), function(i) {
         bamfile <- bamFiles[i]
         acounts <- BaalChIP:::get_allele_counts(bamfile, snp.ranges, returnRanges=FALSE, min_base_quality=min_base_quality,min_mapq=min_mapq)
         acounts <- acounts[,c("ID","CHROM","POS","REF.counts","ALT.counts"), drop=FALSE]
-        setTxtProgressBar(pb, i)
+        if (verbose) {setTxtProgressBar(pb, i)}
         return(acounts)
     })
+
     names(AllCounts) <- bamFiles
-    close(pb)
+    if (verbose) {close(pb)}
 
     #delete all entries in AllCounts that are NULL
     if (any(sapply(AllCounts, is.null))) {
@@ -115,14 +119,17 @@ getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=
         refcounts <- rowSums(sapply(AllCounts, function(x) {x$REF.counts[match(snpIDs, x$ID)]}), na.rm=TRUE)
         altcounts <- rowSums(sapply(AllCounts, function(x) {x$ALT.counts[match(snpIDs, x$ID)]}), na.rm=TRUE)
     }
+
     if (length(AllCounts) == 1)   {
         x <- AllCounts[[1]]
         refcounts <- x$REF.counts[match(snpIDs, x$ID)]
         altcounts <- x$ALT.counts[match(snpIDs, x$ID)]
     }
+
     if (length(AllCounts) == 0) {
         return(NULL)
     }
+
     refcounts [ is.na(refcounts) ] <- 0
     altcounts [ is.na(altcounts) ] <- 0
     totalcounts <- (refcounts + altcounts)
@@ -133,7 +140,7 @@ getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=
 
 }
 
-useRAFfromhets <- function(snps, ID) {
+useRAFfromhets <- function(snps, ID, verbose=TRUE) {
     if (nrow(snps)==0) {return(data.frame())} #in case there were no snps left after filtering
 
     if (!("RAF" %in% colnames(snps))) {
@@ -142,26 +149,26 @@ useRAFfromhets <- function(snps, ID) {
         snps$RAF <- 0.5
     }else{
         #will use the RAF values in this case:
-        message("will use RAF values for ", ID," group from hets file")
+        if (verbose) {message("will use RAF values for ", ID," group from hets file")}
     }
         return(snps)
 }
 
-useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15) {
+useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15, verbose=TRUE) {
 
     if (nrow(snps)==0) {return(data.frame())} #in case there were no snps left after filtering
 
-    message("-calculating RAF from gDNA for group ",ID)
+    if (verbose) {message("-calculating RAF from gDNA for group ",ID)}
     bamFiles <- gDNAbams
     snp.ranges <- get_snp_ranges(snps)
-    RAF <- getRAFfromgDNA(bamFiles, snp.ranges, min_base_quality=min_base_quality, min_mapq=min_mapq)
+    RAF <- getRAFfromgDNA(bamFiles, snp.ranges, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=verbose)
     if (!is.null(RAF)) {snps <- merge(snps, RAF, by="ID")}
     if (is.null(RAF)) {stop("Did not find any reads from gDNA BAMs overlapping SNPs for group",ID," Cannot proceed\n")}
     #message("will use RAF values estimated from all gDNA bam files for ",ID, " group:", gDNA[[ID]])
     return(snps)
 }
 
-get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min_mapq=15, RAFcorrection=TRUE) {
+get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min_mapq=15, RAFcorrection=TRUE, verbose=TRUE) {
 
     if (length(gDNA)==0) {gDNA <- NULL}
 
@@ -174,17 +181,17 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
 
 
         #RAF correction is TRUE, and gDNA is null --> go directly to RAF
-        if (is.null(gDNAbams) & RAFcorrection) { snps <- useRAFfromhets(snps, ID) }
+        if (is.null(gDNAbams) & RAFcorrection) { snps <- useRAFfromhets(snps, ID, verbose=verbose) }
 
         #RAF correction is TRUE and gDNA is not null
         if (!is.null(gDNAbams) & RAFcorrection) {
 
             if ("RAF" %in% colnames(snps)) {
                 #There are both gDNA and RAF in hets tables.. will use the RAF instead!
-                message("both gDNA and hets file found for group ", ID)
-                snps <- useRAFfromhets(snps, ID)
+                warning("both gDNA and hets file found for group ", ID, ". Will use RAF from hets!")
+                snps <- useRAFfromhets(snps, ID, verbose=verbose)
             }else{
-                snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq)
+                snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=verbose)
 
             }
 
@@ -200,7 +207,7 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
 }
 
 
-addVarTable <- function(object, RAFcorrection=TRUE) {
+addVarTable <- function(object, RAFcorrection=TRUE, verbose=TRUE) {
     assayedVar <- getBaalSlot(object, "assayedVar")
     hets <- getBaalSlot(object, "hets")
 
@@ -210,6 +217,6 @@ addVarTable <- function(object, RAFcorrection=TRUE) {
     min_base_quality <- QCparam[["min_base_quality"]] #will not be used if gDNA is null or RAFcorrection==FALSE
     min_mapq <- QCparam[["min_mapq"]] #will not be used if gDNA is null or RAFcorrection==FALSE
 
-    VarTable <- get_Vartable(assayedVar, hets, gDNA, min_base_quality, min_mapq, RAFcorrection)
+    VarTable <- get_Vartable(assayedVar, hets, gDNA, min_base_quality, min_mapq, RAFcorrection,verbose)
     return(VarTable)
 }

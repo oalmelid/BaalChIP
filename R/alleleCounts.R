@@ -140,13 +140,15 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
     }
 }
 
-applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_quality, min_mapq=min_mapq) {
+applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=TRUE) {
     cells <- unique(samples[["group_name"]])
     res_per_bam <- list()
     res_per_bam <- lapply(cells, function(x) {res_per_bam[[x]] <- list()})
     names(res_per_bam) <- cells
-    message("-computing allele counts per BAM")
-    pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
+    if (verbose) {
+        message("-computing allele counts per BAM")
+        pb <- txtProgressBar(min = 0, max = nrow(samples), style = 3)
+    }
     for (rownr in seq_len(nrow(samples))) {
 
         x <- samples[rownr,,drop=FALSE]
@@ -161,9 +163,9 @@ applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_qua
         res_per_bam[[x[["group_name"]]]][[x[["sampleID"]]]] <- list("sigi"=sigi.ranges)
 
         #set progress bar
-        setTxtProgressBar(pb, rownr)
+        if (verbose) {setTxtProgressBar(pb, rownr)}
     }
-    close(pb)
+    if (verbose) {close(pb)}
 
     return(res_per_bam)
 

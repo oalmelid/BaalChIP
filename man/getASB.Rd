@@ -7,10 +7,10 @@
 \title{Method getASB}
 \usage{
 getASB(.Object, Iter = 5000, conf_level = 0.95, cores = 4,
-  RMcorrection = TRUE, RAFcorrection = TRUE)
+  RMcorrection = TRUE, RAFcorrection = TRUE, verbose = TRUE)
 
 \S4method{getASB}{BaalChIP}(.Object, Iter = 5000, conf_level = 0.95,
-  cores = 4, RMcorrection = TRUE, RAFcorrection = TRUE)
+  cores = 4, RMcorrection = TRUE, RAFcorrection = TRUE, verbose = TRUE)
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
@@ -24,6 +24,8 @@ getASB(.Object, Iter = 5000, conf_level = 0.95, cores = 4,
 \item{RMcorrection}{Logical value indicating if reference mapping (RM) bias should be applied (default TRUE). If FALSE will not correct for reference allele mapping bias. If TRUE will estimate the RM bias from the overall reference allele proportion.}
 
 \item{RAFcorrection}{Logical value indicating if relative allele frequency (RAF) bias correction should be applied (default TRUE). If TRUE will read RAF values for each variant from \code{hets} files (RAF column name). If FALSE will not correct for relative allele frequency bias.}
+
+\item{verbose}{logical. If TRUE reports extra information on the process}
 }
 \value{
 An updated \code{\link{BaalChIP}} object with the slot \code{ASB} containing variants identified as allele-specific.
