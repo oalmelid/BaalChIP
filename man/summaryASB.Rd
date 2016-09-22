@@ -22,7 +22,7 @@ Method summaryASB
 Generates summary of ASB test result.
 }
 \examples{
-data("BaalObject")
+data('BaalObject')
 summaryASB(BaalObject)
 }
 \author{

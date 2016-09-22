@@ -4,8 +4,24 @@
 \name{UniqueMappability50bp_hg19}
 \alias{UniqueMappability50bp_hg19}
 \title{Genomic regions of unique mappability}
+\format{A GRanges object of 9831690 ranges.}
+\source{
+Downloaded from \url{http://hgdownload.cse.ucsc.edu/gbdb/hg19/bbi/wgEncodeCrgMapabilityAlign50mer.bw}.
+}
 \description{
-Unique regions with genomic mappability score equal to 1 selected from DUKE uniqueness mappability track of the UCSC genome browser generated using a window size of 50bp (hg19,  wgEncodeCrgMapabilityAlign50mer table). Used as 'RegionsToKeep' within the QCfilter function so that variants NOT overlapping these regions will be removed.
+A GRanges object containing unique regions with genomic mappability score equal to 1.
+Selected from DUKE uniqueness mappability track of the UCSC genome browser (hg19,  wgEncodeCrgMapabilityAlign50mer table).
+
+Code used to retrieve these regions:
+\itemize{
+\item curl http://hgdownload.cse.ucsc.edu/gbdb/hg19/bbi/wgEncodeCrgMapabilityAlign50mer.bw > wgEncodeCrgMapabilityAlign50mer.bw
+\item ./bigWigToBedGraph wgEncodeCrgMapabilityAlign50mer.bw wgEncodeCrgMapabilityAlign50mer.bedgraph
+\item awk '{ if ($4 >= 1) print $0 }' wgEncodeCrgMapabilityAlign50mer.bedgraph > wgEncodeCrgMapabilityAlign50mer_UNIQUEregions.bedgraph
+}
+Used as 'RegionsToKeep' within the QCfilter function so that variants NOT overlapping these regions will be removed. \cr
+}
+\details{
+These regions are not applicable to longer reads (> 50bp).
 }
 \author{
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}

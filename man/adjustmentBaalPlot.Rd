@@ -13,7 +13,7 @@ adjustmentBaalPlot(.Object, col = c("green3", "gray50"))
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
 
-\item{col}{A character vector indicating the colours for the density plot ( default is c( "green3","gray50") ).}
+\item{col}{A character vector indicating the colours for the density plot ( default is c( 'green3','gray50') ).}
 }
 \value{
 A plot
@@ -24,9 +24,9 @@ Method adjustmentBaalPlot
 Produces a density plot of the distribution of allelic ratios (REF/TOTAL) before and after BaalChIP adjustment for RM and RAF biases.
 }
 \examples{
-data("BaalObject")
+data('BaalObject')
 adjustmentBaalPlot(BaalObject)
-adjustmentBaalPlot(BaalObject, col=c("blue","pink"))
+adjustmentBaalPlot(BaalObject, col=c('blue','pink'))
 }
 \author{
 Ines de Santiago

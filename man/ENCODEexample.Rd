@@ -3,9 +3,13 @@
 \docType{data}
 \name{ENCODEexample}
 \alias{ENCODEexample}
-\title{ENCODEexample example dataset. This is a BaalChIP-class object}
+\title{ENCODEexample example dataset}
+\format{A BaalChIP-class object}
+\source{
+Downloaded from supplementary data of BaalChIP paper
+}
 \description{
-ENCODEexample example dataset. This is a BaalChIP-class object
+ENCODEexample example dataset
 }
 \author{
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}

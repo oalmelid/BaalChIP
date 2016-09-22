@@ -4,8 +4,22 @@
 \name{blacklist_hg19}
 \alias{blacklist_hg19}
 \title{Blacklisted genomic regions}
+\format{A GRanges object of 1378 ranges.}
 \description{
-Blacklisted regions downloaded from the UCSC Genome Browser (mappability track; hg19, wgEncodeDacMapabilityConsensusExcludable and wgEncodeDukeMapabilityRegionsExcludable tables). Used as 'RegionsToFilter' within the QCfilter function so that variants overlapping these regions will be removed.
+A GRanges object containing blacklisted regions identified by the ENCODE and modENCODE consortia.
+These correspond to artifact regions that tend to show artificially high signal (excessive unstructured anomalous reads mapping).
+Selected from mappability track of the UCSC genome browser (hg19, wgEncodeDacMapabilityConsensusExcludable and wgEncodeDukeMapabilityRegionsExcludable tables).
+
+Code used to retrieve these regions:
+\itemize{
+\item curl http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/wgEncodeDacMapabilityConsensusExcludable.bed > hg19_DACExcludable.txt \cr
+\item cat hg19_DUKEExcludable.txt hg19_DACExcludable.txt | grep -v "^#" | cut -f 2,3,4,5,6,7 | sort -k1,1 -k2,2n | mergeBed -nms -i stdin > hg19_DUKE_DAC.bed \cr
+}
+Used as 'RegionsToFilter' within the QCfilter function so that variants overlapping these regions will be removed.
+}
+\details{
+Note that these blacklists are applicable to functional genomic data (e.g. ChIP-seq, MNase-seq, DNase-seq, FAIRE-seq) of short reads (20-100bp reads).
+These are not applicable to RNA-seq or other transcriptome data types.
 }
 \author{
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}

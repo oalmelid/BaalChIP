@@ -28,20 +28,20 @@
 #res <- filterIntbias(BaalObject,
 #'       simul_output="~/simuloutput",
 #'       alignmentSimulArgs=c("picard-tools-1.119","bowtie-1.1.1","genomes_test/male.hg19","genomes_test/maleByChrom"))
-picard=$6
-bowtie=$7
-genome=$8
-genomeBychr=$9
+picard=$6 #path to picard
+bowtie=$7 #path to bowtie
+genome=$8 #basename for the indexed genome (to be used by bowtie)
+genomeBychr=$9 #A path to the folder containing gzipped files of the genome, separated by chromosome and named as: chr1.fa.gz, chr2.fa.gz, chr3.fa.gz ...
 #########################################################################################
 
 #########################################################################################
 #Or 
 #use alignmentSimulArgs=NULL and uncomment the following lines (using the appropriate paths):
 
-#picard=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/picard-tools-1.119
-#bowtie=/Volumes/groups/Research/fmlab/public_folders/InesdeSantiago/bowtie-1.1.1
-#genome=/Users/santia01/Desktop/genomes_test/male.hg19
-#genomeBychr=/Users/santia01/Desktop/genomes_test/maleByChrom
+#picard=/lustre/fmlab/santia01/tools/picard-tools-1.47
+#bowtie=/lustre/fmlab/santia01/tools/bowtie-1.1.0/bowtie
+#genome=/lustre/fmlab/santia01/tools/genomes/hg19_encodeDCC/male.hg19
+#genomeBychr=/lustre/fmlab/santia01/tools/genomes/hg19_encodeDCC/maleByChrom
 #########################################################################################
 
 
@@ -51,15 +51,16 @@ genomeBychr=$9
 #these next five arguments are arguments of get.overlaps.v2_chrXY.perl 
 #they are computed directly in R and passed to this script as arguments
 #hardcoded within the R command 
-simscript=$1  #simscript=/Users/santia01/Dropbox/FromHome/baal_package/BaalChIP/inst/extra/get.overlaps.v2_chrXY.perl
-readlen=$2
-snplist=$3
-fastaout=$4
-bamout=$5
+simscript=$1  #e.g. simscript=/Users/santia01/Dropbox/FromHome/baal_package/BaalChIP/inst/extra/get.overlaps.v2_chrXY.perl
+readlen=$2 #The length of the reads you want to simulate
+snplist=$3 #A path to the file that gives the SNP locations
+fastaout=$4 #output fasta file
+bamout=$5 #output aligned bam file
 #########################################################################################
 
 
 #Run
+#readstring is a string of Ascii characters representing the base-quality scores you want to assign to each read.  This needs to be the same length as the reads you are simulating. B was the modal base quality score in Degner 2009 dataset and may be a good default.
 readstring=`printf '%*s' "$readlen" | tr ' ' "B"`
 perl $simscript $snplist $genomeBychr $readlen $readstring > $fastaout
 $bowtie/bowtie --chunkmbs 512 -t --best -q -S -p 8 -l 32 -e 80 -n 2 -m 1 $genome $fastaout $fastaout.sam

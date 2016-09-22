@@ -29,9 +29,9 @@ BaalChIP.run is a wrapper convenience function, to compute allele counts and per
 This function is a wrapper of the following functions: \code{\link{alleleCounts}}, \code{\link{QCfilter}}, \code{\link{mergePerGroup}}, \code{\link{filter1allele}}, \code{\link{getASB}}
 }
 \examples{
-setwd(system.file("test",package="BaalChIP"))
-samplesheet <- "exampleChIP.tsv"
-hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+setwd(system.file('test',package='BaalChIP'))
+samplesheet <- 'exampleChIP.tsv'
+hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
 res <- BaalChIP(samplesheet=samplesheet, hets=hets)
 res <- BaalChIP.run(res, cores=2)
 

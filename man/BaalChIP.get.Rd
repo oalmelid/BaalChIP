@@ -26,20 +26,20 @@ Method BaalChIP.get
 Get information from individual slots in a BaalChIP object.
 }
 \examples{
-data("BaalObject")
+data('BaalObject')
 
 #samples data spreadsheet and hets:
-BaalChIP.get(BaalObject,what="samples")
+BaalChIP.get(BaalObject,what='samples')
 
 #parameters used within run:
-BaalChIP.get(BaalObject,what="param")
+BaalChIP.get(BaalObject,what='param')
 
 #retrieve a GRanges list with allele-specific read counts per BAM file:
-counts <- BaalChIP.get(BaalObject,what="alleleCountsPerBam")
-counts[["MCF7"]][[1]]
+counts <- BaalChIP.get(BaalObject,what='alleleCountsPerBam')
+counts[['MCF7']][[1]]
 
 #retrieve a data.frame with allele-specific read counts per group:
-counts <- BaalChIP.get(BaalObject,what="mergedCounts")
+counts <- BaalChIP.get(BaalObject,what='mergedCounts')
 head(counts[[1]])
 }
 \author{

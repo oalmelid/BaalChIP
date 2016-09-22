@@ -26,7 +26,7 @@ Method summaryQC
 Generates summary of QC result.
 }
 \examples{
-data("BaalObject")
+data('BaalObject')
 summaryQC(BaalObject)
 }
 \author{

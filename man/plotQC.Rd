@@ -34,10 +34,10 @@ Method plotQC
 Produces different plots of QC results.
 }
 \examples{
-data("BaalObject")
-plotQC(BaalObject, what = "overall_pie")
-plotQC(BaalObject, what =  "boxplot_per_filter", addlegend=FALSE)
-plotQC(BaalObject, what =  "barplot_per_group")
+data('BaalObject')
+plotQC(BaalObject, what = 'overall_pie')
+plotQC(BaalObject, what =  'boxplot_per_filter', addlegend=FALSE)
+plotQC(BaalObject, what =  'barplot_per_group')
 }
 \author{
 Ines de Santiago

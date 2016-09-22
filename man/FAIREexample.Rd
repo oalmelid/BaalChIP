@@ -3,9 +3,13 @@
 \docType{data}
 \name{FAIREexample}
 \alias{FAIREexample}
-\title{FAIREexample example dataset. This is a BaalChIP-class object}
+\title{FAIREexample example dataset}
+\format{A BaalChIP-class object}
+\source{
+Downloaded from supplementary data of BaalChIP paper
+}
 \description{
-FAIREexample example dataset. This is a BaalChIP-class object
+FAIREexample example dataset
 }
 \author{
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}

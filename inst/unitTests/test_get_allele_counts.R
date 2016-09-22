@@ -11,18 +11,3 @@ test_get_allele_counts <- function() {
     checkEquals(sum(res$REF.counts), 267)
     checkEquals(sum(res$ALT.counts), 317)
 }
-
-#filter_genomicRegions
-#applyReadlenPerBam
-#get_lastset
-#get_simcounts
-#filter_intbias
-#filter_1allele
-#get_mergedcounts
-#getRAFfromgDNA
-#getbiasTable
-#estimateRefBias
-#pooldata
-#applyBayes
-#Bayesian_report
-#getReport

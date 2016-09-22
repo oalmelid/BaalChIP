@@ -3,9 +3,10 @@
 \docType{data}
 \name{BaalObject}
 \alias{BaalObject}
-\title{BaalObject example dataset. This is a BaalChIP-class object}
+\title{BaalObject example dataset}
+\format{A BaalChIP-class object}
 \description{
-BaalObject example dataset. This is a BaalChIP-class object
+BaalObject example dataset
 }
 \author{
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}

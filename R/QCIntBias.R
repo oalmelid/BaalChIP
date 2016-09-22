@@ -27,7 +27,7 @@ applyReadlenPerBam <- function(samples, res_per_bam, verbose=TRUE) {
         sigi.ranges <- lastset
 
         #readlens <- c(readlens, get_readlen(bamfile=x[["bam_name"]], snp.ranges=sigi.ranges))
-        result <- BaalChIP:::get_readlen(bamfile=x[["bam_name"]], snp.ranges=sigi.ranges)
+        result <- get_readlen(bamfile=x[["bam_name"]], snp.ranges=sigi.ranges)
         if (verbose) {setTxtProgressBar(pb, rownr)}
         return(result)
     })
@@ -100,7 +100,6 @@ run_sim <- function (snpframe, readlenvector, outputPath, simulation_script, ali
 
             command_to_run <- paste(simulation_script,perlScript,readlen,snpout,fastaout,bamout,ARGSTRING)
 
-            #print(command_to_run) #debug!
             r <- system(command_to_run, intern=TRUE)
             if (!is.null(attr(r,"status"))) {
                 stop("error running external script")
@@ -143,7 +142,7 @@ applySim <- function(samples, res_per_bam, simul_output, simulation_script= "loc
      lastset <- get_lastset(res_per_bam) #get the data frame for all unique SNPs from the last round of filters
      readlenvector <- unique(samples$readlen) #vector of read lens
 
-     cat("-detected readlengths", readlenvector, "\n")
+     message("-detected readlengths", readlenvector, "\n")
 
      #run_sum
      if (!testingScript) { #will save fasta+bam files in simul_output

@@ -25,23 +25,23 @@ Merges all ChIP-seq datasets within a group of samples creating a data.frame tha
 if QCfilter has been applied, will use the most up-to-date variant set available for each individual BAM file (after QC). Missing values are allowed for heterozygous variants that are not available (e.g. do not pass filter for a particular ChIP-seq dataset).
 }
 \examples{
-setwd(system.file("test",package="BaalChIP"))
-samplesheet <- "exampleChIP.tsv"
-hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
+setwd(system.file('test',package='BaalChIP'))
+samplesheet <- 'exampleChIP.tsv'
+hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
 res <- BaalChIP(samplesheet=samplesheet, hets=hets)
 res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
-data("blacklist_hg19")
-data("pickrell2011cov1_hg19")
-data("UniqueMappability50bp_hg19")
+data('blacklist_hg19')
+data('pickrell2011cov1_hg19')
+data('UniqueMappability50bp_hg19')
 res <- QCfilter(res,
-               RegionsToFilter=list("blacklist"=blacklist_hg19,
-               "highcoverage"=pickrell2011cov1_hg19),
-               RegionsToKeep=list("UniqueMappability"=UniqueMappability50bp_hg19))
+               RegionsToFilter=list('blacklist'=blacklist_hg19,
+               'highcoverage'=pickrell2011cov1_hg19),
+               RegionsToKeep=list('UniqueMappability'=UniqueMappability50bp_hg19))
 
 res <- mergePerGroup(res)
 
 #retrieve mergedCounts:
-counts <- BaalChIP.get(res, "mergedCounts")
+counts <- BaalChIP.get(res, 'mergedCounts')
 
 #mergedCounts are grouped by group_name:
 names(counts)

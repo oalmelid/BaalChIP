@@ -158,7 +158,6 @@ applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_qua
         sigi.ranges <- filter_sigi(snpfile=snpfile, bedfile = x[["bed_name"]])
 
         #Count frequency of Ref and alternative alleles
-        #print (x[["bam_name"]])
         sigi.ranges <- get_allele_counts(bamfile = x[["bam_name"]], snp.ranges = sigi.ranges, returnRanges=TRUE, min_base_quality=min_base_quality, min_mapq=min_mapq)
         res_per_bam[[x[["group_name"]]]][[x[["sampleID"]]]] <- list("sigi"=sigi.ranges)
 

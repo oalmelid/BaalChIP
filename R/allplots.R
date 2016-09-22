@@ -42,7 +42,7 @@ plot.filt.boxplot <- function(filtering_stats, col=NULL, COLORGROUPS=NULL, addle
 
     #plot filtering_stats
     if (length(unique(rownames(filtering_stats)))==1) {
-                print("only 1 cell line, not able to plot properly...");
+                #warning("only 1 cell line, not able to plot properly...");
                 filtering_stats <- rbind(filtering_stats,filtering_stats) #hack!
                 }
     if (!is.null(COLORGROUPS)) {data2plot_perc$coltype <- COLORGROUPS[data2plot_perc$cellname]}
@@ -69,7 +69,7 @@ plot.filt.pie <- function(filtering_stats, col=NULL, addlegend=TRUE, plot=TRUE) 
 
     if (addlegend==TRUE) {addlegend = "legend"}
     if (length(unique(rownames(filtering_stats)))==1) {
-                print("only 1 cell line, piechart with total counts");
+                #warning("only 1 cell line, piechart with total counts");
                 filtering_stats <- rbind(filtering_stats,filtering_stats) #hack!
                 }
 

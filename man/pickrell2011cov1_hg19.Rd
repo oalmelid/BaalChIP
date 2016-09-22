@@ -4,8 +4,13 @@
 \name{pickrell2011cov1_hg19}
 \alias{pickrell2011cov1_hg19}
 \title{Genomic regions of collapsed repeats}
+\format{A GRanges object of 34359 ranges.}
+\source{
+File available as supplementary data: Pickrell2011_seq.cov1.bed (\url{http://www.ncbi.nlm.nih.gov/pubmed/21690102})
+}
 \description{
-Collapsed repeat regions at the 0.1\% threshold (hg19 reference). Used as 'RegionsToFilter' within the QCfilter function so that variants overlapping these regions will be removed.
+A GRanges object containing collapsed repeat regions at the 0.1\% threshold (hg19 reference).
+Used as 'RegionsToFilter' within the QCfilter function so that variants overlapping these regions will be removed.
 }
 \author{
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}

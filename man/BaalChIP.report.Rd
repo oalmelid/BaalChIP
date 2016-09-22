@@ -42,14 +42,14 @@ The reported data frame contains the following columns:
 }
 }
 \examples{
-data("BaalObject")
+data('BaalObject')
 report <- BaalChIP.report(BaalObject)
 
 #the reported list is grouped by group_name:
 names(report)
 
 #check out the report for one of the groups:
-head(report[["MCF7"]])
+head(report[['MCF7']])
 }
 \author{
 Ines de Santiago

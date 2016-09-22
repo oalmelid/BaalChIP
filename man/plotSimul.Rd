@@ -24,7 +24,7 @@ Method plotSimul
 Produces a plot of the proportion of variants that displayed the correct number of mapped simulated reads.
 }
 \examples{
-data("BaalObject")
+data('BaalObject')
 plotSimul(BaalObject)
 }
 \author{

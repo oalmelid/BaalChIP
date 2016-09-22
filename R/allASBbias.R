@@ -99,7 +99,7 @@ getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=
 
     AllCounts <- lapply(seq_len(length(bamFiles)), function(i) {
         bamfile <- bamFiles[i]
-        acounts <- BaalChIP:::get_allele_counts(bamfile, snp.ranges, returnRanges=FALSE, min_base_quality=min_base_quality,min_mapq=min_mapq)
+        acounts <- get_allele_counts(bamfile, snp.ranges, returnRanges=FALSE, min_base_quality=min_base_quality,min_mapq=min_mapq)
         acounts <- acounts[,c("ID","CHROM","POS","REF.counts","ALT.counts"), drop=FALSE]
         if (verbose) {setTxtProgressBar(pb, i)}
         return(acounts)

@@ -186,39 +186,59 @@ setGeneric(name="adjustmentBaalPlot",
 
 
 
-#' BaalObject example dataset. This is a BaalChIP-class object
+#' BaalObject example dataset
+#' @format A BaalChIP-class object
 #' @name BaalObject
 #' @docType data
 #' @author Ines de Santiago \email{ines.desantiago@@cruk.cam.ac.uk}
 #' @keywords BaalObject
 NULL
 
-#' FAIREexample example dataset. This is a BaalChIP-class object
+#' FAIREexample example dataset
+#' @format A BaalChIP-class object
 #' @name FAIREexample
 #' @docType data
 #' @author Ines de Santiago \email{ines.desantiago@@cruk.cam.ac.uk}
 #' @keywords FAIREexample
+#' @source  Downloaded from supplementary data of BaalChIP paper
 NULL
 
-#' ENCODEexample example dataset. This is a BaalChIP-class object
+#' ENCODEexample example dataset
+#' @format A BaalChIP-class object
 #' @name ENCODEexample
 #' @docType data
 #' @author Ines de Santiago \email{ines.desantiago@@cruk.cam.ac.uk}
+#' @source  Downloaded from supplementary data of BaalChIP paper
 #' @keywords ENCODEexample
 NULL
 
 
 #' Genomic regions of unique mappability
-#' @description Unique regions with genomic mappability score equal to 1 selected from DUKE uniqueness mappability track of the UCSC genome browser generated using a window size of 50bp (hg19,  wgEncodeCrgMapabilityAlign50mer table). Used as 'RegionsToKeep' within the QCfilter function so that variants NOT overlapping these regions will be removed.
+#' @description A GRanges object containing unique regions with genomic mappability score equal to 1.
+#' Selected from DUKE uniqueness mappability track of the UCSC genome browser (hg19,  wgEncodeCrgMapabilityAlign50mer table).
+#'
+#' Code used to retrieve these regions:
+#' \itemize{
+#' \item curl http://hgdownload.cse.ucsc.edu/gbdb/hg19/bbi/wgEncodeCrgMapabilityAlign50mer.bw > wgEncodeCrgMapabilityAlign50mer.bw
+#' \item ./bigWigToBedGraph wgEncodeCrgMapabilityAlign50mer.bw wgEncodeCrgMapabilityAlign50mer.bedgraph
+#' \item awk '{ if ($4 >= 1) print $0 }' wgEncodeCrgMapabilityAlign50mer.bedgraph > wgEncodeCrgMapabilityAlign50mer_UNIQUEregions.bedgraph
+#' }
+#' Used as 'RegionsToKeep' within the QCfilter function so that variants NOT overlapping these regions will be removed. \cr
+#' @details These regions are not applicable to longer reads (> 50bp).
+#' @source  Downloaded from \url{http://hgdownload.cse.ucsc.edu/gbdb/hg19/bbi/wgEncodeCrgMapabilityAlign50mer.bw}.
 #' @name UniqueMappability50bp_hg19
+#' @format A GRanges object of 9831690 ranges.
 #' @docType data
 #' @author Ines de Santiago \email{ines.desantiago@@cruk.cam.ac.uk}
 #' @keywords UniqueMappability50bp_hg19
 NULL
 
 #' Genomic regions of collapsed repeats
-#' @description Collapsed repeat regions at the 0.1\% threshold (hg19 reference). Used as 'RegionsToFilter' within the QCfilter function so that variants overlapping these regions will be removed.
+#' @description A GRanges object containing collapsed repeat regions at the 0.1\% threshold (hg19 reference).
+#' Used as 'RegionsToFilter' within the QCfilter function so that variants overlapping these regions will be removed.
 #' @name pickrell2011cov1_hg19
+#' @source File available as supplementary data: Pickrell2011_seq.cov1.bed (\url{http://www.ncbi.nlm.nih.gov/pubmed/21690102})
+#' @format A GRanges object of 34359 ranges.
 #' @docType data
 #' @author Ines de Santiago \email{ines.desantiago@@cruk.cam.ac.uk}
 #' @references Pickrell et al., 2011 (\url{http://www.ncbi.nlm.nih.gov/pubmed/21690102})
@@ -226,7 +246,19 @@ NULL
 NULL
 
 #' Blacklisted genomic regions
-#' @description Blacklisted regions downloaded from the UCSC Genome Browser (mappability track; hg19, wgEncodeDacMapabilityConsensusExcludable and wgEncodeDukeMapabilityRegionsExcludable tables). Used as 'RegionsToFilter' within the QCfilter function so that variants overlapping these regions will be removed.
+#' @description A GRanges object containing blacklisted regions identified by the ENCODE and modENCODE consortia.
+#' These correspond to artifact regions that tend to show artificially high signal (excessive unstructured anomalous reads mapping).
+#' Selected from mappability track of the UCSC genome browser (hg19, wgEncodeDacMapabilityConsensusExcludable and wgEncodeDukeMapabilityRegionsExcludable tables).
+#'
+#' Code used to retrieve these regions:
+#' \itemize{
+#' \item curl http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeMapability/wgEncodeDacMapabilityConsensusExcludable.bed > hg19_DACExcludable.txt \cr
+#' \item cat hg19_DUKEExcludable.txt hg19_DACExcludable.txt | grep -v "^#" | cut -f 2,3,4,5,6,7 | sort -k1,1 -k2,2n | mergeBed -nms -i stdin > hg19_DUKE_DAC.bed \cr
+#' }
+#' Used as 'RegionsToFilter' within the QCfilter function so that variants overlapping these regions will be removed.
+#' @details Note that these blacklists are applicable to functional genomic data (e.g. ChIP-seq, MNase-seq, DNase-seq, FAIRE-seq) of short reads (20-100bp reads).
+#' These are not applicable to RNA-seq or other transcriptome data types.
+#' @format A GRanges object of 1378 ranges.
 #' @name blacklist_hg19
 #' @docType data
 #' @author Ines de Santiago \email{ines.desantiago@@cruk.cam.ac.uk}

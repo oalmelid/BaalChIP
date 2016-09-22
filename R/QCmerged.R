@@ -97,8 +97,6 @@ applyMergeResults <- function(samples, res_per_bam, includeForeign=FALSE) {
         m1 <- get_mergedcounts(celldata=lastset, metadata=samples[samples$group_name==cellname,,drop=FALSE], includeForeign=includeForeign)
         if (nrow(m1) == 0) {m1 <- data.frame()}
         res_merged[[cellname]][["replicates_merged"]] <- m1
-
-        #print
         #messsage(paste0("data frame contains ", nrow(m1), " variants\n"))
     }
     return(res_merged)

@@ -20,6 +20,7 @@ vignette: >
   %\VignetteIndexEntry{Analyzing ChIP-seq and FAIRE-seq data with the BaalChIP package}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteDepends{knitr}
+  %\VignetteDepends{BiocStyle}
   %\usepackage[utf8]{inputenc}
 ---
 
@@ -70,14 +71,14 @@ wd <- system.file("test",package="BaalChIP") #system directory
 
 samplesheet <- file.path(wd, "exampleChIP1.tsv")
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
-res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
+res <- BaalChIP(samplesheet=samplesheet, hets=hets)
 ```
 
 Given a new BaalChIP object, to run a BaalChIP analysis and identify allele-specific binding events, type:
 
 ```{r quick1, eval=FALSE}
-res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
-res <- BaalChIP.run(res, cores=4) #cores for parallel computing
+res <- BaalChIP(samplesheet=samplesheet, hets=hets)
+res <- BaalChIP.run(res, cores=4, verbose=TRUE) #cores for parallel computing
 ```
 
 > Note that the example data in this vignette does not reveal real biology and was build only for demonstration purposes.
@@ -93,7 +94,7 @@ If you wish to have more control over the input options, the same analysis above
 #create BaalChIP object
 samplesheet <- file.path(wd, "exampleChIP1.tsv")
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
-res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
+res <- BaalChIP(samplesheet=samplesheet, hets=hets)
 
 #Now, load some data
 data(blacklist_hg19)
@@ -101,12 +102,18 @@ data(pickrell2011cov1_hg19)
 data(UniqueMappability50bp_hg19)
 
 #run one at the time (instead of BaalChIP.run)
-res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
-res <- QCfilter(res, RegionsToFilter=c("blacklist_hg19", "pickrell2011cov1_hg19"),                                      
-                RegionsToKeep="UniqueMappability50bp_hg19")
+res <- alleleCounts(res, min_base_quality=10, min_mapq=15, verbose=FALSE)
+res <- QCfilter(res, 
+                RegionsToFilter=c("blacklist_hg19", "pickrell2011cov1_hg19"),            
+                RegionsToKeep="UniqueMappability50bp_hg19",
+                verbose=FALSE)
 res <- mergePerGroup(res)
 res <- filter1allele(res)
-res <- getASB(res, Iter=5000, conf_level=0.95, cores=4, RMcorrection = TRUE, RAFcorrection=TRUE)
+res <- getASB(res, 
+              Iter=5000, 
+              conf_level=0.95, 
+              cores=4, RMcorrection = TRUE, 
+              RAFcorrection=TRUE)
 ```
 
 The following sections describe all these steps in more detail.
@@ -119,11 +126,11 @@ First, we create a named list of filenames for the '.bam' gDNA files to be used.
   
 ```{r}
 gDNA <- list("TaT1"=
-               c("bamFiles/TaT1_1_gDNA.test.bam",
-                 "bamFiles/TaT1_2_gDNA.test.bam"),
+               c(file.path(wd, "bamFiles/TaT1_1_gDNA.test.bam"),
+                 file.path(wd, "bamFiles/TaT1_2_gDNA.test.bam")),
               "AMOVC"=
-               c("bamFiles/AMOVC_1_gDNA.test.bam",
-                 "bamFiles/AMOVC_2_gDNA.test.bam"))
+               c(file.path(wd, "bamFiles/AMOVC_1_gDNA.test.bam"),
+                 file.path(wd, "bamFiles/AMOVC_2_gDNA.test.bam")))
 ```
 
 Now we can run BaalChIP pipeline as before. Note that we include the path to the gDNA files in the `CorrectWithgDNA` argument:
@@ -133,8 +140,8 @@ wd <- system.file("test",package="BaalChIP") #system directory
 
 samplesheet <- file.path(wd, "exampleChIP2.tsv")
 hets <- c("TaT1"="TaT1_hetSNP.txt", "AMOVC"="AMOVC_hetSNP.txt")
-res2 <- new("BaalChIP", samplesheet=samplesheet, hets=hets, CorrectWithgDNA=gDNA)
-res2 <- BaalChIP.run(res2, cores=4) #cores for parallel computing
+res2 <- BaalChIP(samplesheet=samplesheet, hets=hets, CorrectWithgDNA=gDNA)
+res2 <- BaalChIP.run(res2, cores=4, verbose=TRUE) #cores for parallel computing
 ```
 
 > Note that the example data in this vignette does not reveal real biology and was build only for demonstration purposes.
@@ -181,17 +188,17 @@ The information in the variant file includes:
 1. `ID` column with a unique identifier string per variant. 
 2. (1-based) genomic coordinates `CHROM, POS`.
 3. A,C,G,T bases for the reference `REF` and the non-reference alternate `ALT` allele. 
-4. The final column `RAF` is optional. RAF scores consist of values ranging from 0 to 1 for each variant denoting the reference allele frequency. A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. This column is optional, and will not be necessary if ask BaalChIP to calculate the RAF values from the input gDNA libraries (by using `CorrectWithgDNA` argument of the BaalChIP-class constructor function `new` - see below). 
+4. The final column `RAF` is optional. RAF scores consist of values ranging from 0 to 1 for each variant denoting the reference allele frequency. A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternate allele. This column is optional, and will not be necessary if ask BaalChIP to calculate the RAF values from the input gDNA libraries (by using `CorrectWithgDNA` argument of the BaalChIP-class constructor function `BaalChIP` - see below). 
 
 ### The gDNA BAM files
 
-The gDNA BAM files are input genomic DNA sequencing files for the corresponding groups in the ChIP-seq test data. These BAM files are passed to BaalChIP through the `CorrectWithgDNA` argument of the BaalChIP-class constructor function `new`.
+The gDNA BAM files are input genomic DNA sequencing files for the corresponding groups in the ChIP-seq test data. These BAM files are passed to BaalChIP through the `CorrectWithgDNA` argument of the BaalChIP-class constructor function `BaalChIP`.
 
 Allelic read counts from all gDNA files will be pooled together to generate the background allelic ratios directly from input data. 
 
 ## Constructing a BaalChIP object
 
-The first step is to generate a BaalChIP object. The function `new` accepts the following arguments: 
+The first step is to generate a BaalChIP object. The function `BaalChIP` accepts the following arguments: 
 
 1. `samplesheet`: A character string indicating the file name for a tab-delimited file. 
 2. `hets`: A named vector with filenames for the variant files to be used. The names in the vector should correspond to the `group_name` strings in the samplesheet.
@@ -200,7 +207,7 @@ The first step is to generate a BaalChIP object. The function `new` accepts the 
 ```{r, eval=TRUE}
 samplesheet <- file.path(wd,"exampleChIP1.tsv")
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
-res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
+res <- BaalChIP(samplesheet=samplesheet, hets=hets)
 res
 ```
 
@@ -248,9 +255,10 @@ data(pickrell2011cov1_hg19)
 data(UniqueMappability50bp_hg19)
 ```
 
-1. `blacklist_hg19` contains blacklisted genomic regions downloaded from the UCSC Genome Browser [@fujita2010ucsc] (mappability track; hg19, wgEncodeDacMapabilityConsensusExcludable and wgEncodeDukeMapabilityRegionsExcludable tables). These regions should be used as `RegionsToFilter` so that variants overlapping these regions will be removed.
+1. `blacklist_hg19` contains blacklisted genomic regions downloaded from the mappability track of the UCSC Genome Browser [@fujita2010ucsc] (hg19, wgEncodeDacMapabilityConsensusExcludable and wgEncodeDukeMapabilityRegionsExcludable tables). These correspond to artifact regions that tend to show artificially high signal (excessive unstructured anomalous reads mapping). These regions should be used as `RegionsToFilter` so that variants overlapping these regions will be removed. Note that these blacklists are applicable to functional genomic data (e.g. ChIP-seq, MNase-seq, DNase-seq, FAIRE-seq) of short reads (20-100bp reads). These are not applicable to RNA-seq or other transcriptome data types. 
 2. `pickrell2011cov1_hg19` contains collapsed repeat regions at the 0.1\% threshold [@pickrell2011false]. These regions should also be  used as `RegionsToFilter`.
-3. `UniqueMappability50bp_hg19` contains unique regions with genomic mappability score of 1, selected from DUKE uniqueness mappability track of the UCSC genome browser generated using a window size of 50bp (hg19,  wgEncodeCrgMapabilityAlign50mer table). These regions should be used as `RegionsToKeep` so that variants NOT overlapping these regions will be removed.
+3. `UniqueMappability50bp_hg19` contains unique regions with genomic mappability score of 1, selected from DUKE uniqueness mappability track of the UCSC genome browser generated using a window size of 50bp (hg19,  wgEncodeCrgMapabilityAlign50mer table). These regions should be used as `RegionsToKeep` so that variants NOT overlapping these regions will be removed. No applicable to longer reads (> 50bp)
+
 
 ```{r, eval=TRUE}
 #run QC filter
@@ -290,14 +298,19 @@ res <- filterIntbias(res,
                      simul_output="directory_name", 
                      tmpfile_prefix="prefix_name", 
                      simulation_script = "local",
-                     verbose=TRUE)
+                     alignmentSimulArgs=c("picard-tools-1.119",
+                                          "bowtie-1.1.1",
+                                          "genomes_test/male.hg19",
+                                          "genomes_test/maleByChrom")
+                     verbose=FALSE)
 ```
 
 The function accepts three arguments:
 
 1. `simul_output` allows the user to specify the name of the directory of where to save the generated simulated FASTQ and BAM files. if NULL or missing, a random directory under the current working directory will be generated
-2. `tmpfile_prefix` argument is an optional character vector giving the initial part of the name of the FASTQ and BAM files generated by the function. If NULL or missing, a random prefix name will be generated.
-3. `simulation_script` the file path for simulation script containing the instructions of simulation and alignment commands. If set to 'local', the default simulation script distributed with BaalChIP ('extra/simulation_run.sh') will be used. 
+2. `tmpfile_prefix` argument is a character vector giving the initial part of the name of the FASTQ and BAM files generated by the function. If NULL or missing, a random prefix name will be generated.
+3. `simulation_script` the file path for simulation script containing the instructions of simulation and alignment commands. If set to 'local', the default simulation script distributed with BaalChIP ('extra/simulation_run.sh') will be used. Otherwise the user can specify the path to their own simulation scripts.
+4. `alignmentSimulArgs` this is a vector of character with arguments passed to the sumulation_run.sh script. There are four arguments: the complete path to the picard software, the complete path to the bowtie aligner, the basename of the indexed genome files, and finally A path to the folder containing gzipped files of the genome, separated by chromosome and named as: chr1.fa.gz, chr2.fa.gz, chr3.fa.gz, etc.
 
 ### skipScriptRun
 
@@ -345,9 +358,10 @@ BaalChIP uses a Bayesian framework to infer allelic imbalance from read counts d
 
 To run the ASB detection step type:
 
-```{r, eval=FALSE}
+```{r, eval=FALSE, message=FALSE}
 res <- getASB(res, Iter=5000, conf_level=0.95, cores = 4, 
-              RMcorrection = TRUE, RAFcorrection=TRUE)
+              RMcorrection = TRUE, 
+              RAFcorrection=TRUE)
 ```
 
 At this step, BaalChIP considers two additional biases that may lead to inaccurate estimates of ASB: the reference mapping (RM) and the reference allele frequency (RAF) biases.
