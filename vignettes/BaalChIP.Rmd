@@ -41,12 +41,12 @@ library(BaalChIP)
 If you use `r Biocpkg("BaalChIP")` in published research, please cite [@desantiago2016]. 
 
 ```
-de Santiago I, Liu W, Yuan K, O'Reilly M, Chilamakuri CS, ponder BJ, Meyer K, Markowetz F.
+de Santiago I, Liu W, Yuan K, O'Reilly M, Chilamakuri CS, Ponder BJ, Meyer K, Markowetz F.
 BaalChIP: Bayesian analysis of allele-specific transcription factor binding in cancer genomes.
-in press. 2016.
+Genome Biology 2017 18(1):39.
 ```
 
-<!--URL: []() --> 
+<!--URL: [Link](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-017-1165-7) --> 
 
 
 # Introduction
@@ -293,7 +293,6 @@ The default `run_simulations.sh` script can be found here:
 This is how the command to run this filtering step would look like: 
 
 ```{r, eval=FALSE, message=FALSE, error=FALSE, warning=FALSE}
-
 res <- filterIntbias(res, 
                      simul_output="directory_name", 
                      tmpfile_prefix="prefix_name", 
@@ -329,7 +328,7 @@ By specifying `skipScriptRun=TRUE`, BaalChIP will take the simulated reads allel
 
 For this particular example we can run:
 
-```{r, eval=TRUE}
+```{r, eval=TRUE, message=FALSE}
 res <- filterIntbias(res, simul_output=preComputed_output, 
                      tmpfile_prefix="c67c6ec6c433", 
                      skipScriptRun=TRUE,
@@ -388,6 +387,11 @@ This bias correction can be turned on/off by using the argument `RAFcorrection=T
 ### BaalChIP.report
 
 The output of BaalChIP is a posterior distribution of the estimated allelic balance ratio in read counts observed after considering all sources of underlying biases
+
+```{r, eval=TRUE, echo=FALSE, include=FASE}
+data(baalObject)
+res <- BaalObject
+```
 
 ```{r}
 res
