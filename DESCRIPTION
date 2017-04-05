@@ -7,10 +7,9 @@ Description: The package offers functions to process multiple ChIP-seq BAM files
     specific events. BaalChIP is able to account for copy number
     differences between the two alleles, a known phenotypical feature of cancer
     samples.
-Version: 0.99.6
-Author: Ines de Santiago, Wei Liu, Ke Yuan, Bruce Ponder, Kerstin Meyer, Florian
-    Markowetz
-Maintainer: Ines de Santiago <ines.deSantiago@cruk.cam.ac.uk>
+Version: 1.1.1
+Author: Ines de Santiago, Wei Liu, Ke Yuan, Martin O'Reilly, Chandra SR Chilamakuri, Bruce Ponder, Kerstin Meyer, Florian Markowetz
+Maintainer: Ines de Santiago <inesdesantiago@gmail.com>
 Depends:
     R (>= 3.3.1), 
     GenomicRanges,
