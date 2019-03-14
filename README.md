@@ -30,7 +30,7 @@ Note that the example data in this vignette does not reveal real biology and was
 The first step is to contruct a BaalChIP object:
 
 ```r
-samplesheet <- "example.tsv"
+samplesheet <- "exampleChIP.tsv"
 hets <- c("MCF7"="MCF7_hetSNP.txt", "GM12891"="GM12891_hetSNP.txt")
 res <- new("BaalChIP", samplesheet=samplesheet, hets=hets)
 ```
