@@ -8,6 +8,6 @@ test_get_allele_counts <- function() {
     checkEquals(ncol(res), 10)
     checkEquals(nrow(res), 94)
     checkEquals(class(res), "data.frame")
-    checkEquals(sum(res$REF.counts), 267)
-    checkEquals(sum(res$ALT.counts), 317)
+    checkEquals(sum(res$REF.counts), 440)
+    checkEquals(sum(res$ALT.counts), 514)
 }
