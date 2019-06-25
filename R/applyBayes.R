@@ -224,7 +224,7 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4)
     #suppressPackageStartupMessages(require(doParallel))
     #suppressPackageStartupMessages(require(coda))
     cores = cores# how many cores to use parallelly
-    cl <- makeCluster(cores)
+    cl <- makeCluster(cores, outfile="")
     registerDoParallel(cl)
 
     ##------calculate args
