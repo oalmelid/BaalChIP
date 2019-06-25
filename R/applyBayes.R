@@ -217,15 +217,15 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4)
 {
     ### RunBayes for each cell/individual
     #suppressPackageStartupMessages(require(doMPI))
-    #cl <- startMPIcluster(count=10)
-    #registerDoMPI(cl)
+    cl <- startMPIcluster(count=10)
+    registerDoMPI(cl)
 
     #suppressPackageStartupMessages(require("foreach"))
     #suppressPackageStartupMessages(require(doParallel))
     #suppressPackageStartupMessages(require(coda))
-    cores = cores# how many cores to use parallelly
-    cl <- makeCluster(cores, outfile="")
-    registerDoParallel(cl)
+    #cores = cores# how many cores to use parallelly
+    #cl <- makeCluster(cores, outfile="")
+    #registerDoParallel(cl)
 
     ##------calculate args
     TF_num = sum(grepl("score", colnames(counts))) # number of TFs
@@ -251,7 +251,7 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4)
     SNP_check   = 4
     Bayes_report <- Bayesian_report(iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
 
-    stopCluster(cl)
-    #mpi.quit()
+    #stopCluster(cl)
+    mpi.quit()
     return(Bayes_report)
 }
