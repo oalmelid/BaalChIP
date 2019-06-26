@@ -217,7 +217,7 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4)
 {
     ### RunBayes for each cell/individual
     #suppressPackageStartupMessages(require(doMPI))
-    cl <- startMPIcluster(count=10)
+    cl <- startMPIcluster(count=15)
     registerDoMPI(cl)
 
     #suppressPackageStartupMessages(require("foreach"))
