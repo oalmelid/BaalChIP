@@ -579,6 +579,9 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     biasTable <- list()
     applyedCorrection <- list()
 
+    cl <- startMPIcluster()
+    registerDoMPI(cl)
+
     for (ID in Expnames) {
         message("... calculating ASB for: ", ID)
         assayed <- assayedVar[[ID]]
@@ -617,6 +620,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         applyedCorrection[[ID]] <- biasparam
     }
 
+    mpi.quit()
 
     ##-----assign parameters
     applyedCorrection <- t(do.call("rbind", applyedCorrection))
