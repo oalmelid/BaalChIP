@@ -210,8 +210,8 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
   ############## parellel computing #################
   # foreach(SNP_id=snp_start:snp_end, .combine='cbind')%dopar%
   #       MH_iter(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias,SNP_id)
-  parallel_result <- mpi.lapply(seq(snp_start, snp_end),
-                                function(SNP_ID) MH_iter(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_ID))
+  parallel_result <- mpi.parLapply(seq(snp_start, snp_end),
+                                   function(SNP_ID) MH_iter(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_ID))
   do.call(cbind, parallel_result)
 }
 
