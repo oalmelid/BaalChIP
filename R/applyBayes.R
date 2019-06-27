@@ -208,8 +208,11 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
    }
 
   ############## parellel computing #################
-  foreach(SNP_id=snp_start:snp_end, .combine='cbind')%dopar%
-        MH_iter(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias,SNP_id)
+  # foreach(SNP_id=snp_start:snp_end, .combine='cbind')%dopar%
+  #       MH_iter(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias,SNP_id)
+  parallel_result <- mpi.lapply(seq(snp_start, snp_end),
+                                function(SNP_ID) MH_iter(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_ID))
+  do.call(cbind, parallel_result)
 }
 
 
@@ -217,8 +220,8 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4)
 {
     ### RunBayes for each cell/individual
     #suppressPackageStartupMessages(require(doMPI))
-    cl <- startMPIcluster(count=15)
-    registerDoMPI(cl)
+    # cl <- startMPIcluster(count=15)
+    # registerDoMPI(cl)
 
     #suppressPackageStartupMessages(require("foreach"))
     #suppressPackageStartupMessages(require(doParallel))
@@ -252,6 +255,6 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4)
     Bayes_report <- Bayesian_report(iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
 
     #stopCluster(cl)
-    mpi.quit()
+    # mpi.quit()
     return(Bayes_report)
 }

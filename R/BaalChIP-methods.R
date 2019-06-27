@@ -423,15 +423,13 @@ setMethod(f = "filter1allele", signature = "BaalChIP", function(.Object) {
 #' @import Rsamtools
 #' @import GenomicAlignments
 #' @import IRanges
+#' @import Rmpi
 #' @importFrom GenomeInfoDb mapSeqlevels
 #' @importFrom GenomeInfoDb renameSeqlevels
 #' @importFrom GenomeInfoDb seqlengths
 #' @importFrom GenomeInfoDb seqlevels
 #' @importFrom doMPI startMPIcluster
 #' @importFrom doMPI registerDoMPI
-#' @importFrom Rmpi mpi.quit
-#' @importFrom doParallel registerDoParallel
-#' @importFrom parallel makeCluster
 #' @importFrom stats rnorm
 #' @importFrom stats runif
 #' @importFrom stats dbeta
@@ -497,7 +495,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 
     ##-----get ASB
     if (verbose) {
-        message("-geting ASB counts...")
+        message("-getting ASB counts...")
     }
     .Object <- getASB(.Object, Iter = 5000, conf_level = 0.95, cores = cores, verbose = verbose)
 
@@ -506,13 +504,11 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 
 #' Identifies allele-specific binding events
 #' @import methods
+#' @import Rmpi
 #' @importFrom utils read.delim
 #' @importFrom utils txtProgressBar
 #' @importFrom utils setTxtProgressBar
 #' @importFrom doParallel registerDoParallel
-#' @importFrom doMPI startMPIcluster
-#' @importFrom doMPI registerDoMPI
-#' @importFrom Rmpi mpi.quit
 #' @importFrom parallel makeCluster
 #' @importFrom parallel stopCluster
 #' @importFrom stats rnorm
@@ -585,8 +581,8 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     biasTable <- list()
     applyedCorrection <- list()
 
-    cl <- startMPIcluster()
-    registerDoMPI(cl)
+    ns <- mpi.universe.size() - 1
+    mpi.spawn.Rslaves(nslaves=ns)
 
     for (ID in Expnames) {
         message("... calculating ASB for: ", ID)
@@ -626,6 +622,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         applyedCorrection[[ID]] <- biasparam
     }
 
+    mpi.close.Rslaves(dellog = FALSE)
     mpi.quit()
 
     ##-----assign parameters
