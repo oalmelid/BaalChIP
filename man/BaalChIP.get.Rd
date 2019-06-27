@@ -21,8 +21,6 @@ BaalChIP.get(.Object, what = c("samples", "param", "alleleCountsPerBam",
 The slot content from an object of the \code{\link{BaalChIP}} class.
 }
 \description{
-Method BaalChIP.get
-
 Get information from individual slots in a BaalChIP object.
 }
 \examples{
@@ -45,4 +43,3 @@ head(counts[[1]])
 \author{
 Ines de Santiago
 }
-

@@ -17,18 +17,15 @@ summaryASB(.Object)
 A matrix containing the total number of allele-specific variants (TOTAL) and the number of variants allele-specific for the reference (REF) and alternate alleles (ALT).
 }
 \description{
-Method summaryASB
-
 Generates summary of ASB test result.
 }
 \examples{
 data('BaalObject')
 summaryASB(BaalObject)
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{getASB}}, \code{\link{BaalChIP.report}}
 }
-
+\author{
+Ines de Santiago
+}

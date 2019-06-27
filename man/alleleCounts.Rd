@@ -25,8 +25,6 @@ alleleCounts(.Object, min_base_quality = 10, min_mapq = 15,
 An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects.
 }
 \description{
-Method alleleCounts
-
 Generates allele-specific read count data from each BAM ChIP-seq dataset for each variant.
 }
 \details{
@@ -52,10 +50,9 @@ names(counts[['MCF7']])
 #check out the result for one of the bam files:
 counts[['MCF7']][[1]]
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{BaalChIP.get}}
 }
-
+\author{
+Ines de Santiago
+}

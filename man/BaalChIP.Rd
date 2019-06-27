@@ -45,4 +45,3 @@ res <- BaalChIP(samplesheet=samplesheet, hets=hets)
 \author{
 Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 }
-

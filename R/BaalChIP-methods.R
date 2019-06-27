@@ -427,6 +427,9 @@ setMethod(f = "filter1allele", signature = "BaalChIP", function(.Object) {
 #' @importFrom GenomeInfoDb renameSeqlevels
 #' @importFrom GenomeInfoDb seqlengths
 #' @importFrom GenomeInfoDb seqlevels
+#' @importFrom doMPI startMPIcluster
+#' @importFrom doMPI registerDoMPI
+#' @importFrom Rmpi mpi.quit
 #' @importFrom doParallel registerDoParallel
 #' @importFrom parallel makeCluster
 #' @importFrom stats rnorm
@@ -509,7 +512,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #' @importFrom doParallel registerDoParallel
 #' @importFrom doMPI startMPIcluster
 #' @importFrom doMPI registerDoMPI
-#' @importFrom Rmpi mpi
+#' @importFrom Rmpi mpi.quit
 #' @importFrom parallel makeCluster
 #' @importFrom parallel stopCluster
 #' @importFrom stats rnorm
