@@ -507,6 +507,9 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #' @importFrom utils txtProgressBar
 #' @importFrom utils setTxtProgressBar
 #' @importFrom doParallel registerDoParallel
+#' @importFrom doMPI startMPIcluster
+#' @importFrom doMPI registerDoMPI
+#' @importFrom Rmpi mpi
 #' @importFrom parallel makeCluster
 #' @importFrom parallel stopCluster
 #' @importFrom stats rnorm
