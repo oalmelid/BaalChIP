@@ -622,7 +622,6 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         applyedCorrection[[ID]] <- biasparam
     }
     mpi.close.Rslaves(dellog = FALSE)
-    mpi.bcast.cmd(cmd = .Call("mpi_finalize", PACKAGE = "Rmpi"))
     mpi.finalize()
     saveRDS(applyedCorrection, "applied_corretion_1.rds")
     ##-----assign parameters
