@@ -623,7 +623,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     }
     message("foo")
     mpi.close.Rslaves(dellog = FALSE)
-    mpi.quit()
+    mpi.exit()
     message("bar")
     saveRDS(applyedCorrection, "applied_corretion_1.rds")
     ##-----assign parameters
