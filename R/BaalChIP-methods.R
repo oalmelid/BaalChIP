@@ -621,14 +621,15 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         biasTable[[ID]] <- biastable
         applyedCorrection[[ID]] <- biasparam
     }
-
+    message("foo")
     mpi.close.Rslaves(dellog = FALSE)
     mpi.quit()
-
+    message("bar")
+    saveRDS(applyedCorrection, "applied_corretion_1.rds")
     ##-----assign parameters
     applyedCorrection <- t(do.call("rbind", applyedCorrection))
     .Object@param$ASBparam <- list(Iter = Iter, conf_level = conf_level, applyedCorrection = applyedCorrection)
-
+    saveRDS(applyedCorrection, "applied_corretion_2.rds")
     ##-----update status and return
     if (!all(sapply(results, nrow) == 0)) {
         .Object@biasTable <- biasTable

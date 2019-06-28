@@ -145,13 +145,13 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
             if(U < min(0,ratio)) {
                 bias[iter] <- bias_new
                 llh[iter] <- llh_new
-            }else{
+            } else {
                 bias[iter] <- bias[iter-1]
                 llh[iter] <- llh[iter-1]
             }
         }
 
-    return(bias)
+        return(bias)
     }
     ################################################
     log_pro_density_bias <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
