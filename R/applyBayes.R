@@ -124,7 +124,7 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
     }
 
     ################################################
-    MH_iter <- function(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
+    MH_iter <- function(SNP_id, Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias) {
         if (identical(SNP_Bias[SNP_id,"RAF"],0)) { SNP_Bias[SNP_id,"RAF"] <- 0.01}
         if (identical(SNP_Bias[SNP_id,"RAF"],1))  { SNP_Bias[SNP_id,"RAF"] <- 0.99}
 
@@ -211,7 +211,8 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
   # foreach(SNP_id=snp_start:snp_end, .combine='cbind')%dopar%
   #       MH_iter(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias,SNP_id)
   parallel_result <- mpi.parLapply(seq(snp_start, snp_end),
-                                   function(SNP_ID) MH_iter(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_ID))
+                                   MH_iter,
+                                   Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)
   do.call(cbind, parallel_result)
 }
 
