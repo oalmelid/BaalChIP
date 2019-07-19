@@ -16,13 +16,13 @@ Bayesian_report <- function(iter_matrix,conf_level,threshold_lower,threshold_upp
 
     mcmc_traces = mcmc_converter(traces, burnin)
     conf_itval <- matrix(NA,ncol(traces),5)
-    stat_summaries <- summary(mcmc_traces)[["statistics"]]
 
     for (SNP in 1:ncol(traces)) {
       conf_itval[SNP,1:2] = HPDinterval(mcmc_traces[[SNP]], prob = conf_level)
       conf_itval[SNP,3] = (threshold_upper <= conf_itval[SNP,1])
       conf_itval[SNP,4] = (threshold_lower >= conf_itval[SNP,2])
-      conf_itval[SNP,5] = stat_summaries[SNP, "Time-series SE"]
+      stat_summaries <- summary(mcmc_traces[[SNP]])[["statistics"]]
+      conf_itval[SNP,5] = stat_summaries["Time-series SE"]
     }
 
     conf_itval <- data.frame(as.character(SNP_hit_Peaks[,1]),conf_itval, stringsAsFactors=FALSE)
