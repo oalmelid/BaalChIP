@@ -910,10 +910,3 @@ setMethod("adjustmentBaalPlot", "BaalChIP", function(.Object, col = c("green3", 
         message("nothing to plot")
     }
 })
-
-
-
-
-
-
-
