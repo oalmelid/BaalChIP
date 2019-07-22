@@ -6,7 +6,8 @@
 \alias{plotQC,BaalChIP-method}
 \title{Method plotQC}
 \usage{
-plotQC(.Object, what = "barplot_per_group", addlegend = TRUE, plot = TRUE)
+plotQC(.Object, what = "barplot_per_group", addlegend = TRUE,
+  plot = TRUE)
 
 \S4method{plotQC}{BaalChIP}(.Object, what = "barplot_per_group",
   addlegend = TRUE, plot = TRUE)
@@ -29,8 +30,6 @@ plotQC(.Object, what = "barplot_per_group", addlegend = TRUE, plot = TRUE)
 A plot
 }
 \description{
-Method plotQC
-
 Produces different plots of QC results.
 }
 \examples{
@@ -39,10 +38,9 @@ plotQC(BaalObject, what = 'overall_pie')
 plotQC(BaalObject, what =  'boxplot_per_filter', addlegend=FALSE)
 plotQC(BaalObject, what =  'barplot_per_group')
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{BaalChIP.run}}, \code{\link{summaryQC}}
 }
-
+\author{
+Ines de Santiago
+}

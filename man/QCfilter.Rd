@@ -25,8 +25,6 @@ QCfilter(.Object, RegionsToFilter = NULL, RegionsToKeep = NULL,
 An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects that pass filters.
 }
 \description{
-Method QCfilter
-
 Quality control step for removing variants that may be problematic for identification of allele-specific events.
 }
 \examples{
@@ -47,10 +45,9 @@ res <- QCfilter(res,
 plotQC(res,'barplot')
 summaryQC(res)
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{BaalChIP.get}}, \code{\link{plotQC}}, \code{\link{summaryQC}}
 }
-
+\author{
+Ines de Santiago
+}

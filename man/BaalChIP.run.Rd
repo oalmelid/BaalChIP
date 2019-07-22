@@ -21,8 +21,6 @@ BaalChIP.run(.Object, cores = 4, verbose = TRUE)
 An object of the \code{\link{BaalChIP}} class.
 }
 \description{
-Method BaalChIP.run
-
 BaalChIP.run is a wrapper convenience function, to compute allele counts and perform quality controls in one step. This function will use the package's defaults.
 }
 \details{
@@ -40,10 +38,9 @@ summaryQC(res)
 #summary of the ASB step
 summaryASB(res)
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{summaryQC}}, \code{\link{plotQC}}
 }
-
+\author{
+Ines de Santiago
+}

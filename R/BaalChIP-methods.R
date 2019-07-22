@@ -423,12 +423,13 @@ setMethod(f = "filter1allele", signature = "BaalChIP", function(.Object) {
 #' @import Rsamtools
 #' @import GenomicAlignments
 #' @import IRanges
+#' @import Rmpi
 #' @importFrom GenomeInfoDb mapSeqlevels
 #' @importFrom GenomeInfoDb renameSeqlevels
 #' @importFrom GenomeInfoDb seqlengths
 #' @importFrom GenomeInfoDb seqlevels
-#' @importFrom doParallel registerDoParallel
-#' @importFrom parallel makeCluster
+#' @importFrom doMPI startMPIcluster
+#' @importFrom doMPI registerDoMPI
 #' @importFrom stats rnorm
 #' @importFrom stats runif
 #' @importFrom stats dbeta
@@ -494,7 +495,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 
     ##-----get ASB
     if (verbose) {
-        message("-geting ASB counts...")
+        message("-getting ASB counts...")
     }
     .Object <- getASB(.Object, Iter = 5000, conf_level = 0.95, cores = cores, verbose = verbose)
 
@@ -503,6 +504,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 
 #' Identifies allele-specific binding events
 #' @import methods
+#' @import Rmpi
 #' @importFrom utils read.delim
 #' @importFrom utils txtProgressBar
 #' @importFrom utils setTxtProgressBar
@@ -579,6 +581,9 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     biasTable <- list()
     applyedCorrection <- list()
 
+    ns <- mpi.universe.size() - 1
+    mpi.spawn.Rslaves(nslaves=ns)
+
     for (ID in Expnames) {
         message("... calculating ASB for: ", ID)
         assayed <- assayedVar[[ID]]
@@ -616,12 +621,11 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         biasTable[[ID]] <- biastable
         applyedCorrection[[ID]] <- biasparam
     }
-
-
+    mpi.close.Rslaves(dellog = FALSE)
+    mpi.finalize()
     ##-----assign parameters
     applyedCorrection <- t(do.call("rbind", applyedCorrection))
     .Object@param$ASBparam <- list(Iter = Iter, conf_level = conf_level, applyedCorrection = applyedCorrection)
-
     ##-----update status and return
     if (!all(sapply(results, nrow) == 0)) {
         .Object@biasTable <- biasTable

@@ -33,8 +33,6 @@ filterIntbias(.Object, simul_output = NULL, tmpfile_prefix = NULL,
 An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects that pass filters.
 }
 \description{
-Method filterIntbias
-
 Filters the data frame available within a \code{\link{BaalChIP}} object (slot \code{alleleCounts}). This filter performs simulations of reads of the same length as the original ChIP-seq reads, aligns the simulated reads to the genome, calculates the allelic ratios for each variant and finally ignores those variants for which the allelic ratio (REF/TOTAL) is different than 0.5.
 }
 \examples{
@@ -52,10 +50,9 @@ res <- filterIntbias(res,
 plotSimul(res)
 summaryQC(res)
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{BaalChIP.get}}, \code{\link{plotQC}}, \code{\link{summaryQC}}
 }
-
+\author{
+Ines de Santiago
+}

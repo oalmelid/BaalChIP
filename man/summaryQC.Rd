@@ -21,18 +21,15 @@ A list with two elements:
 }
 }
 \description{
-Method summaryQC
-
 Generates summary of QC result.
 }
 \examples{
 data('BaalObject')
 summaryQC(BaalObject)
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{BaalChIP.run}}, \code{\link{plotQC}}
 }
-
+\author{
+Ines de Santiago
+}
