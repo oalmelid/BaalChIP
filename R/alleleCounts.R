@@ -74,6 +74,13 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
     #snp.ranges cannot contain ranges that are not in the bamheader, otherwise pileup will give an error
     bf <- BamFile(bamfile) #create a bamfile instance
     bam_seqlengths <- seqlengths(bf)
+
+    # OA debug
+    print("SNP ranges")
+    print(snp.ranges)
+    print("bam ranges")
+    print(GRanges(names(bam_seqlengths), IRanges(rep(1, length(bam_seqlengths)), as.numeric(bam_seqlengths))))
+
     olap <- suppressWarnings(overlapsAny(snp.ranges, GRanges(names(bam_seqlengths),
                                          IRanges(rep(1, length(bam_seqlengths)), as.numeric(bam_seqlengths)))))
 
