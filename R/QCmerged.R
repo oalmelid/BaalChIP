@@ -34,21 +34,21 @@ get_mergedcounts <- function(celldata, metadata, includeForeign=FALSE){
 
         #Get the counts tables to merge
         data2group <- celldata[targetGroup$sampleID]
-        if (!includeForeign) {data2group <- lapply(data2group, subset, select = c("ID","REF.counts","ALT.counts"), drop=FALSE)}
-        if (includeForeign) {data2group <- lapply(data2group, subset, select = c("ID","REF.counts","ALT.counts","Foreign.counts"), drop=FALSE)}
 
-        #group tables
-        group <- merge(data2group[[1]],data2group[[2]], by=c("ID"))
-        if (length(data2group) >= 3) {
-                for (d in 3:length(data2group)) {
-                    group <- merge(group,data2group[[d]], by=c("ID"))
-                }
+        data_columns <- c("ID","REF.counts","ALT.counts")
+        paste_columns <- c("REF.","ALT.")
+
+        if (includeForeign) {
+                data_columns <- c(data_columns, "Foreign.counts")
+                paste_columns <- c(paste_columns, "FOREIGN.")
         }
 
-        #change colnames
+        data2group <- lapply(data2group, function(x) subset(x , select=data_columns, drop=FALSE))
+        group <- Reduce(function(a, b) merge(a,b, by=c("ID")), data2group)
+
+        #change column names
         nrrep <- nrow(targetGroup)
-        if (!includeForeign) {colname <- unlist(lapply(1:nrrep, function (x) paste0(c("REF.","ALT."),x)))}
-        if (includeForeign)  {colname <- unlist(lapply(1:nrrep, function (x) paste0(c("REF.","ALT.","FOREIGN."),x)))}
+        colname <- unlist(lapply(1:nrrep, function (x) paste0(paste_columns, x)))
         colnames(group) <- c("ID", colname)
 
         #return
@@ -118,10 +118,3 @@ applyFilter1allele <- function(res_merged) {
   }
   return(res_merged)
 }
-
-
-
-
-
-
-
