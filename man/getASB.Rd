@@ -10,7 +10,8 @@ getASB(.Object, Iter = 5000, conf_level = 0.95, cores = 4,
   RMcorrection = TRUE, RAFcorrection = TRUE, verbose = TRUE)
 
 \S4method{getASB}{BaalChIP}(.Object, Iter = 5000, conf_level = 0.95,
-  cores = 4, RMcorrection = TRUE, RAFcorrection = TRUE, verbose = TRUE)
+  cores = 4, RMcorrection = TRUE, RAFcorrection = TRUE,
+  verbose = TRUE)
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
@@ -31,8 +32,6 @@ getASB(.Object, Iter = 5000, conf_level = 0.95, cores = 4,
 An updated \code{\link{BaalChIP}} object with the slot \code{ASB} containing variants identified as allele-specific.
 }
 \description{
-Method getASB
-
 getASB identifies allele-specific binding events using a bayesian framework.
 }
 \examples{
@@ -50,10 +49,9 @@ summaryASB(res)
 #report result
 res <- BaalChIP.report(res)
 }
-\author{
-Wei Liu, Ke Yuan, Ines de Santiago
-}
 \seealso{
 \code{\link{summaryASB}}, \code{\link{BaalChIP.report}}
 }
-
+\author{
+Wei Liu, Ke Yuan, Ines de Santiago
+}

@@ -17,8 +17,6 @@ filter1allele(.Object)
 An updated \code{\link{BaalChIP}} object with the slot \code{mergedCounts} containing a data.frame of merged samples per group with variants that pass the filter.
 }
 \description{
-Method filter1allele
-
 Filters the data frame available within a \code{\link{BaalChIP}} object (slot \code{mergedCounts}). This filter ignores variants for which only one allele is observed after pooling ChIP-seq reads from all datasets.
 }
 \examples{
@@ -48,10 +46,9 @@ sapply(counts, dim)
 #check out the result for one of the groups:
 head(counts[[1]])
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{BaalChIP.get}}, \code{\link{plotQC}}, \code{\link{summaryQC}}
 }
-
+\author{
+Ines de Santiago
+}

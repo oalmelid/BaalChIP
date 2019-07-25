@@ -2,8 +2,8 @@
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 pooldata <- function(merged) {
-    REF.counts <- rowSums(merged[,which(grepl("REF", colnames(merged)))],na.rm=TRUE)
-    ALT.counts <- rowSums(merged[,which(grepl("ALT", colnames(merged)))],na.rm=TRUE)
+    REF.counts <- rowSums(merged[,which(grepl("REF", colnames(merged))),drop=FALSE],na.rm=TRUE)
+    ALT.counts <- rowSums(merged[,which(grepl("ALT", colnames(merged))),drop=FALSE],na.rm=TRUE)
     Total.counts <- REF.counts + ALT.counts
     AR <- REF.counts / Total.counts
     res <- data.frame("ID"=merged$ID, REF.counts, ALT.counts, Total.counts, AR, stringsAsFactors=FALSE)
@@ -49,15 +49,21 @@ estimateRefBias <- function(assayed, GTtable, min_n=200) {
 #' @importFrom stats na.omit
 getbiasTable <- function(assayed, GTtable, ARestimate){
 
-    if(nrow(assayed)==0) {return(list(data.frame(), data.frame()))}
+    if (nrow(assayed) == 0) {
+        return(
+            list(setNames(data.frame(matrix(ncol=2, nrow=0)), c("ID", "RAF")),
+                 setNames(data.frame(matrix(ncol=3, nrow=0)), c("ID","RMbias", "RAF"))
+            )
+        )
+    }
 
     biastable <- GTtable[GTtable$ID %in% assayed$ID,c("ID","RAF"), drop=FALSE]
 
     if (!is.null(ARestimate)) {
-    GT <- paste(GTtable$REF, GTtable$ALT, sep="")
-    biastable$RMbias <- ARestimate[match(GT, names(ARestimate))]
-    }else{
-    biastable$RMbias <- 0.5
+        GT <- paste(GTtable$REF, GTtable$ALT, sep="")
+        biastable$RMbias <- ARestimate[match(GT, names(ARestimate))]
+    } else {
+        biastable$RMbias <- 0.5
     }
 
     biastable <- biastable[,c("ID","RMbias", "RAF"), drop=FALSE]
@@ -141,7 +147,11 @@ getRAFfromgDNA <- function (bamFiles, snp.ranges, min_base_quality=10, min_mapq=
 }
 
 useRAFfromhets <- function(snps, ID, verbose=TRUE) {
-    if (nrow(snps)==0) {return(data.frame())} #in case there were no snps left after filtering
+    #in case there were no snps left after filtering
+    if (nrow(snps)==0) {
+        return(setNames(data.frame(matrix(ncol=6, nrow=0)),
+                        c("ID", "CHROM", "POS", "REF", "ALT", "RAF")))
+    }
 
     if (!("RAF" %in% colnames(snps))) {
         #oops... there are no RAF value in hets table...
@@ -156,7 +166,13 @@ useRAFfromhets <- function(snps, ID, verbose=TRUE) {
 
 useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15, verbose=TRUE) {
 
-    if (nrow(snps)==0) {return(data.frame())} #in case there were no snps left after filtering
+    if (nrow(snps)==0) {
+        #in case there were no snps left after filtering
+        return(
+            setNames(data.frame(matrix(ncol=6, nrow=0)),
+                     c("ID", "CHROM", "POS", "REF", "ALT", "RAF"))
+        )
+    }
 
     if (verbose) {message("-calculating RAF from gDNA for group ",ID)}
     bamFiles <- gDNAbams
@@ -173,12 +189,10 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
     if (length(gDNA)==0) {gDNA <- NULL}
 
     Vartable <- lapply(names(hets), function (ID) {
-        #for (ID in names(hets)){
         snps <- read.delim(hets[[ID]], stringsAsFactors=FALSE, header=TRUE)
         assayed <- assayedVar[[ID]]
         snps <- snps[snps$ID %in% assayed$ID,,drop=FALSE]
         gDNAbams <- gDNA[[ID]]
-
 
         #RAF correction is TRUE, and gDNA is null --> go directly to RAF
         if (is.null(gDNAbams) & RAFcorrection) { snps <- useRAFfromhets(snps, ID, verbose=verbose) }
@@ -198,8 +212,7 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
 
         }
 
-    #Vartable[[ID]] <- snps
-    return(snps)
+        return(snps)
     })
     names(Vartable) <- names(hets)
 

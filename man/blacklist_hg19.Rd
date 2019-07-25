@@ -25,4 +25,3 @@ These are not applicable to RNA-seq or other transcriptome data types.
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}
 }
 \keyword{blacklist_hg19}
-

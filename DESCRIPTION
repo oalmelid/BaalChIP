@@ -15,7 +15,7 @@ Depends:
     GenomicRanges,
     IRanges,
     Rsamtools,
-Imports:   
+Imports: 
     GenomicAlignments,
     GenomeInfoDb,
     doParallel,
@@ -40,5 +40,5 @@ VignetteBuilder:
     knitr
 License: Artistic-2.0
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.1.1
 biocViews: Software, ChIPSeq, Bayesian, Sequencing

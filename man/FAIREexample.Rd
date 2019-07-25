@@ -15,4 +15,3 @@ FAIREexample example dataset
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}
 }
 \keyword{FAIREexample}
-

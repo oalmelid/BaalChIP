@@ -8,7 +8,8 @@
 \usage{
 adjustmentBaalPlot(.Object, col = c("green3", "gray50"))
 
-\S4method{adjustmentBaalPlot}{BaalChIP}(.Object, col = c("green3", "gray50"))
+\S4method{adjustmentBaalPlot}{BaalChIP}(.Object, col = c("green3",
+  "gray50"))
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
@@ -19,8 +20,6 @@ adjustmentBaalPlot(.Object, col = c("green3", "gray50"))
 A plot
 }
 \description{
-Method adjustmentBaalPlot
-
 Produces a density plot of the distribution of allelic ratios (REF/TOTAL) before and after BaalChIP adjustment for RM and RAF biases.
 }
 \examples{
@@ -28,10 +27,9 @@ data('BaalObject')
 adjustmentBaalPlot(BaalObject)
 adjustmentBaalPlot(BaalObject, col=c('blue','pink'))
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{BaalChIP.report}}, \code{\link{summaryQC}}
 }
-
+\author{
+Ines de Santiago
+}

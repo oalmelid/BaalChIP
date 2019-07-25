@@ -27,4 +27,3 @@ These regions are not applicable to longer reads (> 50bp).
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}
 }
 \keyword{UniqueMappability50bp_hg19}
-

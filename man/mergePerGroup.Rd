@@ -17,8 +17,6 @@ mergePerGroup(.Object)
 An updated \code{\link{BaalChIP}} object with the slot \code{mergedCounts} containing a data.frame of merged samples per group.
 }
 \description{
-Method mergePerGroup
-
 Merges all ChIP-seq datasets within a group of samples creating a data.frame that contains allele-specific read count data for all variants that need to be analysed.
 }
 \details{
@@ -50,10 +48,9 @@ sapply(counts, dim)
 #check out the result for one of the groups:
 head(counts[[1]])
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{BaalChIP.get}}, \code{\link{plotQC}}, \code{\link{summaryQC}}
 }
-
+\author{
+Ines de Santiago
+}

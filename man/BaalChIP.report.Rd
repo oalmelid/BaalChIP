@@ -17,8 +17,6 @@ BaalChIP.report(.Object)
 A named list, with a data.frame per group.
 }
 \description{
-Method BaalChIP.report
-
 Generates a data.frame per group with all variants and a label for all identified allele-specific binding (ASB) variants.
 }
 \details{
@@ -51,10 +49,9 @@ names(report)
 #check out the report for one of the groups:
 head(report[['MCF7']])
 }
-\author{
-Ines de Santiago
-}
 \seealso{
 \code{\link{summaryASB}}, \code{\link{getASB}}
 }
-
+\author{
+Ines de Santiago
+}

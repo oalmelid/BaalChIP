@@ -124,7 +124,7 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
     }
 
     ################################################
-    MH_iter <- function(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
+    MH_iter <- function(SNP_id, Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias) {
         if (identical(SNP_Bias[SNP_id,"RAF"],0)) { SNP_Bias[SNP_id,"RAF"] <- 0.01}
         if (identical(SNP_Bias[SNP_id,"RAF"],1))  { SNP_Bias[SNP_id,"RAF"] <- 0.99}
 
@@ -145,13 +145,13 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
             if(U < min(0,ratio)) {
                 bias[iter] <- bias_new
                 llh[iter] <- llh_new
-            }else{
+            } else {
                 bias[iter] <- bias[iter-1]
                 llh[iter] <- llh[iter-1]
             }
         }
 
-    return(bias)
+        return(bias)
     }
     ################################################
     log_pro_density_bias <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
@@ -208,25 +208,16 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
    }
 
   ############## parellel computing #################
-  foreach(SNP_id=snp_start:snp_end, .combine='cbind')%dopar%
-        MH_iter(Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias,SNP_id)
+  parallel_result <- mpi.parLapply(seq(snp_start, snp_end),
+                                   MH_iter,
+                                   Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)
+  do.call(cbind, parallel_result)
 }
 
 
 runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4)
 {
     ### RunBayes for each cell/individual
-    #suppressPackageStartupMessages(require(doMPI))
-    #cl <- startMPIcluster(count=10)
-    #registerDoMPI(cl)
-
-    #suppressPackageStartupMessages(require("foreach"))
-    #suppressPackageStartupMessages(require(doParallel))
-    #suppressPackageStartupMessages(require(coda))
-    cores = cores# how many cores to use concurrently
-    cl <- makeCluster(cores)
-    registerDoParallel(cl)
-
     ##------calculate args
     TF_num = sum(grepl("score", colnames(counts))) # number of TFs
     START = 1   # start SNP
@@ -251,7 +242,5 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4)
     SNP_check   = 4
     Bayes_report <- Bayesian_report(iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
 
-    stopCluster(cl)
-    #mpi.quit()
     return(Bayes_report)
 }
