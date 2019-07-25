@@ -156,7 +156,10 @@ useRAFfromhets <- function(snps, ID, verbose=TRUE) {
 
 useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15, verbose=TRUE) {
 
-    if (nrow(snps)==0) {return(data.frame())} #in case there were no snps left after filtering
+    if (nrow(snps)==0) {
+        #in case there were no snps left after filtering
+        return(data.frame("ID"=c(), "CHROM"=c(), "POS"=c(), "REF"=c(), "ALT"=c(),"RAF"=c()))
+    }
 
     if (verbose) {message("-calculating RAF from gDNA for group ",ID)}
     bamFiles <- gDNAbams
@@ -173,12 +176,10 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
     if (length(gDNA)==0) {gDNA <- NULL}
 
     Vartable <- lapply(names(hets), function (ID) {
-        #for (ID in names(hets)){
         snps <- read.delim(hets[[ID]], stringsAsFactors=FALSE, header=TRUE)
         assayed <- assayedVar[[ID]]
         snps <- snps[snps$ID %in% assayed$ID,,drop=FALSE]
         gDNAbams <- gDNA[[ID]]
-
 
         #RAF correction is TRUE, and gDNA is null --> go directly to RAF
         if (is.null(gDNAbams) & RAFcorrection) { snps <- useRAFfromhets(snps, ID, verbose=verbose) }
@@ -198,8 +199,7 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
 
         }
 
-    #Vartable[[ID]] <- snps
-    return(snps)
+        return(snps)
     })
     names(Vartable) <- names(hets)
 
