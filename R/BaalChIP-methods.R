@@ -613,12 +613,10 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
                 cores = cores)
         } else {
             message("no variants left for ", ID)
-            Bayes_report <- data.frame("ID"=c(),
-                                       "Bayes_lower"=c(),
-                                       "Bayes_upper"=c(),
-                                       "Bayes_sig_A"=c(),
-                                       "Bayes_sig_B"=c(),
-                                       "Bayes_SE"=c())
+            Bayes_report <- setNames(
+                data.frame(matrix(ncol=6,nrow=0)),
+                c("ID", "Bayes_lower", "Bayes_upper", "Bayes_sig_A", "Bayes_sig_B", "Bayes_SE")
+            )
         }
 
         # append results

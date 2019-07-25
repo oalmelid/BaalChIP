@@ -158,7 +158,7 @@ useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15,
 
     if (nrow(snps)==0) {
         #in case there were no snps left after filtering
-        return(data.frame("ID"=c(), "CHROM"=c(), "POS"=c(), "REF"=c(), "ALT"=c(),"RAF"=c()))
+        return(setNames(data.frame(matrix(ncol=6, nrow=0)), c("ID", "CHROM", "POS", "REF", "ALT", "RAF"))
     }
 
     if (verbose) {message("-calculating RAF from gDNA for group ",ID)}
