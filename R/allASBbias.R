@@ -2,8 +2,8 @@
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 pooldata <- function(merged) {
-    REF.counts <- rowSums(merged[,which(grepl("REF", colnames(merged)))],na.rm=TRUE)
-    ALT.counts <- rowSums(merged[,which(grepl("ALT", colnames(merged)))],na.rm=TRUE)
+    REF.counts <- rowSums(merged[,which(grepl("REF", colnames(merged))),drop=FALSE],na.rm=TRUE)
+    ALT.counts <- rowSums(merged[,which(grepl("ALT", colnames(merged))),drop=FALSE],na.rm=TRUE)
     Total.counts <- REF.counts + ALT.counts
     AR <- REF.counts / Total.counts
     res <- data.frame("ID"=merged$ID, REF.counts, ALT.counts, Total.counts, AR, stringsAsFactors=FALSE)
