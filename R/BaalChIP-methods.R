@@ -122,7 +122,7 @@ BaalChIP <- function(samplesheet = NULL, hets = NULL, CorrectWithgDNA = list()) 
 #'counts[['MCF7']][[1]]
 #' @export
 setMethod(f = "alleleCounts", signature = "BaalChIP", function(.Object, min_base_quality = 10, min_mapq = 15,
-    verbose = TRUE) {
+    verbose = TRUE, all_hets=FALSE) {
 
     ##-----check input arguments
     samples <- getBaalSlot(.Object, "samples")
@@ -134,7 +134,7 @@ setMethod(f = "alleleCounts", signature = "BaalChIP", function(.Object, min_base
     .Object@param$QCparam <- list(min_base_quality = min_base_quality, min_mapq = min_mapq)
 
     ##-----compute allele counts
-    res_per_bam <- applyAlleleCountsPerBam(samples, hets, min_base_quality, min_mapq, verbose = verbose)
+    res_per_bam <- applyAlleleCountsPerBam(samples, hets, min_base_quality, min_mapq, verbose = verbose, all_hets=all_hets)
     .Object@alleleCounts <- res_per_bam
 
     return(.Object)

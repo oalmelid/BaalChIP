@@ -27,14 +27,13 @@ get_snps_in_GI <- function(snpfile, bedfile){
     sigi.ranges
 }
 
-filter_sigi <- function(snpfile, bedfile) {
-    #get snps in bed file
-    if (!is.null(bedfile)) {
+filter_sigi <- function(snpfile, bedfile, all_hets) {
+    if (!is.null(bedfile) && !all_hets) {
+        #get snps in bed file
         sigi.ranges <- get_snps_in_GI(snpfile, bedfile)
-    }
-
-    #if no genomic regions are given, get snp range object
-    else {
+    } else {
+        # if no genomic regions are given or we've explicitly asked for it,
+        # get snp range object
         snps <- read.delim(snpfile, stringsAsFactors=FALSE, header=TRUE)
         sigi.ranges <- get_snp_ranges(snps)
     }
@@ -140,7 +139,7 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
     }
 }
 
-applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=TRUE) {
+applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=TRUE, all_hets=FALSE) {
     cells <- unique(samples[["group_name"]])
     res_per_bam <- list()
     res_per_bam <- lapply(cells, function(x) {res_per_bam[[x]] <- list()})
@@ -155,7 +154,7 @@ applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_qua
 
         #get SNPs in genomic intervals (peaks, genes)
         snpfile = hets[[x[["group_name"]]]]
-        sigi.ranges <- filter_sigi(snpfile=snpfile, bedfile = x[["bed_name"]])
+        sigi.ranges <- filter_sigi(snpfile=snpfile, bedfile = x[["bed_name"]], all_hets)
 
         #Count frequency of Ref and alternative alleles
         sigi.ranges <- get_allele_counts(bamfile = x[["bam_name"]], snp.ranges = sigi.ranges, returnRanges=TRUE, min_base_quality=min_base_quality, min_mapq=min_mapq)
@@ -167,5 +166,4 @@ applyAlleleCountsPerBam <- function(samples, hets, min_base_quality=min_base_qua
     if (verbose) {close(pb)}
 
     return(res_per_bam)
-
 }
