@@ -7,10 +7,10 @@
 \title{Method alleleCounts}
 \usage{
 alleleCounts(.Object, min_base_quality = 10, min_mapq = 15,
-  verbose = TRUE)
+  verbose = TRUE, all_hets = TRUE)
 
 \S4method{alleleCounts}{BaalChIP}(.Object, min_base_quality = 10,
-  min_mapq = 15, verbose = TRUE)
+  min_mapq = 15, verbose = TRUE, all_hets = FALSE)
 }
 \arguments{
 \item{.Object}{An object of the \code{\link{BaalChIP}} class.}
@@ -20,6 +20,8 @@ alleleCounts(.Object, min_base_quality = 10, min_mapq = 15,
 \item{min_mapq}{A numeric value indicating the minimum mapping quality (MAPQ) below which the entire read is ignored (default 15).}
 
 \item{verbose}{logical. If TRUE reports extra information on the process}
+
+\item{all_hets}{logical. If TRUE don't filter for only peak regions}
 }
 \value{
 An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects.
