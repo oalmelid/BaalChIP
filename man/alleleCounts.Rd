@@ -7,7 +7,7 @@
 \title{Method alleleCounts}
 \usage{
 alleleCounts(.Object, min_base_quality = 10, min_mapq = 15,
-  verbose = TRUE, all_hets = TRUE)
+  verbose = TRUE, all_hets = FALSE)
 
 \S4method{alleleCounts}{BaalChIP}(.Object, min_base_quality = 10,
   min_mapq = 15, verbose = TRUE, all_hets = FALSE)
