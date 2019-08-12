@@ -100,6 +100,7 @@ BaalChIP <- function(samplesheet = NULL, hets = NULL, CorrectWithgDNA = list()) 
 #' @param min_base_quality A numeric value indicating the minimum read base quality below which the base is ignored when summarizing pileup information (default 10).
 #' @param min_mapq A numeric value indicating the minimum mapping quality (MAPQ) below which the entire read is ignored (default 15).
 #' @param verbose logical. If TRUE reports extra information on the process
+#' @param all_hets logical. If TRUE don't filter for only peak regions
 #' @note BaalChIP computes allelic counts at each variant position with Rsamtools pileup function. The algorithm follows pileup::Rsamtools by automatically excluding reads flagged as unmapped, secondary, duplicate, or not passing quality controls.
 #' @details Utilizes the information within the \code{samples} slot of a BaalChIP object. Will primarily find all variants overlapping peaks. Then, for each variant, computes the number of reads carrying the reference (REF) and alternative (ALT) alleles.
 #' @return An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects.
@@ -122,7 +123,7 @@ BaalChIP <- function(samplesheet = NULL, hets = NULL, CorrectWithgDNA = list()) 
 #'counts[['MCF7']][[1]]
 #' @export
 setMethod(f = "alleleCounts", signature = "BaalChIP", function(.Object, min_base_quality = 10, min_mapq = 15,
-    verbose = TRUE) {
+    verbose = TRUE, all_hets=FALSE) {
 
     ##-----check input arguments
     samples <- getBaalSlot(.Object, "samples")
@@ -134,7 +135,7 @@ setMethod(f = "alleleCounts", signature = "BaalChIP", function(.Object, min_base
     .Object@param$QCparam <- list(min_base_quality = min_base_quality, min_mapq = min_mapq)
 
     ##-----compute allele counts
-    res_per_bam <- applyAlleleCountsPerBam(samples, hets, min_base_quality, min_mapq, verbose = verbose)
+    res_per_bam <- applyAlleleCountsPerBam(samples, hets, min_base_quality, min_mapq, verbose = verbose, all_hets=all_hets)
     .Object@alleleCounts <- res_per_bam
 
     return(.Object)

@@ -10,7 +10,8 @@ setGeneric(name="alleleCounts",
                        def=function(.Object,
                        min_base_quality=10,
                        min_mapq=15,
-                       verbose=TRUE)
+                       verbose=TRUE,
+                       all_hets=FALSE)
                        {
                                standardGeneric("alleleCounts")
                        }
