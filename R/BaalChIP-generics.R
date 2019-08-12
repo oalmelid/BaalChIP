@@ -11,7 +11,7 @@ setGeneric(name="alleleCounts",
                        min_base_quality=10,
                        min_mapq=15,
                        verbose=TRUE,
-                       all_hets=TRUE)
+                       all_hets=FALSE)
                        {
                                standardGeneric("alleleCounts")
                        }

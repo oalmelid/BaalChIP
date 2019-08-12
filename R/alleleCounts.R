@@ -95,18 +95,14 @@ get_allele_counts <- function(bamfile, snp.ranges, returnRanges=FALSE,min_base_q
 
 
     #merge with snp.ranges to get info about REF, ALT alleles
-    snps <- data.frame("names"= names(snp.ranges), "seqnames"=seqnames(snp.ranges),
-                               "start"=start(snp.ranges),
-                               "REF"=as.character(values(snp.ranges)$REF),
-                               "ALT"=as.character(values(snp.ranges)$ALT),
-                               stringsAsFactors=FALSE)
+    snps <- data.frame("names"= names(snp.ranges),
+                       "seqnames"=seqnames(snp.ranges),
+                       "start"=start(snp.ranges),
+                       "REF"=as.character(values(snp.ranges)$REF),
+                       "ALT"=as.character(values(snp.ranges)$ALT),
+                       stringsAsFactors=FALSE)
 
-    #snps <- as.data.frame(snp.ranges)
-    #snps$names <- rownames(snps)
     snps <- merge(snps, nuctab, by=c("seqnames","start"))
-    #snps$REF <- as.character(snps$REF)
-    #snps$ALT <- as.character(snps$ALT)
-
 
     ref.counts <- sapply(seq_len(nrow(snps)), function(x) {snps[x,snps[x,"REF"]]})
     alt.counts <- sapply(seq_len(nrow(snps)), function(x) {snps[x,snps[x,"ALT"]]})
