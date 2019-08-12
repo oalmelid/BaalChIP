@@ -26,10 +26,10 @@ readsamplesheet <- function(samplesheet, .CHECKS=TRUE) {
 
     # make sampleIDs
     if (! "sampleID" %in% colnames(samples)){
-      sampleID <- paste(samples[,'group_name'],samples[,'target'],samples[,'replicate_number'], sep='_')
-        samples$sampleID <- sampleID
+        samples$sampleID <- paste(samples[,'group_name'],samples[,'target'],samples[,'replicate_number'], sep='_')
     }
 
+    sampleID <- samples$sampleID
     #Check duplicated names
     if (any(duplicated(sampleID))) {
       i <- which(duplicated(sampleID))
@@ -238,8 +238,3 @@ BaalChIP.checks <- function(name, param, .CHECKS= TRUE){
     }
 
 }
-
-
-
-
-
