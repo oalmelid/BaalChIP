@@ -388,7 +388,7 @@ This bias correction can be turned on/off by using the argument `RAFcorrection=T
 
 The output of BaalChIP is a posterior distribution of the estimated allelic balance ratio in read counts observed after considering all sources of underlying biases
 
-```{r, eval=TRUE, echo=FALSE, include=FASE}
+```{r, eval=TRUE, echo=FALSE, include=FALSE}
 data(baalObject)
 res <- BaalObject
 ```
