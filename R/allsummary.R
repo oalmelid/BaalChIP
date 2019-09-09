@@ -103,7 +103,7 @@ getReport <- function(object, group_name) {
     correctedAR <- data.frame("ID"=as.character(asb$ID),
                     "Bayes_lower"=asb$Bayes_lower,
                     "Bayes_upper"=asb$Bayes_upper,
-                    "Bayes_SE"=asb$Bayes_SE,
+                    "Bayes_SD"=asb$Bayes_SD,
                     "Corrected.AR"=rowMeans(asb[,c("Bayes_lower","Bayes_upper")]),
                      stringsAsFactors=FALSE)
     baalSig <- as.character(asb$ID[asb[,"Bayes_sig_A"]==1 | asb[,"Bayes_sig_B"] == 1])
