@@ -43,8 +43,11 @@ get_mergedcounts <- function(celldata, metadata, includeForeign=FALSE){
                 paste_columns <- c(paste_columns, "FOREIGN.")
         }
 
+        # We don't want to filter this down to SNPS that appear in all samples, so keep SNPS that are
+        # unique to a single sample and set counts to 0
         data2group <- lapply(data2group, function(x) subset(x , select=data_columns, drop=FALSE))
-        group <- Reduce(function(a, b) merge(a,b, by=c("ID")), data2group)
+        group <- Reduce(function(a, b) merge(a,b, by=c("ID"), all=TRUE), data2group)
+        group[is.na(group)] <- 0
 
         #change column names
         nrrep <- nrow(targetGroup)
