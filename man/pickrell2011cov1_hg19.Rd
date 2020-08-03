@@ -4,7 +4,9 @@
 \name{pickrell2011cov1_hg19}
 \alias{pickrell2011cov1_hg19}
 \title{Genomic regions of collapsed repeats}
-\format{A GRanges object of 34359 ranges.}
+\format{
+A GRanges object of 34359 ranges.
+}
 \source{
 File available as supplementary data: Pickrell2011_seq.cov1.bed (\url{http://www.ncbi.nlm.nih.gov/pubmed/21690102})
 }

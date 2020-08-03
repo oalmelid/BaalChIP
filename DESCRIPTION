@@ -29,7 +29,8 @@ Imports:
     methods,
     utils,
     graphics,
-    stats
+    stats,
+    Rmpi
 Suggests:
     RUnit,
     BiocGenerics,
@@ -40,5 +41,5 @@ VignetteBuilder:
     knitr
 License: Artistic-2.0
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 biocViews: Software, ChIPSeq, Bayesian, Sequencing

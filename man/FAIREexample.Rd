@@ -4,7 +4,9 @@
 \name{FAIREexample}
 \alias{FAIREexample}
 \title{FAIREexample example dataset}
-\format{A BaalChIP-class object}
+\format{
+A BaalChIP-class object
+}
 \source{
 Downloaded from supplementary data of BaalChIP paper
 }

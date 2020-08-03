@@ -4,7 +4,9 @@
 \name{UniqueMappability50bp_hg19}
 \alias{UniqueMappability50bp_hg19}
 \title{Genomic regions of unique mappability}
-\format{A GRanges object of 9831690 ranges.}
+\format{
+A GRanges object of 9831690 ranges.
+}
 \source{
 Downloaded from \url{http://hgdownload.cse.ucsc.edu/gbdb/hg19/bbi/wgEncodeCrgMapabilityAlign50mer.bw}.
 }
