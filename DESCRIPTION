@@ -29,7 +29,8 @@ Imports:
     methods,
     utils,
     graphics,
-    stats
+    stats,
+    Rmpi
 Suggests:
     RUnit,
     BiocGenerics,
