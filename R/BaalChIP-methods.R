@@ -429,8 +429,6 @@ setMethod(f = "filter1allele", signature = "BaalChIP", function(.Object) {
 #' @importFrom GenomeInfoDb renameSeqlevels
 #' @importFrom GenomeInfoDb seqlengths
 #' @importFrom GenomeInfoDb seqlevels
-#' @importFrom doMPI startMPIcluster
-#' @importFrom doMPI registerDoMPI
 #' @importFrom stats rnorm
 #' @importFrom stats runif
 #' @importFrom stats dbeta
