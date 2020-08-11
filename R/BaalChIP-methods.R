@@ -424,7 +424,6 @@ setMethod(f = "filter1allele", signature = "BaalChIP", function(.Object) {
 #' @import Rsamtools
 #' @import GenomicAlignments
 #' @import IRanges
-#' @import Rmpi
 #' @importFrom GenomeInfoDb mapSeqlevels
 #' @importFrom GenomeInfoDb renameSeqlevels
 #' @importFrom GenomeInfoDb seqlengths
@@ -503,7 +502,6 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 
 #' Identifies allele-specific binding events
 #' @import methods
-#' @import Rmpi
 #' @importFrom utils read.delim
 #' @importFrom utils txtProgressBar
 #' @importFrom utils setTxtProgressBar
@@ -515,6 +513,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #' @importFrom stats dbeta
 #' @importFrom coda as.mcmc
 #' @import foreach
+#' @import Rmpi
 #' @importFrom coda HPDinterval
 #' @author Wei Liu, Ke Yuan, Ines de Santiago
 #' @rdname getASB
@@ -545,7 +544,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #'res <- BaalChIP.report(res)
 #' @export
 setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95, cores = 4, RMcorrection = TRUE,
-    RAFcorrection = TRUE, verbose = TRUE) {
+    RAFcorrection = TRUE, verbose = TRUE, useMPI = FALSE) {
 
     ##-----check input arguments
     BaalChIP.checks(name = "Iter", Iter)
@@ -580,9 +579,13 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     biasTable <- list()
     applyedCorrection <- list()
 
-    ns <- mpi.universe.size() - 1
-    mpi.spawn.Rslaves(nslaves=ns)
-
+    cl <- NULL
+    if (useMPI) {
+        mpi.spawn.Rslaves(cores-1)    
+    } else {
+        cl <- makeCluster(cores)
+    }
+    
     for (ID in Expnames) {
         message("... calculating ASB for: ", ID)
         assayed <- assayedVar[[ID]]
@@ -609,7 +612,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         # run bayes
         if (nrow(counts) > 0) {
             Bayes_report <- runBayes(counts = counts, bias = biastable, Iter = Iter, conf_level = conf_level,
-                cores = cores)
+                cores = cores, useMPI = useMPI, cluster=cl)
         } else {
             message("no variants left for ", ID)
             Bayes_report <- setNames(
@@ -623,8 +626,14 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         biasTable[[ID]] <- biastable
         applyedCorrection[[ID]] <- biasparam
     }
-    mpi.close.Rslaves(dellog = FALSE)
-    mpi.finalize()
+    
+    if (useMPI) {
+        mpi.close.Rslaves(dellog = FALSE)
+        mpi.finalize()
+    } else {
+        stopCluster(cl)
+    }
+    
     ##-----assign parameters
     applyedCorrection <- t(do.call("rbind", applyedCorrection))
     .Object@param$ASBparam <- list(Iter = Iter, conf_level = conf_level, applyedCorrection = applyedCorrection)

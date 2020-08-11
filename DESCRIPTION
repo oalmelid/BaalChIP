@@ -30,7 +30,6 @@ Imports:
     utils,
     graphics,
     stats,
-    Rmpi
 Suggests:
     RUnit,
     BiocGenerics,
