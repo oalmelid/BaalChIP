@@ -95,7 +95,8 @@ setGeneric(name="getASB",
                        conf_level = 0.95, cores = 4,
                        RMcorrection = TRUE,
                        RAFcorrection = TRUE,
-                       verbose=TRUE)
+                       verbose=TRUE,
+                       useMPI = FALSE)
                        {
                                standardGeneric("getASB")
                        }
