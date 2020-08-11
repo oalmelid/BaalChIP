@@ -12,7 +12,8 @@ getASB(
   cores = 4,
   RMcorrection = TRUE,
   RAFcorrection = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  useMPI = FALSE
 )
 
 \S4method{getASB}{BaalChIP}(
@@ -22,7 +23,8 @@ getASB(
   cores = 4,
   RMcorrection = TRUE,
   RAFcorrection = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  useMPI = FALSE
 )
 }
 \arguments{
