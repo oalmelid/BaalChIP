@@ -513,7 +513,6 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #' @importFrom stats dbeta
 #' @importFrom coda as.mcmc
 #' @import foreach
-#' @import Rmpi
 #' @importFrom coda HPDinterval
 #' @author Wei Liu, Ke Yuan, Ines de Santiago
 #' @rdname getASB
@@ -544,7 +543,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #'res <- BaalChIP.report(res)
 #' @export
 setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95, cores = 4, RMcorrection = TRUE,
-    RAFcorrection = TRUE, verbose = TRUE, useMPI = FALSE) {
+    RAFcorrection = TRUE, verbose = TRUE) {
 
     ##-----check input arguments
     BaalChIP.checks(name = "Iter", Iter)
@@ -579,12 +578,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     biasTable <- list()
     applyedCorrection <- list()
 
-    cl <- NULL
-    if (useMPI) {
-        mpi.spawn.Rslaves(cores-1)    
-    } else {
-        cl <- makeCluster(cores)
-    }
+    cl <- makeCluster(cores)
     
     for (ID in Expnames) {
         message("... calculating ASB for: ", ID)
@@ -611,8 +605,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
 
         # run bayes
         if (nrow(counts) > 0) {
-            Bayes_report <- runBayes(counts = counts, bias = biastable, Iter = Iter, conf_level = conf_level,
-                cores = cores, useMPI = useMPI, cluster=cl)
+            Bayes_report <- runBayes(counts = counts, bias = biastable, Iter = Iter, conf_level = conf_level, cluster=cl)
         } else {
             message("no variants left for ", ID)
             Bayes_report <- setNames(
@@ -627,12 +620,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         applyedCorrection[[ID]] <- biasparam
     }
     
-    if (useMPI) {
-        mpi.close.Rslaves(dellog = FALSE)
-        mpi.finalize()
-    } else {
-        stopCluster(cl)
-    }
+    stopCluster(cl)
     
     ##-----assign parameters
     applyedCorrection <- t(do.call("rbind", applyedCorrection))

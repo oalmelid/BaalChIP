@@ -29,7 +29,7 @@ Imports:
     methods,
     utils,
     graphics,
-    stats,
+    stats
 Suggests:
     RUnit,
     BiocGenerics,
