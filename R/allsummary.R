@@ -103,9 +103,11 @@ getReport <- function(object, group_name) {
     correctedAR <- data.frame("ID"=as.character(asb$ID),
                     "Bayes_lower"=asb$Bayes_lower,
                     "Bayes_upper"=asb$Bayes_upper,
-                    "Bayes_SD"=asb$Bayes_SD,
                     "Corrected.AR"=rowMeans(asb[,c("Bayes_lower","Bayes_upper")]),
                      stringsAsFactors=FALSE)
+    if("Bayes_SD" %in% colnames(asb)) {
+        correctedAR$Bayes_SD <- asb$Bayes_SD
+    }
     baalSig <- as.character(asb$ID[asb[,"Bayes_sig_A"]==1 | asb[,"Bayes_sig_B"] == 1])
     snps <- merge(VarTable, pooled, by="ID")
     snps <- merge(snps, RAFtable, by="ID")
