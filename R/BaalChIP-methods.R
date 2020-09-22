@@ -583,7 +583,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     if (useMPI) {
         mpi.spawn.Rslaves(cores-1)    
     } else {
-        cl <- makeCluster(cores)
+        cl <- makeCluster(cores-1)
     }
     
     for (ID in Expnames) {
