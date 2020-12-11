@@ -215,13 +215,14 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         burnin = 0.2*Iter
         maxlag = 150
         SNP_check = 4
+        
         report <- Bayesian_report(bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
         return(report)
     }
     
     ############## parellel computing #################
     if (useMPI) {
-        mpi::parLapply(seq(snp_start, snp_end),
+      parallel_result <- mpi::parLapply(seq(snp_start, snp_end),
                    MH_iter,
                    Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)
     } else {
