@@ -215,8 +215,8 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         burnin = 0.2*Iter
         maxlag = 150
         SNP_check = 4
-        Bayesian_report(bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
-        return(bias)
+        report <- Bayesian_report(bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
+        return(report)
     }
     
     ############## parellel computing #################
@@ -231,7 +231,7 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
                                              Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)  
     }
   
-    do.call(cbind, parallel_result)
+    do.call(rbind, parallel_result)
 }
 
 
