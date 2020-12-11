@@ -43,7 +43,7 @@ Sum_read_counts <- function(SNP_hit_Peaks) {
 
 ############## apply Bayes #################
 
-applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_Bias, useMPI, cluster) {
+applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_Bias, useMPI, cluster, conf_level, counts) {
 
     ################################################
     # beta binomial functions for likelihood
@@ -123,8 +123,63 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         return(log_beta_binomial_pdf(A_count, total_count, param_a, param_b))
     }
 
+    log_pro_density_bias <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
+      temp <- matrix(0,1,TF_num)
+      i <- SNP_id
+      precision <- 1000
+      pi <- 0.5
+      bias_in <- SNP_Bias[i,"RAF"]
+      
+      for (id_tf in c(1:TF_num) ) {
+        
+        if (SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)]==1) {
+          Ref_count <- SNP_hit_Peaks_sum[i,2+3*(id_tf-1)+1]
+          total_count <- SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)+2]
+          temp[id_tf] <- log(pi) + log_genotype_llh(Ref_count, total_count, bias_in,
+                                                    allele_bias, precision) # likelihood for each TF
+        }
+      }
+      
+      # refBias as model prior
+      mu <- SNP_Bias[i,"RMbias"]
+      var <- 0.05
+      alpha <- ( (1-mu)/var- 1/mu) * mu^2
+      beta <- alpha*(1/mu - 1)
+      prior <- log(dbeta(allele_bias,alpha,beta))
+      
+      # total posterior = prior * likelihood
+      total_pos <- sum(temp) + prior + log(bias_in/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in)) - allele_bias*bias_in*(2*bias_in-1)/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in))^2)
+      return(total_pos)
+      
+    }
+    
+    log_pro_density_bias2 <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
+      i <- SNP_id
+      precision <- 1000
+      pi <- 0.5
+      bias_in <- SNP_Bias[i,"RAF"]
+      
+      X_count <- SNP_hit_Peaks_sum[i, 2:ncol(SNP_hit_Peaks_sum)]
+      temp <- log_genotype_llh2(X_count,bias_in, allele_bias, precision)
+      temp <- matrix(data=unlist(temp), nrow=1, ncol=TF_num)
+      
+      # refBias as model prior
+      mu <- SNP_Bias[i,"RMbias"]
+      var <- 0.05
+      alpha <- ( (1-mu)/var- 1/mu) * mu^2
+      beta <- alpha*(1/mu - 1)
+      prior <- log(dbeta(allele_bias,alpha,beta))
+      
+      # total posterior = prior * likelihood
+      total_pos <- sum(temp) + prior + log(bias_in/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in)) - allele_bias*bias_in*(2*bias_in-1)/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in))^2)
+      return(total_pos)
+      
+    }
+    
     ################################################
-    MH_iter <- function(SNP_id, Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias) {
+    MH_iter <- function(SNP_id, Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, conf_level, counts) {
+        
+      
         if (identical(SNP_Bias[SNP_id,"RAF"],0)) { SNP_Bias[SNP_id,"RAF"] <- 0.01}
         if (identical(SNP_Bias[SNP_id,"RAF"],1))  { SNP_Bias[SNP_id,"RAF"] <- 0.99}
 
@@ -151,75 +206,32 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
             }
         }
 
+        ##------generate report
+        # significant level
+        threshold_lower = 0.4
+        threshold_upper = 0.6
+        
+        # parameters for MCMC plot
+        burnin = 0.2*Iter
+        maxlag = 150
+        SNP_check = 4
+        Bayesian_report(bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
         return(bias)
     }
-    ################################################
-    log_pro_density_bias <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
-        temp <- matrix(0,1,TF_num)
-        i <- SNP_id
-        precision <- 1000
-        pi <- 0.5
-        bias_in <- SNP_Bias[i,"RAF"]
-
-        for (id_tf in c(1:TF_num) ) {
-
-          if (SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)]==1) {
-            Ref_count <- SNP_hit_Peaks_sum[i,2+3*(id_tf-1)+1]
-            total_count <- SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)+2]
-            temp[id_tf] <- log(pi) + log_genotype_llh(Ref_count, total_count, bias_in,
-                                                     allele_bias, precision) # likelihood for each TF
-          }
-        }
-
-        # refBias as model prior
-        mu <- SNP_Bias[i,"RMbias"]
-        var <- 0.05
-        alpha <- ( (1-mu)/var- 1/mu) * mu^2
-        beta <- alpha*(1/mu - 1)
-        prior <- log(dbeta(allele_bias,alpha,beta))
-
-        # total posterior = prior * likelihood
-        total_pos <- sum(temp) + prior + log(bias_in/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in)) - allele_bias*bias_in*(2*bias_in-1)/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in))^2)
-        return(total_pos)
-
-   }
-
-   log_pro_density_bias2 <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
-        i <- SNP_id
-        precision <- 1000
-        pi <- 0.5
-        bias_in <- SNP_Bias[i,"RAF"]
-
-        X_count <- SNP_hit_Peaks_sum[i, 2:ncol(SNP_hit_Peaks_sum)]
-        temp <- log_genotype_llh2(X_count,bias_in, allele_bias, precision)
-        temp <- matrix(data=unlist(temp), nrow=1, ncol=TF_num)
-
-        # refBias as model prior
-        mu <- SNP_Bias[i,"RMbias"]
-        var <- 0.05
-        alpha <- ( (1-mu)/var- 1/mu) * mu^2
-        beta <- alpha*(1/mu - 1)
-        prior <- log(dbeta(allele_bias,alpha,beta))
-
-        # total posterior = prior * likelihood
-        total_pos <- sum(temp) + prior + log(bias_in/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in)) - allele_bias*bias_in*(2*bias_in-1)/(allele_bias*bias_in+(1-allele_bias)*(1-bias_in))^2)
-        return(total_pos)
-
-   }
-
-  ############## parellel computing #################
-  if (useMPI) {
-    mpi::parLapply(seq(snp_start, snp_end),
-              MH_iter,
-              Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)
-  } else {
-    parallel_result <- parallel::parLapply(cluster, 
-                                           seq(snp_start, snp_end),
-                                           MH_iter,
-                                           Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)  
-  }
+    
+    ############## parellel computing #################
+    if (useMPI) {
+        mpi::parLapply(seq(snp_start, snp_end),
+                   MH_iter,
+                   Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)
+    } else {
+      parallel_result <- parallel::parLapply(cluster, 
+                                             seq(snp_start, snp_end),
+                                             MH_iter,
+                                             Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)  
+    }
   
-  do.call(cbind, parallel_result)
+    do.call(cbind, parallel_result)
 }
 
 
@@ -236,19 +248,10 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4, useMPI=F
 
     ##------run bayesian model
     print(system.time(
-    iter_matrix <- applyBayes(START,END,Iter,TF_num,counts.pooled,bias, useMPI, cluster)
+    Bayes_report <- applyBayes(START,END,Iter,TF_num,counts.pooled,bias, useMPI, cluster, conf_level, counts)
     ))
 
-    ##------generate report
-    # significant level
-    threshold_lower = 0.4
-    threshold_upper = 0.6
-
-    # parameters for MCMC plot
-    burnin = 0.2*Iter
-    maxlag = 150
-    SNP_check   = 4
-    Bayes_report <- Bayesian_report(iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
+    #Bayes_report <- Bayesian_report(iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
 
     return(Bayes_report)
 }
