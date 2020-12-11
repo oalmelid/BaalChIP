@@ -224,12 +224,12 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
     if (useMPI) {
       parallel_result <- mpi::parLapply(seq(snp_start, snp_end),
                    MH_iter,
-                   Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)
+                   Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias, conf_level, counts)
     } else {
       parallel_result <- parallel::parLapply(cluster, 
                                              seq(snp_start, snp_end),
                                              MH_iter,
-                                             Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias)  
+                                             Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias, conf_level=conf_level, counts=counts)  
     }
   
     do.call(rbind, parallel_result)
