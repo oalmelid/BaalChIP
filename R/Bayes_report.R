@@ -8,10 +8,10 @@ Bayesian_report <- function(SNP_id,iter_matrix,conf_level,threshold_lower,thresh
     mcmc_traces <- as.mcmc(traces[-(1:burnin),])
     
     conf_itval <- matrix(NA,1,5)
-    conf_itval[SNP_id,1:2] = HPDinterval(mcmc_traces[[SNP_id]], prob = conf_level)
-    conf_itval[SNP_id,3] = (threshold_upper <= conf_itval[SNP_id,1])
-    conf_itval[SNP_id,4] = (threshold_lower >= conf_itval[SNP_id,2])
-    stat_summaries <- summary(mcmc_traces[[SNP_id]])[["statistics"]]
+    conf_itval[SNP_id,1:2] = HPDinterval(mcmc_traces, prob = conf_level)
+    conf_itval[SNP_id,3] = (threshold_upper <= conf_itval[1])
+    conf_itval[SNP_id,4] = (threshold_lower >= conf_itval[2])
+    stat_summaries <- summary(mcmc_traces)[["statistics"]]
     conf_itval[SNP_id,5] = stat_summaries["SD"]
     
     conf_itval_df <- data.frame(c(SNP_id), conf_itval, stringsAsFactors=FALSE)
