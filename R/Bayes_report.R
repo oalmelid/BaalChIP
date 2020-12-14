@@ -2,19 +2,11 @@
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 
-Bayesian_report <- function(SNP_id, iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check){
+Bayesian_report <- function(SNP_id,iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check){
     #suppressPackageStartupMessages(require('coda'))
     traces <- iter_matrix
 
-    mcmc_converter <- function(traces, burnin){
-      numsamp = dim(traces)[1]
-      numvar = dim(traces)[2]
-      output = lapply(1:numvar, function(nvar)
-        as.mcmc(traces[(burnin+1):numsamp, nvar]) )
-      return( output )
-    }
-
-    mcmc_traces = mcmc_converter(traces, burnin)
+    mcmc_traces <- as.mcmc(traces[burnin+1, dim(traces)[1]], )
     
     conf_itval <- matrix(NA,1,5)
     conf_itval[SNP_id,1:2] = HPDinterval(mcmc_traces[[SNP_id]], prob = conf_level)
