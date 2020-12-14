@@ -5,8 +5,7 @@
 Bayesian_report <- function(SNP_id,iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check){
     #suppressPackageStartupMessages(require('coda'))
     traces <- iter_matrix
-
-    mcmc_traces <- as.mcmc(traces[burnin+1, dim(traces)[1]], )
+    mcmc_traces <- as.mcmc(traces[-(1:burnin),])
     
     conf_itval <- matrix(NA,1,5)
     conf_itval[SNP_id,1:2] = HPDinterval(mcmc_traces[[SNP_id]], prob = conf_level)
