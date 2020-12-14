@@ -177,7 +177,7 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
     }
     
     ################################################
-    MH_iter <- function(SNP_id, Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, conf_level, counts) {
+    MH_iter <- function(SNP_id, Iter,TF_num,SNP_hit_Peaks_sum, SNP_Bias, conf_level) {
         
       
         if (identical(SNP_Bias[SNP_id,"RAF"],0)) { SNP_Bias[SNP_id,"RAF"] <- 0.01}
@@ -216,7 +216,7 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         maxlag = 150
         SNP_check = 4
         
-        report <- Bayesian_report(bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
+        report <- Bayesian_report(bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check, SNP_id)
         return(report)
     }
     
@@ -249,7 +249,7 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4, useMPI=F
 
     ##------run bayesian model
     print(system.time(
-    Bayes_report <- applyBayes(START,END,Iter,TF_num,counts.pooled,bias, useMPI, cluster, conf_level, counts)
+    Bayes_report <- applyBayes(START,END,Iter,TF_num,counts.pooled,bias, useMPI, cluster, conf_level)
     ))
 
     #Bayes_report <- Bayesian_report(iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check, counts)
