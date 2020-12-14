@@ -223,7 +223,8 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
                    MH_iter,
                    Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias, conf_level)
     } else {
-      parallel_result <- parallel::parLapply(seq(snp_start, snp_end),
+      parallel_result <- parallel::parLapply(cluster,
+                                             seq(snp_start, snp_end),
                                              MH_iter,
                                              Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias, conf_level=conf_level)  
     }
