@@ -212,8 +212,8 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         burnin = 0.2*Iter
         maxlag = 150
         SNP_check = 4
-        
-        report <- Bayesian_report(SNP_id, bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check)
+        SNP_name <- as.character(SNP_hit_Peaks_sum[SNP_id, 1])
+        report <- Bayesian_report(SNP_name, bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check)
         return(report)
     }
     
