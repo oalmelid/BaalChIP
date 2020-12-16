@@ -1,4 +1,4 @@
-#BaalChIP: Bayesian_report function to report the bayesian analysis result
+#BaalChIP: Bayesian_report function to report the bayesian analysis result per SNP
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 

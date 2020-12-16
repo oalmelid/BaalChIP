@@ -544,7 +544,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #'res <- BaalChIP.report(res)
 #' @export
 setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95, cores = 4, RMcorrection = TRUE,
-    RAFcorrection = TRUE, verbose = TRUE, useMPI = FALSE) {
+    RAFcorrection = TRUE, verbose = TRUE, useMPI = FALSE, clusterType = "FORK") {
 
     ##-----check input arguments
     BaalChIP.checks(name = "Iter", Iter)
@@ -581,9 +581,9 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
 
     cl <- NULL
     if (useMPI) {
-        mpi.spawn.Rslaves(cores-1)    
+        mpi.spawn.Rslaves(cores-1)
     } else {
-        cl <- makeCluster(cores-1)
+        cl <- makeCluster(cores-1, type = clusterType)
     }
     
     for (ID in Expnames) {
