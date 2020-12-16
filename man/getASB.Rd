@@ -12,7 +12,9 @@ getASB(
   cores = 4,
   RMcorrection = TRUE,
   RAFcorrection = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  clusterType = "FORK",
+  workerLog = nullfile()
 )
 
 \S4method{getASB}{BaalChIP}(
@@ -22,7 +24,9 @@ getASB(
   cores = 4,
   RMcorrection = TRUE,
   RAFcorrection = TRUE,
-  verbose = TRUE
+  verbose = TRUE,
+  clusterType = "PSOCK",
+  workerLog = nullfile()
 )
 }
 \arguments{
