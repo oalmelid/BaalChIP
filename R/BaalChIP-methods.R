@@ -514,7 +514,6 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #' @importFrom stats dbeta
 #' @importFrom coda as.mcmc
 #' @import foreach
-#' @import Rmpi
 #' @importFrom coda HPDinterval
 #' @author Wei Liu, Ke Yuan, Ines de Santiago
 #' @rdname getASB
@@ -545,7 +544,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #'res <- BaalChIP.report(res)
 #' @export
 setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95, cores = 4, RMcorrection = TRUE,
-    RAFcorrection = TRUE, verbose = TRUE, useMPI = FALSE, clusterType = "FORK", workerLog = nullfile()) {
+    RAFcorrection = TRUE, verbose = TRUE, clusterType = "PSOCK", workerLog = nullfile()) {
 
     ##-----check input arguments
     BaalChIP.checks(name = "Iter", Iter)
@@ -580,15 +579,8 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     biasTable <- list()
     applyedCorrection <- list()
 
-    cl <- NULL
-    if (useMPI) {
-        mpi.spawn.Rslaves(cores-1)
-    } else {
-        cl <- makeCluster(cores-1, type = clusterType, outfile = workerLog)
-        clusterEvalQ(cl, {
-            library(coda)
-        })
-    }
+    cl <- makeCluster(cores-1, type = clusterType, outfile = workerLog)
+    clusterEvalQ(cl, { library(coda) })
     
     for (ID in Expnames) {
         message("... calculating ASB for: ", ID)
@@ -630,13 +622,8 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         biasTable[[ID]] <- biastable
         applyedCorrection[[ID]] <- biasparam
     }
-    
-    if (useMPI) {
-        mpi.close.Rslaves(dellog = FALSE)
-        mpi.finalize()
-    } else {
-        stopCluster(cl)
-    }
+
+    stopCluster(cl)
     
     ##-----assign parameters
     applyedCorrection <- t(do.call("rbind", applyedCorrection))

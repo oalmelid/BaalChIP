@@ -96,7 +96,6 @@ setGeneric(name="getASB",
                        RMcorrection = TRUE,
                        RAFcorrection = TRUE,
                        verbose=TRUE,
-                       useMPI = FALSE,
                        clusterType = "FORK",
                        workerLog = nullfile())
                        {

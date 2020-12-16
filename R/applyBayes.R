@@ -43,7 +43,7 @@ Sum_read_counts <- function(SNP_hit_Peaks) {
 
 ############## apply Bayes #################
 
-applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_Bias, useMPI, cluster, conf_level) {
+applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_Bias, cluster, conf_level) {
 
     ################################################
     # beta binomial functions for likelihood
@@ -173,22 +173,16 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
     }
     
     ############## parallel computing #################
-    if (useMPI) {
-      parallel_result <- mpi::parLapply(seq(snp_start, snp_end),
-                   MH_iter,
-                   Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias, conf_level)
-    } else {
-      parallel_result <- parallel::parLapply(cluster,
-                                             seq(snp_start, snp_end),
-                                             MH_iter,
-                                             Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias, conf_level=conf_level)  
-    }
-  
+    parallel_result <- parallel::parLapply(cluster,
+                                           seq(snp_start, snp_end),
+                                           MH_iter,
+                                           Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias, conf_level=conf_level)
+    
     do.call(rbind, parallel_result)
 }
 
 
-runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4, useMPI=FALSE, cluster=NULL)
+runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4, cluster=NULL)
 {
     ### RunBayes for each cell/individual
     ##------calculate args
@@ -201,7 +195,7 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4, useMPI=F
 
     ##------run bayesian model
     print(system.time(
-      Bayes_report <- applyBayes(START, END, Iter, TF_num, counts.pooled, bias, useMPI, cluster, conf_level)
+      Bayes_report <- applyBayes(START, END, Iter, TF_num, counts.pooled, bias, cluster, conf_level)
     ))
 
     return(Bayes_report)
