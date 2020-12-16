@@ -97,7 +97,8 @@ setGeneric(name="getASB",
                        RAFcorrection = TRUE,
                        verbose=TRUE,
                        useMPI = FALSE,
-                       clusterType = "FORK")
+                       clusterType = "FORK",
+                       workerLog = nullfile())
                        {
                                standardGeneric("getASB")
                        }
