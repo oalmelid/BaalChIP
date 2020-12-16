@@ -507,6 +507,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #' @importFrom utils setTxtProgressBar
 #' @importFrom doParallel registerDoParallel
 #' @importFrom parallel makeCluster
+#' @importFrom parallel clusterEvalQ
 #' @importFrom parallel stopCluster
 #' @importFrom stats rnorm
 #' @importFrom stats runif
@@ -584,6 +585,9 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         mpi.spawn.Rslaves(cores-1)
     } else {
         cl <- makeCluster(cores-1, type = clusterType, outfile = workerLog)
+        clusterEvalQ(cl, {
+            library(coda)
+        })
     }
     
     for (ID in Expnames) {
