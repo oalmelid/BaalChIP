@@ -43,7 +43,7 @@ Sum_read_counts <- function(SNP_hit_Peaks) {
 
 ############## apply Bayes #################
 
-applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_Bias, cluster, conf_level) {
+applyBayes <- function(Iter, TF_num, snp_table, cluster, conf_level) {
 
     ################################################
     # beta binomial functions for likelihood
@@ -101,25 +101,24 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         return(log_beta_binomial_pdf(A_count, total_count, param_a, param_b))
     }
 
-    log_pro_density_bias <- function(allele_bias,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id) {
+    log_pro_density_bias <- function(allele_bias,TF_num,snp_table) {
       temp <- matrix(0,1,TF_num)
-      i <- SNP_id
       precision <- 1000
       pi <- 0.5
-      bias_in <- SNP_Bias[i,"RAF"]
+      bias_in <- snp_table["RAF"]
       
       for (id_tf in c(1:TF_num) ) {
         
-        if (SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)]==1) {
-          Ref_count <- SNP_hit_Peaks_sum[i,2+3*(id_tf-1)+1]
-          total_count <- SNP_hit_Peaks_sum[i, 2+3*(id_tf-1)+2]
+        if (snp_table[2+3*(id_tf-1)]==1) {
+          Ref_count <- snp_table[2+3*(id_tf-1)+1]
+          total_count <- snp_table[2+3*(id_tf-1)+2]
           temp[id_tf] <- log(pi) + log_genotype_llh(Ref_count, total_count, bias_in,
                                                     allele_bias, precision) # likelihood for each TF
         }
       }
       
       # refBias as model prior
-      mu <- SNP_Bias[i,"RMbias"]
+      mu <- snp_table["RMbias"]
       var <- 0.05
       alpha <- ( (1-mu)/var- 1/mu) * mu^2
       beta <- alpha*(1/mu - 1)
@@ -132,19 +131,19 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
     }
     
     ################################################
-    MH_iter <- function(SNP_id, Iter, TF_num, SNP_hit_Peaks_sum, SNP_Bias, conf_level) {
-        if (identical(SNP_Bias[SNP_id,"RAF"],0)) { SNP_Bias[SNP_id,"RAF"] <- 0.01}
-        if (identical(SNP_Bias[SNP_id,"RAF"],1))  { SNP_Bias[SNP_id,"RAF"] <- 0.99}
+    MH_iter <- function(SNP_id, Iter, TF_num, snp_table, conf_level) {
+        if (identical(snp_table["RAF"],0)) { snp_table["RAF"] <- 0.01}
+        if (identical(snp_table["RAF"],1))  { snp_table["RAF"] <- 0.99}
 
         bias <- matrix(0,Iter,1)
         bias[1] <- 0.5
         llh <- matrix(0,Iter,1)
-        llh[1] <- log_pro_density_bias(bias[1],TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id)
+        llh[1] <- log_pro_density_bias(bias[1],TF_num,snp_table)
 
         for (iter in 2:Iter) {
             set.seed(iter)
             bias_new <- bias[iter-1] + rnorm(1,mean=0, sd = 0.2)
-            llh_new <- log_pro_density_bias(bias_new,TF_num,SNP_hit_Peaks_sum, SNP_Bias, SNP_id)
+            llh_new <- log_pro_density_bias(bias_new,TF_num,snp_table)
             ratio <- llh_new -llh[iter-1]
 
             U <- log(runif(1))
@@ -167,16 +166,17 @@ applyBayes <- function(snp_start, snp_end, Iter, TF_num,SNP_hit_Peaks_sum, SNP_B
         burnin = 0.2*Iter
         maxlag = 150
         SNP_check = 4
-        SNP_name <- as.character(SNP_hit_Peaks_sum[SNP_id, 1])
+        SNP_name <- as.character(snp_table[1])
         report <- Bayesian_report(SNP_name, bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check)
         return(report)
     }
     
     ############## parallel computing #################
-    parallel_result <- parallel::parLapply(cluster,
-                                           seq(snp_start, snp_end),
-                                           MH_iter,
-                                           Iter=Iter,TF_num=TF_num,SNP_hit_Peaks_sum=SNP_hit_Peaks_sum, SNP_Bias=SNP_Bias, conf_level=conf_level)
+    parallel_result <- parallel::parApply(cluster,
+                                          snp_table,
+                                          MARGIN=1,
+                                          FUN=MH_iter,
+                                          Iter=Iter,TF_num=TF_num, conf_level=conf_level)
     
     do.call(rbind, parallel_result)
 }
@@ -187,15 +187,13 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4, cluster=
     ### RunBayes for each cell/individual
     ##------calculate args
     TF_num = sum(grepl("score", colnames(counts))) # number of TFs
-    START = 1   # start SNP
-    END = nrow(counts) # end SNP. Using the whole table:
 
     ##------ pool data between replicates
-    counts.pooled <- Sum_read_counts(counts)
-
+    counts.pooled <- cbind(c(Sum_read_counts(counts), bias[c("RAF", "RMbias")]))
+    
     ##------run bayesian model
     print(system.time(
-      Bayes_report <- applyBayes(START, END, Iter, TF_num, counts.pooled, bias, cluster, conf_level)
+      Bayes_report <- applyBayes(Iter, TF_num, counts.pooled, cluster, conf_level)
     ))
 
     return(Bayes_report)
