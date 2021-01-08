@@ -13,7 +13,7 @@ getASB(
   RMcorrection = TRUE,
   RAFcorrection = TRUE,
   verbose = TRUE,
-  clusterType = "FORK",
+  clusterType = "PSOCK",
   workerLog = nullfile()
 )
 

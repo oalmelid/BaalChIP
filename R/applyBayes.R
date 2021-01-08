@@ -43,7 +43,7 @@ Sum_read_counts <- function(SNP_hit_Peaks) {
 
 ############## apply Bayes #################
 
-applyBayes <- function(Iter, TF_num, snp_table, cluster, conf_level) {
+applyBayes <- function(Iter, TF_num, snp_table, bias, cluster, conf_level) {
 
     ################################################
     # beta binomial functions for likelihood
@@ -101,24 +101,24 @@ applyBayes <- function(Iter, TF_num, snp_table, cluster, conf_level) {
         return(log_beta_binomial_pdf(A_count, total_count, param_a, param_b))
     }
 
-    log_pro_density_bias <- function(allele_bias,TF_num,snp_table) {
+    log_pro_density_bias <- function(allele_bias,TF_num,snp,snp_bias) {
       temp <- matrix(0,1,TF_num)
       precision <- 1000
       pi <- 0.5
-      bias_in <- snp_table$RAF
+      bias_in <- snp_bias$RAF
       
       for (id_tf in c(1:TF_num) ) {
         
-        if (snp_table[,2+3*(id_tf-1)]==1) {
-          Ref_count <- snp_table[,2+3*(id_tf-1)+1]
-          total_count <- snp_table[,2+3*(id_tf-1)+2]
+        if (snp[,2+3*(id_tf-1)]==1) {
+          Ref_count <- snp[,2+3*(id_tf-1)+1]
+          total_count <- snp[,2+3*(id_tf-1)+2]
           temp[id_tf] <- log(pi) + log_genotype_llh(Ref_count, total_count, bias_in,
                                                     allele_bias, precision) # likelihood for each TF
         }
       }
       
       # refBias as model prior
-      mu <- snp_table$RMbias
+      mu <- snp_bias$RMbias
       var <- 0.05
       alpha <- ( (1-mu)/var- 1/mu) * mu^2
       beta <- alpha*(1/mu - 1)
@@ -131,19 +131,19 @@ applyBayes <- function(Iter, TF_num, snp_table, cluster, conf_level) {
     }
     
     ################################################
-    MH_iter <- function(snp_table, Iter, TF_num, conf_level) {
-        if (identical(snp_table$RAF,0)) { snp_table$RAF <- 0.01}
-        if (identical(snp_table$RAF,1))  { snp_table$RAF <- 0.99}
+    MH_iter <- function(snp, snp_bias, Iter, TF_num, conf_level) {
+        if (identical(snp_bias$RAF,0)) { snp_bias$RAF <- 0.01}
+        if (identical(snp_bias$RAF,1))  { snp_bias$RAF <- 0.99}
 
         bias <- matrix(0,Iter,1)
         bias[1] <- 0.5
         llh <- matrix(0,Iter,1)
-        llh[1] <- log_pro_density_bias(bias[1],TF_num,snp_table)
+        llh[1] <- log_pro_density_bias(bias[1],TF_num,snp,snp_bias)
 
         for (iter in 2:Iter) {
             set.seed(iter)
             bias_new <- bias[iter-1] + rnorm(1,mean=0, sd = 0.2)
-            llh_new <- log_pro_density_bias(bias_new,TF_num,snp_table)
+            llh_new <- log_pro_density_bias(bias_new,TF_num,snp,snp_bias)
             ratio <- llh_new -llh[iter-1]
 
             U <- log(runif(1))
@@ -166,7 +166,7 @@ applyBayes <- function(Iter, TF_num, snp_table, cluster, conf_level) {
         burnin = 0.2*Iter
         maxlag = 150
         SNP_check = 4
-        SNP_name <- as.character(snp_table$ID)
+        SNP_name <- as.character(snp$ID)
         report <- Bayesian_report(SNP_name, bias, conf_level, threshold_lower,threshold_upper,burnin,maxlag,SNP_check)
         return(report)
     }
@@ -174,7 +174,7 @@ applyBayes <- function(Iter, TF_num, snp_table, cluster, conf_level) {
     ############## parallel computing #################
     parallel_result <- parallel::parLapply(cl=cluster,
                                            1:dim(snp_table)[1],
-                                           function(i){ MH_iter(snp_table[i,], Iter=Iter,TF_num=TF_num, conf_level=conf_level)}
+                                           function(i){ MH_iter(snp_table[i,], bias[i, ], Iter=Iter,TF_num=TF_num, conf_level=conf_level)}
                                            )
     do.call(rbind, parallel_result)
 }
@@ -187,11 +187,11 @@ runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4, cluster=
     TF_num = sum(grepl("score", colnames(counts))) # number of TFs
 
     ##------ pool data between replicates
-    counts.pooled <- cbind(Sum_read_counts(counts), bias[c("RAF", "RMbias")])
+    counts.pooled <- Sum_read_counts(counts)
     
     ##------run bayesian model
     print(system.time(
-      Bayes_report <- applyBayes(Iter, TF_num, counts.pooled, cluster, conf_level)
+      Bayes_report <- applyBayes(Iter, TF_num, counts.pooled, bias, cluster, conf_level)
     ))
 
     return(Bayes_report)
