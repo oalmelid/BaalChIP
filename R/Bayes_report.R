@@ -1,33 +1,21 @@
-#BaalChIP: Bayesian_report function to report the bayesian analysis result
+#BaalChIP: Bayesian_report function to report the bayesian analysis result per SNP
 #Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
 
-Bayesian_report <- function(iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check,SNP_hit_Peaks){
+Bayesian_report <- function(SNP_id,iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check){
     #suppressPackageStartupMessages(require('coda'))
     traces <- iter_matrix
-
-    mcmc_converter <- function(traces, burnin){
-      numsamp = dim(traces)[1]
-      numvar = dim(traces)[2]
-      output = lapply(1:numvar, function(nvar)
-        as.mcmc(traces[(burnin+1):numsamp, nvar]) )
-      return( output )
-    }
-
-    mcmc_traces = mcmc_converter(traces, burnin)
-    conf_itval <- matrix(NA,ncol(traces),5)
-
-    for (SNP in 1:ncol(traces)) {
-      conf_itval[SNP,1:2] = HPDinterval(mcmc_traces[[SNP]], prob = conf_level)
-      conf_itval[SNP,3] = (threshold_upper <= conf_itval[SNP,1])
-      conf_itval[SNP,4] = (threshold_lower >= conf_itval[SNP,2])
-      stat_summaries <- summary(mcmc_traces[[SNP]])[["statistics"]]
-      conf_itval[SNP,5] = stat_summaries["SD"]
-    }
-
-    conf_itval <- data.frame(as.character(SNP_hit_Peaks[,1]),conf_itval, stringsAsFactors=FALSE)
-
-    ##################
-    colnames(conf_itval) <- c("ID","Bayes_lower", "Bayes_upper","Bayes_sig_A", "Bayes_sig_B", "Bayes_SD")
-    return(conf_itval)
+    mcmc_traces <- as.mcmc(traces[-(1:burnin),])
+    
+    conf_itval <- matrix(NA,1,5)
+    conf_itval[1,1:2] = HPDinterval(mcmc_traces, prob = conf_level)
+    conf_itval[1,3] = (threshold_upper <= conf_itval[1])
+    conf_itval[1,4] = (threshold_lower >= conf_itval[2])
+    stat_summaries <- summary(mcmc_traces)[["statistics"]]
+    conf_itval[1,5] = stat_summaries["SD"]
+    
+    conf_itval_df <- data.frame(c(SNP_id), conf_itval, stringsAsFactors=FALSE)
+    colnames(conf_itval_df) <- c("ID","Bayes_lower", "Bayes_upper","Bayes_sig_A", "Bayes_sig_B", "Bayes_SD")
+    
+    return(conf_itval_df)
 }
