@@ -581,6 +581,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
 
     cl <- makeCluster(cores-1, type = clusterType, outfile = workerLog)
     clusterEvalQ(cl, { library(coda) })
+    registerDoParallel(cl)
     
     for (ID in Expnames) {
         message("... calculating ASB for: ", ID)
@@ -607,8 +608,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
 
         # run bayes
         if (nrow(counts) > 0) {
-            Bayes_report <- runBayes(counts = counts, bias = biastable, Iter = Iter, conf_level = conf_level,
-                cores = cores, cluster=cl)
+            Bayes_report <- runBayes(counts = counts, bias = biastable, Iter = Iter, conf_level = conf_level, cluster=cl)
         } else {
             message("no variants left for ", ID)
             Bayes_report <- setNames(

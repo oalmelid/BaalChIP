@@ -172,15 +172,12 @@ applyBayes <- function(Iter, TF_num, snp_table, bias, cluster, conf_level) {
     }
     
     ############## parallel computing #################
-    parallel_result <- parallel::parLapply(cl=cluster,
-                                           1:dim(snp_table)[1],
-                                           function(i){ MH_iter(snp_table[i,], bias[i, ], Iter=Iter,TF_num=TF_num, conf_level=conf_level)}
-                                           )
-    do.call(rbind, parallel_result)
+    foreach(snp=1:dim(snp_table)[1], .combine='rbind')%dopar%
+            MH_iter(snp_table[snp,], bias[snp,], Iter=Iter,TF_num=TF_num, conf_level=conf_level)
 }
 
 
-runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cores=4, cluster=NULL)
+runBayes <- function(counts, bias, Iter=5000, conf_level=0.99, cluster=NULL)
 {
     ### RunBayes for each cell/individual
     ##------calculate args
