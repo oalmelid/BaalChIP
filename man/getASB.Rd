@@ -34,7 +34,7 @@ getASB(
 
 \item{Iter}{Maximum number of iterations (default 5000).}
 
-\item{conf_level}{Confidence interval in the estimated allelic ratio (default 0.95).}
+\item{conf_level}{Confidence interval, or list of such in the estimated allelic ratio (default 0.95).}
 
 \item{cores}{number of cores for parallel computing (default is 4).}
 
@@ -51,18 +51,18 @@ An updated \code{\link{BaalChIP}} object with the slot \code{ASB} containing var
 getASB identifies allele-specific binding events using a bayesian framework.
 }
 \examples{
-setwd(system.file('test',package='BaalChIP'))
-samplesheet <- 'exampleChIP.tsv'
-hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
+setwd(system.file("test", package = "BaalChIP"))
+samplesheet <- "exampleChIP.tsv"
+hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+res <- alleleCounts(res, min_base_quality = 10, min_mapq = 15)
 res <- mergePerGroup(res)
-res <- getASB(res, cores=2)
+res <- getASB(res, cores = 2)
 
-#summary - number of significant ASB variants
+# summary - number of significant ASB variants
 summaryASB(res)
 
-#report result
+# report result
 res <- BaalChIP.report(res)
 }
 \seealso{

@@ -45,21 +45,21 @@ Utilizes the information within the \code{samples} slot of a BaalChIP object. Wi
 BaalChIP computes allelic counts at each variant position with Rsamtools pileup function. The algorithm follows pileup::Rsamtools by automatically excluding reads flagged as unmapped, secondary, duplicate, or not passing quality controls.
 }
 \examples{
-setwd(system.file('test',package='BaalChIP'))
-samplesheet <- 'exampleChIP.tsv'
-hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
+setwd(system.file("test", package = "BaalChIP"))
+samplesheet <- "exampleChIP.tsv"
+hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+res <- alleleCounts(res, min_base_quality = 10, min_mapq = 15)
 
-#retrieve alleleCounts:
-counts <- BaalChIP.get(res, 'alleleCountsPerBam')
+# retrieve alleleCounts:
+counts <- BaalChIP.get(res, "alleleCountsPerBam")
 
-#alleleCounts are grouped by bam_name and group_name:
+# alleleCounts are grouped by bam_name and group_name:
 names(counts)
-names(counts[['MCF7']])
+names(counts[["MCF7"]])
 
-#check out the result for one of the bam files:
-counts[['MCF7']][[1]]
+# check out the result for one of the bam files:
+counts[["MCF7"]][[1]]
 }
 \seealso{
 \code{\link{BaalChIP.get}}
