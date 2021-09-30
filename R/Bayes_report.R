@@ -38,8 +38,6 @@ bayesian_report <- function(SNP_id,
         )
     }
 
-    print(conf_columns)
-
     conf_itval_df <- data.frame(c(SNP_id), conf_itval, stringsAsFactors = FALSE)
 
     colnames(conf_itval_df) <- c(
