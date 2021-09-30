@@ -19,7 +19,7 @@ A matrix containing the total number of allele-specific variants (TOTAL) and the
 Generates summary of ASB test result.
 }
 \examples{
-data('BaalObject')
+data("BaalObject")
 summaryASB(BaalObject)
 }
 \seealso{

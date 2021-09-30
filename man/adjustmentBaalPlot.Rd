@@ -21,9 +21,9 @@ A plot
 Produces a density plot of the distribution of allelic ratios (REF/TOTAL) before and after BaalChIP adjustment for RM and RAF biases.
 }
 \examples{
-data('BaalObject')
+data("BaalObject")
 adjustmentBaalPlot(BaalObject)
-adjustmentBaalPlot(BaalObject, col=c('blue','pink'))
+adjustmentBaalPlot(BaalObject, col = c("blue", "pink"))
 }
 \seealso{
 \code{\link{BaalChIP.report}}, \code{\link{summaryQC}}

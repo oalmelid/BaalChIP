@@ -23,7 +23,7 @@ A list with two elements:
 Generates summary of QC result.
 }
 \examples{
-data('BaalObject')
+data("BaalObject")
 summaryQC(BaalObject)
 }
 \seealso{

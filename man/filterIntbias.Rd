@@ -47,17 +47,18 @@ An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} conta
 Filters the data frame available within a \code{\link{BaalChIP}} object (slot \code{alleleCounts}). This filter performs simulations of reads of the same length as the original ChIP-seq reads, aligns the simulated reads to the genome, calculates the allelic ratios for each variant and finally ignores those variants for which the allelic ratio (REF/TOTAL) is different than 0.5.
 }
 \examples{
-setwd(system.file('test',package='BaalChIP'))
-samplesheet <- 'exampleChIP.tsv'
-hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
-skipScriptRun=TRUE #For demonstration purposes only (read details in vignette)
+setwd(system.file("test", package = "BaalChIP"))
+samplesheet <- "exampleChIP.tsv"
+hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+res <- alleleCounts(res, min_base_quality = 10, min_mapq = 15)
+skipScriptRun <- TRUE # For demonstration purposes only (read details in vignette)
 res <- filterIntbias(res,
-      simul_output=system.file('test/simuloutput',package='BaalChIP'),
-      tmpfile_prefix='c67c6ec6c433', skipScriptRun=TRUE)
+    simul_output = system.file("test/simuloutput", package = "BaalChIP"),
+    tmpfile_prefix = "c67c6ec6c433", skipScriptRun = TRUE
+)
 
-#check results
+# check results
 plotSimul(res)
 summaryQC(res)
 }

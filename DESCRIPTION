@@ -40,5 +40,5 @@ VignetteBuilder:
     knitr
 License: Artistic-2.0
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 biocViews: Software, ChIPSeq, Bayesian, Sequencing

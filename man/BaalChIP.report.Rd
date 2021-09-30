@@ -36,17 +36,18 @@ The reported data frame contains the following columns:
 \item Bayes_upper: upper interval for the estimated allelic ratio (allelic ratio is given by REF / TOTAL).
 \item Corrected.AR: average estimated allelic ratio (average between Bayes_lower and Bayes_upper). A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternative allele.
 \item isASB: logical value indicating BaalChIP's classification of variants into allele-specific.
+\item conf_<p>_upper/lower: upper and lower bounds of additional credible intervals.
 }
 }
 \examples{
-data('BaalObject')
+data("BaalObject")
 report <- BaalChIP.report(BaalObject)
 
-#the reported list is grouped by group_name:
+# the reported list is grouped by group_name:
 names(report)
 
-#check out the report for one of the groups:
-head(report[['MCF7']])
+# check out the report for one of the groups:
+head(report[["MCF7"]])
 }
 \seealso{
 \code{\link{summaryASB}}, \code{\link{getASB}}

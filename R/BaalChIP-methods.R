@@ -3,13 +3,15 @@
 
 ## initialization method
 setMethod("initialize", "BaalChIP", function(.Object, samplesheet = NULL, hets = NULL, CorrectWithgDNA = list(),
-    .CHECKS = TRUE) {
+                                             .CHECKS = TRUE) {
 
-    ##-----check arguments
-    if (missing(samplesheet))
-        stop("NOTE: 'samplesheet' is missing!")
-    if (missing(hets))
-        stop("NOTE: 'hets' is missing!")
+    ## -----check arguments
+    if (missing(samplesheet)) {
+          stop("NOTE: 'samplesheet' is missing!")
+      }
+    if (missing(hets)) {
+          stop("NOTE: 'hets' is missing!")
+      }
     samples <- BaalChIP.checks(name = "samplesheet", samplesheet, .CHECKS = .CHECKS)
     hets <- BaalChIP.checks(name = "hets", list(hets = hets, wd = dirname(samplesheet)), .CHECKS = .CHECKS)
     BaalChIP.checks(name = "gDNA", CorrectWithgDNA, .CHECKS = .CHECKS)
@@ -22,14 +24,14 @@ setMethod("initialize", "BaalChIP", function(.Object, samplesheet = NULL, hets =
         CorrectWithgDNA <- list()
     }
 
-    ##-----check matching names
+    ## -----check matching names
     cells1 <- unique(samples$group_name)
     checkmatchingnames(names(hets), cells1)
     if (!is.null(names(CorrectWithgDNA))) {
         checkmatchingnames.gDNA(names(CorrectWithgDNA), cells1)
     }
 
-    ##-----initialization
+    ## -----initialization
     .Object@samples <- samples
     .Object@hets <- hets
     .Object@gDNA <- CorrectWithgDNA
@@ -46,10 +48,14 @@ setMethod("show", "BaalChIP", function(object) {
     samples <- getBaalSlot(object, "samples")
     cat(" Samples                 :  ", nrow(samples), "\n")
     cat(" Experiments             :  ", unique(samples[, "group_name"]), "\n")
-    cat(" Filtering and QC        :  ", ifelse(is.null(QCstats), "None", paste(ncol(QCstats) - 1, "filter(s) applied")),
-        "\n")
-    cat(" Run allele-specific     :  ", ifelse(length(asb) == 0, "None", "Yes: run BaalChIP.report(object)"),
-        "\n")
+    cat(
+        " Filtering and QC        :  ", ifelse(is.null(QCstats), "None", paste(ncol(QCstats) - 1, "filter(s) applied")),
+        "\n"
+    )
+    cat(
+        " Run allele-specific     :  ", ifelse(length(asb) == 0, "None", "Yes: run BaalChIP.report(object)"),
+        "\n"
+    )
     cat("\n")
 })
 
@@ -57,11 +63,13 @@ setMethod("show", "BaalChIP", function(object) {
 #' @export BaalChIP
 BaalChIP <- function(samplesheet = NULL, hets = NULL, CorrectWithgDNA = list()) {
 
-    ##-----check arguments
-    if (missing(samplesheet))
-        stop("NOTE: 'samplesheet' is missing!")
-    if (missing(hets))
-        stop("NOTE: 'hets' is missing!")
+    ## -----check arguments
+    if (missing(samplesheet)) {
+          stop("NOTE: 'samplesheet' is missing!")
+      }
+    if (missing(hets)) {
+          stop("NOTE: 'hets' is missing!")
+      }
     samples <- BaalChIP.checks(name = "samplesheet", samplesheet, .CHECKS = TRUE)
     hets <- BaalChIP.checks(name = "hets", list(hets = hets, wd = dirname(samplesheet)), .CHECKS = TRUE)
     BaalChIP.checks(name = "gDNA", CorrectWithgDNA, .CHECKS = TRUE)
@@ -70,17 +78,16 @@ BaalChIP <- function(samplesheet = NULL, hets = NULL, CorrectWithgDNA = list()) 
         CorrectWithgDNA <- list()
     }
 
-    ##-----check matching names
+    ## -----check matching names
     cells1 <- unique(samples$group_name)
     checkmatchingnames(names(hets), cells1)
     if (!is.null(names(CorrectWithgDNA))) {
         checkmatchingnames.gDNA(names(CorrectWithgDNA), cells1)
     }
 
-    ##-----initialization
+    ## -----initialization
     .Object <- new("BaalChIP", samplesheet, hets, CorrectWithgDNA, .CHECKS = TRUE)
     .Object
-
 }
 
 #' Generates allele-specific read count data
@@ -106,36 +113,36 @@ BaalChIP <- function(samplesheet = NULL, hets = NULL, CorrectWithgDNA = list()) 
 #' @return An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects.
 #' @seealso \code{\link{BaalChIP.get}}
 #' @examples
-#'setwd(system.file('test',package='BaalChIP'))
-#'samplesheet <- 'exampleChIP.tsv'
-#'hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-#'res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-#'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
+#' setwd(system.file("test", package = "BaalChIP"))
+#' samplesheet <- "exampleChIP.tsv"
+#' hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+#' res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+#' res <- alleleCounts(res, min_base_quality = 10, min_mapq = 15)
 #'
-#'#retrieve alleleCounts:
-#'counts <- BaalChIP.get(res, 'alleleCountsPerBam')
+#' # retrieve alleleCounts:
+#' counts <- BaalChIP.get(res, "alleleCountsPerBam")
 #'
-#'#alleleCounts are grouped by bam_name and group_name:
-#'names(counts)
-#'names(counts[['MCF7']])
+#' # alleleCounts are grouped by bam_name and group_name:
+#' names(counts)
+#' names(counts[["MCF7"]])
 #'
-#'#check out the result for one of the bam files:
-#'counts[['MCF7']][[1]]
+#' # check out the result for one of the bam files:
+#' counts[["MCF7"]][[1]]
 #' @export
 setMethod(f = "alleleCounts", signature = "BaalChIP", function(.Object, min_base_quality = 10, min_mapq = 15,
-    verbose = TRUE, all_hets=FALSE) {
+                                                               verbose = TRUE, all_hets = FALSE) {
 
-    ##-----check input arguments
+    ## -----check input arguments
     samples <- getBaalSlot(.Object, "samples")
     hets <- getBaalSlot(.Object, "hets")
     BaalChIP.checks(name = "min_base_quality", min_base_quality)
     BaalChIP.checks(name = "min_mapq", min_mapq)
 
-    ##-----assign parameters
+    ## -----assign parameters
     .Object@param$QCparam <- list(min_base_quality = min_base_quality, min_mapq = min_mapq)
 
-    ##-----compute allele counts
-    res_per_bam <- applyAlleleCountsPerBam(samples, hets, min_base_quality, min_mapq, verbose = verbose, all_hets=all_hets)
+    ## -----compute allele counts
+    res_per_bam <- applyAlleleCountsPerBam(samples, hets, min_base_quality, min_mapq, verbose = verbose, all_hets = all_hets)
     .Object@alleleCounts <- res_per_bam
 
     return(.Object)
@@ -163,31 +170,34 @@ setMethod(f = "alleleCounts", signature = "BaalChIP", function(.Object, min_base
 #' @return An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects that pass filters.
 #' @seealso \code{\link{BaalChIP.get}}, \code{\link{plotQC}}, \code{\link{summaryQC}}
 #' @examples
-#'setwd(system.file('test',package='BaalChIP'))
-#'samplesheet <- 'exampleChIP.tsv'
-#'hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-#'res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-#'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
-#'data('blacklist_hg19')
-#'data('pickrell2011cov1_hg19')
-#'data('UniqueMappability50bp_hg19')
-#'res <- QCfilter(res,
-#'                RegionsToFilter=list('blacklist'=blacklist_hg19,
-#'                'highcoverage'=pickrell2011cov1_hg19),
-#'                RegionsToKeep=list('UniqueMappability'=UniqueMappability50bp_hg19))
+#' setwd(system.file("test", package = "BaalChIP"))
+#' samplesheet <- "exampleChIP.tsv"
+#' hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+#' res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+#' res <- alleleCounts(res, min_base_quality = 10, min_mapq = 15)
+#' data("blacklist_hg19")
+#' data("pickrell2011cov1_hg19")
+#' data("UniqueMappability50bp_hg19")
+#' res <- QCfilter(res,
+#'     RegionsToFilter = list(
+#'         "blacklist" = blacklist_hg19,
+#'         "highcoverage" = pickrell2011cov1_hg19
+#'     ),
+#'     RegionsToKeep = list("UniqueMappability" = UniqueMappability50bp_hg19)
+#' )
 #'
-#'#check results
-#'plotQC(res,'barplot')
-#'summaryQC(res)
+#' # check results
+#' plotQC(res, "barplot")
+#' summaryQC(res)
 #' @export
 setMethod(f = "QCfilter", signature = "BaalChIP", function(.Object, RegionsToFilter = NULL, RegionsToKeep = NULL,
-    verbose = TRUE) {
+                                                           verbose = TRUE) {
 
-    ##-----check input arguments
+    ## -----check input arguments
     RegionsToFilter <- BaalChIP.checks(name = "RegionsToFilter", RegionsToFilter)
     RegionsToKeep <- BaalChIP.checks(name = "RegionsToKeep", RegionsToKeep)
 
-    ##-----check that mergedCounts and ASB have not been computed yet
+    ## -----check that mergedCounts and ASB have not been computed yet
     asb <- getBaalSlot(.Object, "ASB")
     merged <- .Object@mergedCounts
     if (!all(length(asb) == 0 & length(merged) == 0)) {
@@ -201,17 +211,17 @@ setMethod(f = "QCfilter", signature = "BaalChIP", function(.Object, RegionsToFil
         # }else{stop('Interrupted by the user')}
     }
 
-    ##-----assign parameters
+    ## -----assign parameters
     counts_per_bam <- getBaalSlot(.Object, "alleleCounts")
     .Object@param$QCparam$RegionsToFilter <- names(RegionsToFilter)
     .Object@param$QCparam$RegionsToKeep <- names(RegionsToKeep)
 
-    ##-----do not run if alleleCounts not found
+    ## -----do not run if alleleCounts not found
     if (length(counts_per_bam) == 0) {
         stop("Please run alleleCounts function before running QCfilter")
     }
 
-    ##-----apply filters
+    ## -----apply filters
     res_per_bam <- applyFiltersPerBam(counts_per_bam, RegionsToFilter, RegionsToKeep, verbose = verbose)
     .Object@alleleCounts <- res_per_bam
 
@@ -242,43 +252,44 @@ setMethod(f = "QCfilter", signature = "BaalChIP", function(.Object, RegionsToFil
 #' @return An updated \code{\link{BaalChIP}} object with the slot \code{alleleCounts} containing a list of GRanges objects that pass filters.
 #' @seealso \code{\link{BaalChIP.get}}, \code{\link{plotQC}}, \code{\link{summaryQC}}
 #' @examples
-#'setwd(system.file('test',package='BaalChIP'))
-#'samplesheet <- 'exampleChIP.tsv'
-#'hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-#'res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-#'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
-#'skipScriptRun=TRUE #For demonstration purposes only (read details in vignette)
-#'res <- filterIntbias(res,
-#'       simul_output=system.file('test/simuloutput',package='BaalChIP'),
-#'       tmpfile_prefix='c67c6ec6c433', skipScriptRun=TRUE)
+#' setwd(system.file("test", package = "BaalChIP"))
+#' samplesheet <- "exampleChIP.tsv"
+#' hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+#' res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+#' res <- alleleCounts(res, min_base_quality = 10, min_mapq = 15)
+#' skipScriptRun <- TRUE # For demonstration purposes only (read details in vignette)
+#' res <- filterIntbias(res,
+#'     simul_output = system.file("test/simuloutput", package = "BaalChIP"),
+#'     tmpfile_prefix = "c67c6ec6c433", skipScriptRun = TRUE
+#' )
 #'
-#'#check results
-#'plotSimul(res)
-#'summaryQC(res)
+#' # check results
+#' plotSimul(res)
+#' summaryQC(res)
 #' @export
 setMethod(f = "filterIntbias", signature = "BaalChIP", function(.Object, simul_output = NULL, tmpfile_prefix = NULL,
-    simulation_script = "local", alignmentSimulArgs = NULL, skipScriptRun = FALSE, verbose = TRUE) {
+                                                                simulation_script = "local", alignmentSimulArgs = NULL, skipScriptRun = FALSE, verbose = TRUE) {
 
-    ##-----check input arguments
+    ## -----check input arguments
     simul_output <- BaalChIP.checks(name = "simul_output", list(dir = simul_output, prefix = tmpfile_prefix))
     BaalChIP.checks(simulation_script, "simulation_script")
     BaalChIP.checks(skipScriptRun, "skipScriptRun")
 
-    ##-----assign parameters
+    ## -----assign parameters
     res_per_bam <- getBaalSlot(.Object, "alleleCounts")
     samples <- getBaalSlot(.Object, "samples")
     .Object@param$QCparam$FiltIntBias <- TRUE
     .Object@param$QCparam$simul_output <- simul_output
 
-    ##-----do not run if alleleCounts not found
+    ## -----do not run if alleleCounts not found
     if (length(res_per_bam) == 0) {
         stop("Please run alleleCounts (and optionally QCfilter) functions before running filterIntbias")
     }
 
-    ##-----read length per sample
+    ## -----read length per sample
     samples$readlen <- applyReadlenPerBam(samples, res_per_bam, verbose = verbose)
 
-    ##---- run simulations
+    ## ---- run simulations
     # DEBUG if (testingScript) { #save so far before running simulations tmpname <-
     # file.path(dirname(samplesheet),paste0(tmpfile_prefix,'_step1.Rda')) save(samples, res_per_bam,
     # file = tmpname) }
@@ -287,12 +298,16 @@ setMethod(f = "filterIntbias", signature = "BaalChIP", function(.Object, simul_o
     # existsTest) {testingScript = FALSE} if (!is.logical(testingScript)) {stop('cannot continue,
     # testingScript has to be either TRUE or FALSE')}
     testingScript <- skipScriptRun
-    simures <- applySim(samples, res_per_bam, simul_output = simul_output, simulation_script = simulation_script,
-        alignmentSimulArgs = alignmentSimulArgs, testingScript = testingScript, verbose = verbose)
+    simures <- applySim(samples, res_per_bam,
+        simul_output = simul_output, simulation_script = simulation_script,
+        alignmentSimulArgs = alignmentSimulArgs, testingScript = testingScript, verbose = verbose
+    )
 
-    ##----apply filter
-    res_per_bam <- applyIntBiasFilterPerBam(samples, res_per_bam, simcounts = simures[["simcounts"]],
-        verbose = verbose)
+    ## ----apply filter
+    res_per_bam <- applyIntBiasFilterPerBam(samples, res_per_bam,
+        simcounts = simures[["simcounts"]],
+        verbose = verbose
+    )
 
     # save so far DEBUG if (testingScript) { tmpname <-
     # file.path(dirname(samplesheet),paste0(tmpfile_prefix,'_step2.Rda')) save(samples, res_per_bam,
@@ -316,43 +331,46 @@ setMethod(f = "filterIntbias", signature = "BaalChIP", function(.Object, simul_o
 #' @return An updated \code{\link{BaalChIP}} object with the slot \code{mergedCounts} containing a data.frame of merged samples per group.
 #' @seealso \code{\link{BaalChIP.get}}, \code{\link{plotQC}}, \code{\link{summaryQC}}
 #' @examples
-#'setwd(system.file('test',package='BaalChIP'))
-#'samplesheet <- 'exampleChIP.tsv'
-#'hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-#'res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-#'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
-#'data('blacklist_hg19')
-#'data('pickrell2011cov1_hg19')
-#'data('UniqueMappability50bp_hg19')
-#'res <- QCfilter(res,
-#'                RegionsToFilter=list('blacklist'=blacklist_hg19,
-#'                'highcoverage'=pickrell2011cov1_hg19),
-#'                RegionsToKeep=list('UniqueMappability'=UniqueMappability50bp_hg19))
+#' setwd(system.file("test", package = "BaalChIP"))
+#' samplesheet <- "exampleChIP.tsv"
+#' hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+#' res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+#' res <- alleleCounts(res, min_base_quality = 10, min_mapq = 15)
+#' data("blacklist_hg19")
+#' data("pickrell2011cov1_hg19")
+#' data("UniqueMappability50bp_hg19")
+#' res <- QCfilter(res,
+#'     RegionsToFilter = list(
+#'         "blacklist" = blacklist_hg19,
+#'         "highcoverage" = pickrell2011cov1_hg19
+#'     ),
+#'     RegionsToKeep = list("UniqueMappability" = UniqueMappability50bp_hg19)
+#' )
 #'
-#'res <- mergePerGroup(res)
+#' res <- mergePerGroup(res)
 #'
-#'#retrieve mergedCounts:
-#'counts <- BaalChIP.get(res, 'mergedCounts')
+#' # retrieve mergedCounts:
+#' counts <- BaalChIP.get(res, "mergedCounts")
 #'
-#'#mergedCounts are grouped by group_name:
-#'names(counts)
-#'sapply(counts, dim)
+#' # mergedCounts are grouped by group_name:
+#' names(counts)
+#' sapply(counts, dim)
 #'
-#'#check out the result for one of the groups:
-#'head(counts[[1]])
+#' # check out the result for one of the groups:
+#' head(counts[[1]])
 #' @export
 setMethod(f = "mergePerGroup", signature = "BaalChIP", function(.Object) {
 
-    ##-----assign parameters
+    ## -----assign parameters
     res_per_bam <- getBaalSlot(.Object, "alleleCounts")
     samples <- getBaalSlot(.Object, "samples")
 
-    ##-----do not run if alleleCounts not found
+    ## -----do not run if alleleCounts not found
     if (length(res_per_bam) == 0) {
         stop("Please run alleleCounts (and optionally QCfilter and/or filtIntBias) functions before running mergePerGroup")
     }
 
-    ##-----apply filters
+    ## -----apply filters
     res_merged <- applyMergeResults(samples, res_per_bam)
     .Object@mergedCounts <- res_merged
 
@@ -370,43 +388,46 @@ setMethod(f = "mergePerGroup", signature = "BaalChIP", function(.Object) {
 #' @return An updated \code{\link{BaalChIP}} object with the slot \code{mergedCounts} containing a data.frame of merged samples per group with variants that pass the filter.
 #' @seealso \code{\link{BaalChIP.get}}, \code{\link{plotQC}}, \code{\link{summaryQC}}
 #' @examples
-#'setwd(system.file('test',package='BaalChIP'))
-#'samplesheet <- 'exampleChIP.tsv'
-#'hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-#'res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-#'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
-#'data('blacklist_hg19')
-#'data('pickrell2011cov1_hg19')
-#'data('UniqueMappability50bp_hg19')
-#'res <- QCfilter(res,
-#'                RegionsToFilter=list('blacklist'=blacklist_hg19,
-#'                'highcoverage'=pickrell2011cov1_hg19),
-#'                RegionsToKeep=list('UniqueMappability'=UniqueMappability50bp_hg19))
+#' setwd(system.file("test", package = "BaalChIP"))
+#' samplesheet <- "exampleChIP.tsv"
+#' hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+#' res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+#' res <- alleleCounts(res, min_base_quality = 10, min_mapq = 15)
+#' data("blacklist_hg19")
+#' data("pickrell2011cov1_hg19")
+#' data("UniqueMappability50bp_hg19")
+#' res <- QCfilter(res,
+#'     RegionsToFilter = list(
+#'         "blacklist" = blacklist_hg19,
+#'         "highcoverage" = pickrell2011cov1_hg19
+#'     ),
+#'     RegionsToKeep = list("UniqueMappability" = UniqueMappability50bp_hg19)
+#' )
 #'
-#'res <- mergePerGroup(res)
-#'res <- filter1allele(res)
+#' res <- mergePerGroup(res)
+#' res <- filter1allele(res)
 #'
-#'#retrieve mergedCounts:
-#'counts <- BaalChIP.get(res, 'mergedCounts')
+#' # retrieve mergedCounts:
+#' counts <- BaalChIP.get(res, "mergedCounts")
 #'
-#'#mergedCounts are grouped by group_name:
-#'names(counts)
-#'sapply(counts, dim)
+#' # mergedCounts are grouped by group_name:
+#' names(counts)
+#' sapply(counts, dim)
 #'
-#'#check out the result for one of the groups:
-#'head(counts[[1]])
+#' # check out the result for one of the groups:
+#' head(counts[[1]])
 #' @export
 setMethod(f = "filter1allele", signature = "BaalChIP", function(.Object) {
 
-    ##-----assign parameters
+    ## -----assign parameters
     res_merged <- .Object@mergedCounts
 
-    ##-----do not run if res_merged not found
+    ## -----do not run if res_merged not found
     if (length(res_merged) == 0) {
         stop("Please run mergePerGroup function before running filter1allele")
     }
 
-    ##-----apply filters
+    ## -----apply filters
     res_merged <- applyFilter1allele(res_merged)
     .Object@mergedCounts <- res_merged
 
@@ -445,43 +466,45 @@ setMethod(f = "filter1allele", signature = "BaalChIP", function(.Object) {
 #' @return An object of the \code{\link{BaalChIP}} class.
 #' @seealso \code{\link{summaryQC}}, \code{\link{plotQC}}
 #' @examples
-#'setwd(system.file('test',package='BaalChIP'))
-#'samplesheet <- 'exampleChIP.tsv'
-#'hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-#'res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-#'res <- BaalChIP.run(res, cores=2)
+#' setwd(system.file("test", package = "BaalChIP"))
+#' samplesheet <- "exampleChIP.tsv"
+#' hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+#' res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+#' res <- BaalChIP.run(res, cores = 2)
 #'
-#'#summary of the QC step
-#'summaryQC(res)
-#'#summary of the ASB step
-#'summaryASB(res)
+#' # summary of the QC step
+#' summaryQC(res)
+#' # summary of the ASB step
+#' summaryASB(res)
 #' @export
 setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 4, verbose = TRUE) {
     # simul_output=NULL)
 
-    ##-----check input arguments
+    ## -----check input arguments
     BaalChIP.checks(name = "cores", cores)
 
-    ##----- compute allele counts
+    ## ----- compute allele counts
     .Object <- alleleCounts(.Object, min_base_quality = 10, min_mapq = 15, verbose = verbose)
 
-    ##-----run QC step
+    ## -----run QC step
     data("blacklist_hg19")
     data("pickrell2011cov1_hg19")
     data("UniqueMappability50bp_hg19")
-    .Object <- QCfilter(.Object, RegionsToFilter = c("blacklist_hg19", "pickrell2011cov1_hg19"), RegionsToKeep = c("UniqueMappability50bp_hg19"),
-        verbose = verbose)
+    .Object <- QCfilter(.Object,
+        RegionsToFilter = c("blacklist_hg19", "pickrell2011cov1_hg19"), RegionsToKeep = c("UniqueMappability50bp_hg19"),
+        verbose = verbose
+    )
 
     # if (FiltIntBias == FALSE & !is.null(simul_output)) { warning (paste('will not use 'simul_output'
     # because FiltIntBias is FALSE'))
 
-    ##-----merge replicates
+    ## -----merge replicates
     if (verbose) {
         message("-merging replicated samples...")
     }
     .Object <- mergePerGroup(.Object)
 
-    ##-----filter 'Only1Allele'
+    ## -----filter 'Only1Allele'
     if (verbose) {
         message("-filtering out SNPs with only 1 observed allele...")
     }
@@ -491,7 +514,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
         message("-QC complete!\n")
     }
 
-    ##-----get ASB
+    ## -----get ASB
     if (verbose) {
         message("-getting ASB counts...")
     }
@@ -521,7 +544,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #' @description getASB identifies allele-specific binding events using a bayesian framework.
 #' @param .Object An object of the \code{\link{BaalChIP}} class.
 #' @param Iter Maximum number of iterations (default 5000).
-#' @param conf_level Confidence interval in the estimated allelic ratio (default 0.95).
+#' @param conf_level Confidence interval, or list of such in the estimated allelic ratio (default 0.95).
 #' @param cores number of cores for parallel computing (default is 4).
 #' @param RMcorrection Logical value indicating if reference mapping (RM) bias should be applied (default TRUE). If FALSE will not correct for reference allele mapping bias. If TRUE will estimate the RM bias from the overall reference allele proportion.
 #' @param RAFcorrection Logical value indicating if relative allele frequency (RAF) bias correction should be applied (default TRUE). If TRUE will read RAF values for each variant from \code{hets} files (RAF column name). If FALSE will not correct for relative allele frequency bias.
@@ -529,32 +552,32 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #' @return An updated \code{\link{BaalChIP}} object with the slot \code{ASB} containing variants identified as allele-specific.
 #' @seealso \code{\link{summaryASB}}, \code{\link{BaalChIP.report}}
 #' @examples
-#'setwd(system.file('test',package='BaalChIP'))
-#'samplesheet <- 'exampleChIP.tsv'
-#'hets <- c('MCF7'='MCF7_hetSNP.txt', 'GM12891'='GM12891_hetSNP.txt')
-#'res <- BaalChIP(samplesheet=samplesheet, hets=hets)
-#'res <- alleleCounts(res, min_base_quality=10, min_mapq=15)
-#'res <- mergePerGroup(res)
-#'res <- getASB(res, cores=2)
+#' setwd(system.file("test", package = "BaalChIP"))
+#' samplesheet <- "exampleChIP.tsv"
+#' hets <- c("MCF7" = "MCF7_hetSNP.txt", "GM12891" = "GM12891_hetSNP.txt")
+#' res <- BaalChIP(samplesheet = samplesheet, hets = hets)
+#' res <- alleleCounts(res, min_base_quality = 10, min_mapq = 15)
+#' res <- mergePerGroup(res)
+#' res <- getASB(res, cores = 2)
 #'
-#'#summary - number of significant ASB variants
-#'summaryASB(res)
+#' # summary - number of significant ASB variants
+#' summaryASB(res)
 #'
-#'#report result
-#'res <- BaalChIP.report(res)
+#' # report result
+#' res <- BaalChIP.report(res)
 #' @export
 setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95, cores = 4, RMcorrection = TRUE,
-    RAFcorrection = TRUE, verbose = TRUE, clusterType = "PSOCK", workerLog = nullfile()) {
+                                         RAFcorrection = TRUE, verbose = TRUE, clusterType = "PSOCK", workerLog = nullfile()) {
 
-    ##-----check input arguments
+    ## -----check input arguments
     BaalChIP.checks(name = "Iter", Iter)
     BaalChIP.checks(name = "conf_level", conf_level)
     BaalChIP.checks(name = "cores", cores)
     BaalChIP.checks(name = "RMcorrection", RMcorrection)
     BaalChIP.checks(name = "RAFcorrection", RAFcorrection)
 
-    ##-----update object with 'assayedVar'
-    assayedVar <- BaalChIP.get(.Object, "mergedCounts")  #last filtered mergedCounts
+    ## -----update object with 'assayedVar'
+    assayedVar <- BaalChIP.get(.Object, "mergedCounts") # last filtered mergedCounts
     .Object@assayedVar <- assayedVar
 
     if (length(assayedVar) == 0) {
@@ -565,7 +588,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     VarTable <- addVarTable(.Object, RAFcorrection = RAFcorrection, verbose = verbose)
     .Object@VarTable <- VarTable
 
-    ##-----check matching cellnames
+    ## -----check matching cellnames
     samples <- getBaalSlot(.Object, "samples")
     assayedVar <- getBaalSlot(.Object, "assayedVar")
     VarTable <- getBaalSlot(.Object, "VarTable")
@@ -573,16 +596,18 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     checkmatchingnames(names(assayedVar), cells1)
     checkmatchingnames(names(VarTable), cells1)
 
-    ##-----run
+    ## -----run
     Expnames <- names(assayedVar)
     results <- list()
     biasTable <- list()
     applyedCorrection <- list()
 
-    cl <- makeCluster(cores-1, type = clusterType, outfile = workerLog)
-    clusterEvalQ(cl, { library(coda) })
+    cl <- makeCluster(cores - 1, type = clusterType, outfile = workerLog)
+    clusterEvalQ(cl, {
+        library(coda)
+    })
     registerDoParallel(cl)
-    
+
     for (ID in Expnames) {
         message("... calculating ASB for: ", ID)
         assayed <- assayedVar[[ID]]
@@ -597,7 +622,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
         if (RMcorrection) {
             ARestimate <- estimateRefBias(assayed, GTtable, min_n = 200)
         } else {
-            ARestimate = NULL
+            ARestimate <- NULL
         }
 
         # get biasTable
@@ -608,12 +633,12 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
 
         # run bayes
         if (nrow(counts) > 0) {
-            Bayes_report <- runBayes(counts = counts, bias = biastable, Iter = Iter, conf_level = conf_level, cluster=cl)
+            Bayes_report <- runBayes(counts = counts, bias = biastable, Iter = Iter, conf_level = conf_level, cluster = cl)
         } else {
             message("no variants left for ", ID)
             Bayes_report <- setNames(
-                data.frame(matrix(ncol=6,nrow=0)),
-                c("ID", "Bayes_lower", "Bayes_upper", "Bayes_sig_A", "Bayes_sig_B", "Bayes_SD")
+                data.frame(matrix(ncol = 6, nrow = 0)),
+                c("ID", "Bayes_lower", "Bayes_upper", "Bayes_sig", "Bayes_SD")
             )
         }
 
@@ -624,11 +649,11 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     }
 
     stopCluster(cl)
-    
-    ##-----assign parameters
+
+    ## -----assign parameters
     applyedCorrection <- t(do.call("rbind", applyedCorrection))
     .Object@param$ASBparam <- list(Iter = Iter, conf_level = conf_level, applyedCorrection = applyedCorrection)
-    ##-----update status and return
+    ## -----update status and return
     if (!all(sapply(results, nrow) == 0)) {
         .Object@biasTable <- biasTable
         .Object@ASB <- results
@@ -648,27 +673,29 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
 #' @param what a single character value specifying which information should be retrieved. Options: 'samples', 'param', 'alleleCountsPerBam', 'mergedCounts', 'assayedVar', 'biasTable'.
 #' @return The slot content from an object of the \code{\link{BaalChIP}} class.
 #' @examples
-#'data('BaalObject')
+#' data("BaalObject")
 #'
-#'#samples data spreadsheet and hets:
-#'BaalChIP.get(BaalObject,what='samples')
+#' # samples data spreadsheet and hets:
+#' BaalChIP.get(BaalObject, what = "samples")
 #'
-#'#parameters used within run:
-#'BaalChIP.get(BaalObject,what='param')
+#' # parameters used within run:
+#' BaalChIP.get(BaalObject, what = "param")
 #'
-#'#retrieve a GRanges list with allele-specific read counts per BAM file:
-#'counts <- BaalChIP.get(BaalObject,what='alleleCountsPerBam')
-#'counts[['MCF7']][[1]]
+#' # retrieve a GRanges list with allele-specific read counts per BAM file:
+#' counts <- BaalChIP.get(BaalObject, what = "alleleCountsPerBam")
+#' counts[["MCF7"]][[1]]
 #'
-#'#retrieve a data.frame with allele-specific read counts per group:
-#'counts <- BaalChIP.get(BaalObject,what='mergedCounts')
-#'head(counts[[1]])
+#' # retrieve a data.frame with allele-specific read counts per group:
+#' counts <- BaalChIP.get(BaalObject, what = "mergedCounts")
+#' head(counts[[1]])
 #' @export
-setMethod("BaalChIP.get", "BaalChIP", function(.Object, what = c("samples", "param", "alleleCountsPerBam",
-    "mergedCounts", "assayedVar")) {
-    ##-----check input arguments
+setMethod("BaalChIP.get", "BaalChIP", function(.Object, what = c(
+                                                   "samples", "param", "alleleCountsPerBam",
+                                                   "mergedCounts", "assayedVar"
+                                               )) {
+    ## -----check input arguments
     BaalChIP.checks(name = "get.what", param = what)
-    ##-----get query
+    ## -----get query
     query <- NULL
     if (what == "samples") {
         query <- list(samples = .Object@samples, hets = .Object@hets)
@@ -691,31 +718,45 @@ setMethod("BaalChIP.get", "BaalChIP", function(.Object, what = c("samples", "par
 })
 
 getBaalSlot <- function(.Object, what) {
-    match.arg(what, c("samples", "param", "mergedCounts", "alleleCounts", "assayedVar", "biasTable",
-        "hets", "simulation_stats", "ASB", "VarTable", "gDNA"))
-    switch(what, samples = {
-        query <- .Object@samples
-    }, param = {
-        query <- .Object@param
-    }, mergedCounts = {
-        query <- .Object@mergedCounts
-    }, alleleCounts = {
-        query <- .Object@alleleCounts
-    }, assayedVar = {
-        query <- .Object@assayedVar
-    }, biasTable = {
-        query <- .Object@biasTable
-    }, hets = {
-        query <- .Object@hets
-    }, simulation_stats = {
-        query <- .Object@simulation_stats
-    }, ASB = {
-        query <- .Object@ASB
-    }, VarTable = {
-        query <- .Object@VarTable
-    }, gDNA = {
-        query <- .Object@gDNA
-    }, )
+    match.arg(what, c(
+        "samples", "param", "mergedCounts", "alleleCounts", "assayedVar", "biasTable",
+        "hets", "simulation_stats", "ASB", "VarTable", "gDNA"
+    ))
+    switch(what,
+        samples = {
+            query <- .Object@samples
+        },
+        param = {
+            query <- .Object@param
+        },
+        mergedCounts = {
+            query <- .Object@mergedCounts
+        },
+        alleleCounts = {
+            query <- .Object@alleleCounts
+        },
+        assayedVar = {
+            query <- .Object@assayedVar
+        },
+        biasTable = {
+            query <- .Object@biasTable
+        },
+        hets = {
+            query <- .Object@hets
+        },
+        simulation_stats = {
+            query <- .Object@simulation_stats
+        },
+        ASB = {
+            query <- .Object@ASB
+        },
+        VarTable = {
+            query <- .Object@VarTable
+        },
+        gDNA = {
+            query <- .Object@gDNA
+        },
+    )
     return(query)
 }
 
@@ -744,17 +785,18 @@ getBaalSlot <- function(.Object, what) {
 #' \item Bayes_upper: upper interval for the estimated allelic ratio (allelic ratio is given by REF / TOTAL).
 #' \item Corrected.AR: average estimated allelic ratio (average between Bayes_lower and Bayes_upper). A value between 0.5 and 1 denotes a bias to the reference allele, and a value between 0 and 0.5 a bias to the alternative allele.
 #' \item isASB: logical value indicating BaalChIP's classification of variants into allele-specific.
+#' \item conf_<p>_upper/lower: upper and lower bounds of additional credible intervals.
 #' }
 #' @seealso \code{\link{summaryASB}}, \code{\link{getASB}}
 #' @examples
-#'data('BaalObject')
-#'report <- BaalChIP.report(BaalObject)
+#' data("BaalObject")
+#' report <- BaalChIP.report(BaalObject)
 #'
-#'#the reported list is grouped by group_name:
-#'names(report)
+#' # the reported list is grouped by group_name:
+#' names(report)
 #'
-#'#check out the report for one of the groups:
-#'head(report[['MCF7']])
+#' # check out the report for one of the groups:
+#' head(report[["MCF7"]])
 #' @export
 setMethod("BaalChIP.report", "BaalChIP", function(.Object) {
     samples <- getBaalSlot(.Object, "samples")
@@ -783,8 +825,8 @@ setMethod("BaalChIP.report", "BaalChIP", function(.Object) {
 #' }
 #' @seealso \code{\link{BaalChIP.run}}, \code{\link{plotQC}}
 #' @examples
-#'data('BaalObject')
-#'summaryQC(BaalObject)
+#' data("BaalObject")
+#' summaryQC(BaalObject)
 #' @export
 setMethod("summaryQC", "BaalChIP", function(.Object) {
     query <- summary_QC(.Object)
@@ -806,8 +848,8 @@ setMethod("summaryQC", "BaalChIP", function(.Object) {
 #' @return A matrix containing the total number of allele-specific variants (TOTAL) and the number of variants allele-specific for the reference (REF) and alternate alleles (ALT).
 #' @seealso \code{\link{getASB}}, \code{\link{BaalChIP.report}}
 #' @examples
-#'data('BaalObject')
-#'summaryASB(BaalObject)
+#' data("BaalObject")
+#' summaryASB(BaalObject)
 #' @export
 setMethod("summaryASB", "BaalChIP", function(.Object) {
     query <- summary_ASB(.Object)
@@ -837,21 +879,25 @@ setMethod("summaryASB", "BaalChIP", function(.Object) {
 #' @return A plot
 #' @seealso \code{\link{BaalChIP.run}}, \code{\link{summaryQC}}
 #' @examples
-#'data('BaalObject')
-#'plotQC(BaalObject, what = 'overall_pie')
-#'plotQC(BaalObject, what =  'boxplot_per_filter', addlegend=FALSE)
-#'plotQC(BaalObject, what =  'barplot_per_group')
+#' data("BaalObject")
+#' plotQC(BaalObject, what = "overall_pie")
+#' plotQC(BaalObject, what = "boxplot_per_filter", addlegend = FALSE)
+#' plotQC(BaalObject, what = "barplot_per_group")
 #' @export
 setMethod("plotQC", "BaalChIP", function(.Object, what = "barplot_per_group", addlegend = TRUE, plot = TRUE) {
-    ##-----check input arguments
+    ## -----check input arguments
     match.arg(what, c("overall_pie", "boxplot_per_filter", "barplot_per_group", "pie", "boxplot", "barplot"))
-    switch(what, pie = {
-        what <- "overall_pie"
-    }, boxplot = {
-        what <- "boxplot_per_filter"
-    }, barplot = {
-        what <- "barplot_per_group"
-    })
+    switch(what,
+        pie = {
+            what <- "overall_pie"
+        },
+        boxplot = {
+            what <- "boxplot_per_filter"
+        },
+        barplot = {
+            what <- "barplot_per_group"
+        }
+    )
     BaalChIP.checks(name = "plot.what", param = what)
     stats <- summary_QC(.Object)
     p <- plotfilters(stats = stats, what = what, addlegend = addlegend, plot = plot)
@@ -875,11 +921,10 @@ setMethod("plotQC", "BaalChIP", function(.Object, what = "barplot_per_group", ad
 #' @param plot a logical value to whether it should plot (TRUE) or not (FALSE). Default is TRUE.
 #' @return A plot
 #' @examples
-#'data('BaalObject')
-#'plotSimul(BaalObject)
+#' data("BaalObject")
+#' plotSimul(BaalObject)
 #' @export
 setMethod("plotSimul", "BaalChIP", function(.Object, plot = TRUE) {
-
     simulation_stats <- getBaalSlot(.Object, "simulation_stats")
     p <- plot.simul(simulation_stats, plot = plot)
     if (!plot) {
@@ -903,12 +948,11 @@ setMethod("plotSimul", "BaalChIP", function(.Object, plot = TRUE) {
 #' @return A plot
 #' @seealso \code{\link{BaalChIP.report}}, \code{\link{summaryQC}}
 #' @examples
-#'data('BaalObject')
-#'adjustmentBaalPlot(BaalObject)
-#'adjustmentBaalPlot(BaalObject, col=c('blue','pink'))
+#' data("BaalObject")
+#' adjustmentBaalPlot(BaalObject)
+#' adjustmentBaalPlot(BaalObject, col = c("blue", "pink"))
 #' @export
 setMethod("adjustmentBaalPlot", "BaalChIP", function(.Object, col = c("green3", "gray50")) {
-
     query <- BaalChIP.report(.Object)
     if (!is.null(query)) {
         plotadjustment(query, col = col)
