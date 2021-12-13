@@ -197,8 +197,8 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
         #RAF correction is TRUE, and gDNA is null --> go directly to RAF
         if (is.null(gDNAbams) & RAFcorrection) { snps <- useRAFfromhets(snps, ID, verbose=verbose) }
 
-        #use_correctBygDNA is TRUE and gDNA is null --> use RAF
-        if (is.null(gDNAbams) & correctBygDNA) { 
+        #RAF correction is TRUE, correctBygDNA is TRUE and gDNA is null --> use RAF
+        if (is.null(gDNAbams) & correctBygDNA & RAFcorrection) { 
             snps <- useRAFfromhets(snps, ID, verbose=verbose)
             warning("Cannot correct using gDNA as it has not been provided for group ", ID, ". Will use RAF from hets") 
         }
