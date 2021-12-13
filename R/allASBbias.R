@@ -184,7 +184,7 @@ useRAFfromgDNA <- function(gDNAbams, snps, ID, min_base_quality=10, min_mapq=15,
     return(snps)
 }
 
-get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min_mapq=15, RAFcorrection=TRUE, verbose=TRUE) {
+get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min_mapq=15, RAFcorrection=TRUE, verbose=TRUE, correctBygDNA=FALSE) {
 
     if (length(gDNA)==0) {gDNA <- NULL}
 
@@ -197,14 +197,22 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
         #RAF correction is TRUE, and gDNA is null --> go directly to RAF
         if (is.null(gDNAbams) & RAFcorrection) { snps <- useRAFfromhets(snps, ID, verbose=verbose) }
 
+        #use_correctBygDNA is TRUE and gDNA is null --> use RAF
+        if (is.null(gDNAbams) & correctBygDNA) { 
+            snps <- useRAFfromhets(snps, ID, verbose=verbose)
+            warning("Cannot correct using gDNA as it has not been provided for group ", ID, ". Will use RAF from hets") 
+        }
+
         #RAF correction is TRUE and gDNA is not null
         if (!is.null(gDNAbams) & RAFcorrection) {
 
-            if ("RAF" %in% colnames(snps)) {
+            # If correctBygDNA is FALSE, use RAFs
+            if ("RAF" %in% colnames(snps) & !correctBygDNA) {
                 #There are both gDNA and RAF in hets tables.. will use the RAF instead!
                 warning("both gDNA and hets file found for group ", ID, ". Will use RAF from hets!")
                 snps <- useRAFfromhets(snps, ID, verbose=verbose)
-            }else{
+            # If correctBygDNA is TRUE, correct using gDNA
+            }else {
                 snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=verbose)
 
             }
@@ -220,7 +228,7 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
 }
 
 
-addVarTable <- function(object, RAFcorrection=TRUE, verbose=TRUE) {
+addVarTable <- function(object, RAFcorrection=TRUE, verbose=TRUE, correctBygDNA=FALSE) {
     assayedVar <- getBaalSlot(object, "assayedVar")
     hets <- getBaalSlot(object, "hets")
 
@@ -230,6 +238,6 @@ addVarTable <- function(object, RAFcorrection=TRUE, verbose=TRUE) {
     min_base_quality <- QCparam[["min_base_quality"]] #will not be used if gDNA is null or RAFcorrection==FALSE
     min_mapq <- QCparam[["min_mapq"]] #will not be used if gDNA is null or RAFcorrection==FALSE
 
-    VarTable <- get_Vartable(assayedVar, hets, gDNA, min_base_quality, min_mapq, RAFcorrection,verbose)
+    VarTable <- get_Vartable(assayedVar, hets, gDNA, min_base_quality, min_mapq, RAFcorrection,verbose,correctBygDNA)
     return(VarTable)
 }
