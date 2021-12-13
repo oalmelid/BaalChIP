@@ -567,7 +567,7 @@ setMethod(f = "BaalChIP.run", signature = "BaalChIP", function(.Object, cores = 
 #' res <- BaalChIP.report(res)
 #' @export
 setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95, cores = 4, RMcorrection = TRUE,
-                                         RAFcorrection = TRUE, verbose = TRUE, clusterType = "PSOCK", workerLog = nullfile()) {
+                                         RAFcorrection = TRUE, verbose = TRUE, correctBygDNA = FALSE, clusterType = "PSOCK", workerLog = nullfile()) {
 
     ## -----check input arguments
     BaalChIP.checks(name = "Iter", Iter)
@@ -575,6 +575,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     BaalChIP.checks(name = "cores", cores)
     BaalChIP.checks(name = "RMcorrection", RMcorrection)
     BaalChIP.checks(name = "RAFcorrection", RAFcorrection)
+    BaalChIP.checks(name = "correctBygDNA", correctBygDNA)
 
     ## -----update object with 'assayedVar'
     assayedVar <- BaalChIP.get(.Object, "mergedCounts") # last filtered mergedCounts
@@ -585,7 +586,7 @@ setMethod("getASB", "BaalChIP", function(.Object, Iter = 5000, conf_level = 0.95
     }
 
     #------get VarTable
-    VarTable <- addVarTable(.Object, RAFcorrection = RAFcorrection, verbose = verbose)
+    VarTable <- addVarTable(.Object, RAFcorrection = RAFcorrection, verbose = verbose, correctBygDNA = correctBygDNA)
     .Object@VarTable <- VarTable
 
     ## -----check matching cellnames
