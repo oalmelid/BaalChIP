@@ -194,30 +194,32 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
         snps <- snps[snps$ID %in% assayed$ID,,drop=FALSE]
         gDNAbams <- gDNA[[ID]]
 
-        #RAF correction is TRUE, and gDNA is null --> go directly to RAF
-        if (is.null(gDNAbams) & RAFcorrection) { snps <- useRAFfromhets(snps, ID, verbose=verbose) }
+        # Set boolean variables associated with RAF and gDNA being present
+        RAF_exists <- "RAF" %in% colnames(snps)
+        gDNA_exists <- !is.null(gDNAbams)
 
-        #RAF correction is TRUE, correctBygDNA is TRUE and gDNA is null --> use RAF
-        if (is.null(gDNAbams) & correctBygDNA & RAFcorrection) { 
-            snps <- useRAFfromhets(snps, ID, verbose=verbose)
-            warning("Cannot correct using gDNA as it has not been provided for group ", ID, ". Will use RAF from hets") 
-        }
-
-        #RAF correction is TRUE and gDNA is not null
-        if (!is.null(gDNAbams) & RAFcorrection) {
-
-            # If correctBygDNA is FALSE, use RAFs
-            if ("RAF" %in% colnames(snps) & !correctBygDNA) {
-                #There are both gDNA and RAF in hets tables.. will use the RAF instead!
-                warning("both gDNA and hets file found for group ", ID, ". Will use RAF from hets!")
-                snps <- useRAFfromhets(snps, ID, verbose=verbose)
-            # If correctBygDNA is TRUE, correct using gDNA
-            }else {
-                snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=verbose)
-
+        if (RAFcorrection) { 
+        # If gDNA files are not provided, correct by RAF
+          if (!gDNA_exists) {
+            if (!correctBygDNA) {
+              snps <- useRAFfromhets(snps, ID, verbose=verbose)
+            } else {
+              # Specified to correct by gDNA, but files not provided, so correct by RAF instead ad print warning
+              snps <- useRAFfromhets(snps, ID, verbose=verbose)
+              warning("Cannot correct using gDNA as it has not been provided for group ", ID, ". Will use RAF from hets") 
             }
-
-
+          # If gDNA files are provided
+          } else {
+            # if correctBygDNA = FALSE and RAF is present, correct by RAF, even if gDNA files provided
+            if (RAF_exists & !correctBygDNA) {
+              #There are both gDNA and RAF in hets tables.. will use the RAF instead!
+              warning("both gDNA and hets file found for group ", ID, ". Will use RAF from hets! To correct by gDNA, please specify the flag correctBygDNA=TRUE")
+              snps <- useRAFfromhets(snps, ID, verbose=verbose)
+            } else {
+              # Otherwise, correct by gDNA bam files provided
+              snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=verbose)
+            }
+          }
         }
 
         return(snps)
