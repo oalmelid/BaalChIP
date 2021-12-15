@@ -198,26 +198,21 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
         RAF_exists <- "RAF" %in% colnames(snps)
         gDNA_exists <- !is.null(gDNAbams)
 
-        if (RAFcorrection) { 
-        # If gDNA files are not provided, correct by RAF
-          if (!gDNA_exists) {
-            if (!correctBygDNA) {
-              snps <- useRAFfromhets(snps, ID, verbose=verbose)
-            } else {
-              # Specified to correct by gDNA, but files not provided, so correct by RAF instead ad print warning
-              snps <- useRAFfromhets(snps, ID, verbose=verbose)
-              warning("Cannot correct using gDNA as it has not been provided for group ", ID, ". Will use RAF from hets") 
-            }
-          # If gDNA files are provided
+        # if RAFcorrection is TRUE, correct either by pre-computed RAF or gDNA background
+        if (RAFcorrection) {
+          # If gDNA files are provided and correctBygDNA = TRUE, correct by gDNA
+          if (gDNA_exists & correctBygDNA) {
+            snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=verbose)
           } else {
-            # if correctBygDNA = FALSE and RAF is present, correct by RAF, even if gDNA files provided
-            if (RAF_exists & !correctBygDNA) {
-              #There are both gDNA and RAF in hets tables.. will use the RAF instead!
+            # Otherwise, correct by RAF
+            snps <- useRAFfromhets(snps, ID, verbose=verbose)
+            # Give warning for unique cases with conflicting arguments
+            if (!gDNA_exists & correctBygDNA) {
+              # If correctBygDNA = TRUE, but gDNA files not provided, will correct by RAF
+              warning("Cannot correct using gDNA as it has not been provided for group ", ID, ". Will use RAF from hets") 
+            } else if (RAF_exists & !correctBygDNA) {
+              # There are both gDNA and RAF in hets tables.. will use the RAF instead!
               warning("both gDNA and hets file found for group ", ID, ". Will use RAF from hets! To correct by gDNA, please specify the flag correctBygDNA=TRUE")
-              snps <- useRAFfromhets(snps, ID, verbose=verbose)
-            } else {
-              # Otherwise, correct by gDNA bam files provided
-              snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=verbose)
             }
           }
         }
