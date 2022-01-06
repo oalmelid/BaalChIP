@@ -214,7 +214,7 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
             if (!gDNA_exists & correctBygDNA) {
               # If correctBygDNA = TRUE, but gDNA files not provided, will correct by RAF
               warning("Cannot correct using gDNA as it has not been provided for group ", ID, ". Will use RAF from hets") 
-            } else if (RAF_exists & !correctBygDNA) {
+            } else if (RAF_exists & !correctBygDNA & gDNA_exists) {
               # There are both gDNA and RAF in hets tables.. will use the RAF instead!
               warning("both gDNA and hets file found for group ", ID, ". Will use RAF from hets! To correct by gDNA, please specify the flag correctBygDNA=TRUE")
             }
