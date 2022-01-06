@@ -202,6 +202,10 @@ get_Vartable <- function(assayedVar, hets, gDNA=list(), min_base_quality=10, min
         if (RAFcorrection) {
           # If gDNA files are provided and correctBygDNA = TRUE, correct by gDNA
           if (gDNA_exists & correctBygDNA) {
+              if (RAF_exists) {
+                # If RAF exists and we are correcting by gDNA, remove RAF column in hets file
+                snps$RAF <- NULL
+            }
             snps <- useRAFfromgDNA(gDNAbams, snps, ID, min_base_quality=min_base_quality, min_mapq=min_mapq, verbose=verbose)
           } else {
             # Otherwise, correct by RAF
