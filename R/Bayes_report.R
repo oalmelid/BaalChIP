@@ -18,7 +18,7 @@ bayesian_report <- function(SNP_id,
     mcmc_traces <- as.mcmc(traces[-(1:burnin), ])
 
     conf_itvals <- unlist(lapply(conf_level, function(x) {
-        HPDinterval(mcmc_traces, conf_level = x)
+        HPDinterval(mcmc_traces, prob = x)
     }))
     num_columns <- 3 + length(conf_itvals)
 
