@@ -96,6 +96,7 @@ setGeneric(name="getASB",
                        RMcorrection = TRUE,
                        RAFcorrection = TRUE,
                        verbose=TRUE,
+                       correctBygDNA=FALSE,
                        clusterType = "PSOCK",
                        workerLog = nullfile())
                        {

@@ -227,6 +227,12 @@ BaalChIP.checks <- function(name, param, .CHECKS = TRUE) {
         }
     }
 
+    if (name == "correctBygDNA") {
+        if (class(param) != "logical") {
+            stop("correctBygDNA must be a logical value", call. = FALSE)
+        }
+    }
+
     if (name == "get.what") {
         opts <- c("samples", "param", "mergedCounts", "alleleCountsPerBam", "assayedVar", "biasTable")
         if (!is.character(param) || length(param) != 1 || !(param %in% opts)) {
