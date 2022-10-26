@@ -1,27 +1,25 @@
 ---
 title: "BaalChIP: Bayesian analysis of allele-specific transcription factor binding in cancer genomes"
 author: "\\
-
 	Ines de Santiago,
   Wei Liu,
   Ke Yuan,
   Florian Markowetz.\\
-
         University of Cambridge, Cancer Research UK Cambridge Institute"
 date: "`r Sys.Date()`"
 bibliography: BaalChIP-vignette.bib
 csl: biomed-central.csl
 output: 
-  BiocStyle::html_document:
-    toc: true
   BiocStyle::pdf_document:
+    toc: true
+  BiocStyle::html_document:
     toc: true
 vignette: >
   %\VignetteIndexEntry{Analyzing ChIP-seq and FAIRE-seq data with the BaalChIP package}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteDepends{knitr}
   %\VignetteDepends{BiocStyle}
   %\usepackage[utf8]{inputenc}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
 ```{r style, echo=FALSE, results="asis", message=FALSE}
@@ -388,7 +386,7 @@ This bias correction can be turned on/off by using the argument `RAFcorrection=T
 
 The output of BaalChIP is a posterior distribution of the estimated allelic balance ratio in read counts observed after considering all sources of underlying biases
 
-```{r, eval=TRUE, echo=FALSE, include=FASE}
+```{r, eval=TRUE, echo=FALSE, include=FALSE}
 data(baalObject)
 res <- BaalObject
 ```

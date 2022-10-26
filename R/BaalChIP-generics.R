@@ -10,7 +10,8 @@ setGeneric(name="alleleCounts",
                        def=function(.Object,
                        min_base_quality=10,
                        min_mapq=15,
-                       verbose=TRUE)
+                       verbose=TRUE,
+                       all_hets=FALSE)
                        {
                                standardGeneric("alleleCounts")
                        }
@@ -94,7 +95,9 @@ setGeneric(name="getASB",
                        conf_level = 0.95, cores = 4,
                        RMcorrection = TRUE,
                        RAFcorrection = TRUE,
-                       verbose=TRUE)
+                       verbose=TRUE,
+                       clusterType = "PSOCK",
+                       workerLog = nullfile())
                        {
                                standardGeneric("getASB")
                        }

@@ -4,7 +4,9 @@
 \name{BaalObject}
 \alias{BaalObject}
 \title{BaalObject example dataset}
-\format{A BaalChIP-class object}
+\format{
+A BaalChIP-class object
+}
 \description{
 BaalObject example dataset
 }
@@ -12,4 +14,3 @@ BaalObject example dataset
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}
 }
 \keyword{BaalObject}
-

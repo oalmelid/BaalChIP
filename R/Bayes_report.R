@@ -1,39 +1,54 @@
-#BaalChIP: Bayesian_report function to report the bayesian analysis result
-#Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
+# BaalChIP: bayesian_report function to report the bayesian analysis result per SNP
+# Ines de Santiago, Wei Liu, Ke Yuan, Florian Markowetz
 
+boundary_titles <- function(threshold) {
+    c(
+        gettextf("conf_%.2f_lower", threshold),
+        gettextf("conf_%.2f_upper", threshold)
+    )
+}
 
-Bayesian_report <- function(iter_matrix,conf_level,threshold_lower,threshold_upper,burnin,maxlag,SNP_check,SNP_hit_Peaks){
-    #suppressPackageStartupMessages(require('coda'))
+bayesian_report <- function(SNP_id,
+                            iter_matrix,
+                            conf_level,
+                            central_threshold,
+                            burnin,
+                            maxlag) {
     traces <- iter_matrix
+    mcmc_traces <- as.mcmc(traces[-(1:burnin), ])
 
-    mcmc_converter <- function(traces, burnin){
-    numsamp = dim(traces)[1]
-    numvar = dim(traces)[2]
-    output = lapply(1:numvar, function(nvar)
-      as.mcmc(traces[(burnin+1):numsamp, nvar]) )
-    return( output )
+    conf_itvals <- unlist(lapply(conf_level, function(x) {
+        HPDinterval(mcmc_traces, prob = x)
+    }))
+    num_columns <- 3 + length(conf_itvals)
+
+    conf_itval <- matrix(NA, 1, num_columns)
+    conf_itval[1, 1:2] <- conf_itvals[1:2]
+    conf_itval[1, 3] <- (0.5 + central_threshold <= conf_itval[1])
+    conf_itval[1, 4] <- (0.5 - central_threshold >= conf_itval[2])
+    stat_summaries <- summary(mcmc_traces)[["statistics"]]
+    conf_itval[1, 5] <- stat_summaries["SD"]
+
+    conf_columns <- c()
+    if (length(conf_level) > 1) {
+        conf_itval[1, 6:num_columns] <- conf_itvals[3:length(conf_itvals)]
+        conf_columns <- lapply(
+            conf_level[2:length(conf_level)],
+            boundary_titles
+        )
     }
 
+    conf_itval_df <- data.frame(c(SNP_id), conf_itval, stringsAsFactors = FALSE)
 
-    mcmc_traces = mcmc_converter(traces, burnin)
-    #autocorr.plot(mcmc_traces[[nvar]], maxlag)
-    #traceplot(mcmc_traces[[nvar]])
-    #densplot(mcmc_traces[[nvar]])
-    #geweke.diag(mcmc_traces[[nvar]])
+    colnames(conf_itval_df) <- c(
+        "ID",
+        "Bayes_lower",
+        "Bayes_upper",
+        "Bayes_sig_A",
+        "Bayes_sig_B",
+        "Bayes_SD",
+        unlist(conf_columns)
+    )
 
-    conf_itval <- matrix(NA,ncol(traces),4)
-    for (SNP in 1:ncol(traces)) {
-    conf_itval[SNP,1:2] = HPDinterval(mcmc_traces[[SNP]], prob = conf_level)
-    conf_itval[SNP,3] = (threshold_upper <= conf_itval[SNP,1])
-    conf_itval[SNP,4] = (threshold_lower >= conf_itval[SNP,2])
-
-    }
-    conf_itval <- data.frame(as.character(SNP_hit_Peaks[,1]),conf_itval, stringsAsFactors=FALSE)
-
-    ##################
-    colnames(conf_itval) <- c("ID","Bayes_lower", "Bayes_upper","Bayes_sig_A", "Bayes_sig_B")
-    return(conf_itval)
-    #save(Bayes_binom, file=paste("results/AAF_refbias_new_post/bayes_binom/",cell_line,"_table.RData",sep=""))
-    #write.table(Bayes_binom, file = paste("results/AAF_refbias_new_post/bayes_binom/",cell_line,"_table.csv", sep=""), quote=FALSE, sep=",",row.names=FALSE)
-
+    return(conf_itval_df)
 }

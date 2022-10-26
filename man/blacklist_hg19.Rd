@@ -4,7 +4,9 @@
 \name{blacklist_hg19}
 \alias{blacklist_hg19}
 \title{Blacklisted genomic regions}
-\format{A GRanges object of 1378 ranges.}
+\format{
+A GRanges object of 1378 ranges.
+}
 \description{
 A GRanges object containing blacklisted regions identified by the ENCODE and modENCODE consortia.
 These correspond to artifact regions that tend to show artificially high signal (excessive unstructured anomalous reads mapping).
@@ -25,4 +27,3 @@ These are not applicable to RNA-seq or other transcriptome data types.
 Ines de Santiago \email{ines.desantiago@cruk.cam.ac.uk}
 }
 \keyword{blacklist_hg19}
-
